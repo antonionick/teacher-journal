@@ -11,11 +11,12 @@ import { StudentTableComponent } from './components/students/student-table/stude
 import { StudentPageComponent } from './components/students/student-page/student-page.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FormBuilder } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, PanelComponent, StudentFormComponent, StudentTableComponent, StudentPageComponent],
   imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, MatChipsModule, SharedModule, FontAwesomeModule],
-  providers: [],
+  providers: [FormBuilder],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
