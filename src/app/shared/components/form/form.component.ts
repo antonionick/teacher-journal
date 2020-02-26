@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { FormConfig } from '../../../common/entities/FormConfig';
+import { FormConfig } from '../../../common/entities/Form/FormConfig';
 import { ButtonConfig } from '../../../common/entities/ButtonConfig';
 
 @Component({

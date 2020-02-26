@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Student } from '../../../common/models/Student';
 
+import { TableHeaderConfig } from '../../../common/entities/Table/TableHeaderConfig';
+
 @Component({
   selector: 'app-student-table',
   templateUrl: './student-table.component.html',
@@ -10,7 +12,7 @@ export class StudentTableComponent implements OnInit {
   @Input()
   public data: Array<Student>;
   @Input('columnHeaders')
-  public displayedColumns: Array<string>;
+  public displayedColumns: Array<TableHeaderConfig>;
 
   constructor() {}
 

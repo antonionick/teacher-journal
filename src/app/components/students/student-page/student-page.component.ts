@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
 import { Student } from '../../../common/models/Student';
 import { students } from '../../../../../mock-data/students';
+import { TableHeaderConfig } from '../../../common/entities/Table/TableHeaderConfig';
 import { getMaxId } from '../../../common/helpers/id';
 
 @Component({
@@ -11,15 +13,37 @@ import { getMaxId } from '../../../common/helpers/id';
 })
 export class StudentPageComponent implements OnInit {
   public students: Array<Student>;
-  public headers: Array<string>;
-  public plusIcon = faPlus;
+  public headers: Array<TableHeaderConfig>;
+  public plusIcon: IconDefinition = faPlus;
 
   constructor() {
     this.students = students;
-    this.headers = ['id', 'name', 'lastName', 'address', 'description'];
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    this.headers = [
+      {
+        value: 'id',
+        isSort: true,
+      },
+      {
+        value: 'name',
+        isSort: true,
+      },
+      {
+        value: 'lastName',
+        isSort: true,
+      },
+      {
+        value: 'address',
+        isSort: true,
+      },
+      {
+        value: 'description',
+        isSort: true,
+      },
+    ];
+  }
 
   public addData(data: Student): void {
     const id: number = getMaxId(this.students) + 1;

@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { FormConfig } from '../../../common/entities/FormConfig';
-import { FormElement } from '../../../common/entities/FormElement';
+import { FormConfig } from '../../../common/entities/Form/FormConfig';
+import { FormElement } from '../../../common/entities/Form/FormElement';
 import { Student } from '../../../common/models/Student';
 
 @Component({
@@ -61,6 +61,7 @@ export class StudentFormComponent implements OnInit {
 
   public onSubmit(form: FormGroup): void {
     const result: Student = { id: -1, ...form.value };
+    form.reset();
     this.submit.emit(result);
   }
 }
