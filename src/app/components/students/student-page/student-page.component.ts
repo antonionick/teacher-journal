@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Student } from '../../../common/models/Student';
 import { students } from '../../../../../mock-data/students';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { getMaxId } from '../../../common/helpers/id';
 
 @Component({
   selector: 'app-student-page',
@@ -19,4 +20,10 @@ export class StudentPageComponent implements OnInit {
   }
 
   public ngOnInit(): void {}
+
+  public addData(data: Student): void {
+    const id: number = getMaxId(this.students) + 1;
+    data.id = id;
+    this.students = [...this.students, data];
+  }
 }

@@ -1,5 +1,17 @@
 .form {
-  &__wrapper-content {
-    display: flex;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  border: 3px solid orange;
+
+  &__column {
+    width: 100%;
   }
+
+  // &__button {}
 }

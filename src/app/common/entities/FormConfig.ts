@@ -1,4 +1,7 @@
+import { FormElement } from './FormElement';
+
 export interface FormConfig {
-  classes: Array<string>;
   id: string;
+  classes: Array<string>;
+  elements: FormElement<string>[];
 }

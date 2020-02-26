@@ -1,6 +1,32 @@
-<form
-  id="{{ config.id ? config.id : null }}"
-  class="form {{ config.classes ? config.classes.join(' ') : null }}"
->
-  <ng-content></ng-content>
+<form id="{{ config.id }}" class="form {{ config.classes }}" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="form__row" *ngFor="let item of config.elements">
+    <mat-form-field class="form__column">
+      <mat-label>{{ item.label }}</mat-label>
+
+      <ng-container [ngSwitch]="item.controlType">
+        <input
+          *ngSwitchCase="'input'"
+          matInput
+          class="{{ item.classNames.join(' ') }}"
+          [formControlName]="item.key"
+          type="{{ item.type }}"
+          name="{{ item.key }}"
+          placeholder="{{ item.placeholder }}"
+        />
+        <textarea
+          *ngSwitchCase="'textarea'"
+          matInput
+          cdkTextareaAutosize
+          class="{{ item.classNames.join(' ') }}"
+          [formControlName]="item.key"
+          name="{{ item.key }}"
+          placeholder="{{ item.placeholder }}"
+        ></textarea>
+      </ng-container>
+    </mat-form-field>
+  </div>
+
+  <div class="form__row">
+    <app-button class="form__button" [config]="buttonConfig">Add</app-button>
+  </div>
 </form>

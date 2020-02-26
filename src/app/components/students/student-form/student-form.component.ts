@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { FormConfig } from '../../../common/entities/FormConfig';
+import { FormElement } from '../../../common/entities/FormElement';
+import { Student } from '../../../common/models/Student';
 
 @Component({
   selector: 'app-student-form',
@@ -8,29 +10,57 @@ import { FormConfig } from '../../../common/entities/FormConfig';
   styleUrls: ['./student-form.component.scss'],
 })
 export class StudentFormComponent implements OnInit {
-  public config: FormConfig = {
-    id: '',
-    classes: [],
-  };
+  @Output('submit')
+  public submit: EventEmitter<Student> = new EventEmitter();
 
-  public formControl: FormGroup;
+  public config: FormConfig;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor() {}
 
   public ngOnInit(): void {
-    this.formControl = this._formBuilder.group({
-      name: this._formBuilder.control(['', Validators.required]),
-      lastName: this._formBuilder.control(['', Validators.required]),
-      address: this._formBuilder.control(['']),
-      description: this._formBuilder.control(['']),
-    });
+    this.config = {
+      id: '',
+      classes: [],
+      elements: [
+        new FormElement({
+          value: '',
+          key: 'name',
+          label: 'Name',
+          placeholder: 'Enter name:',
+          required: true,
+          controlType: 'input',
+          type: 'text',
+        }),
+        new FormElement({
+          value: '',
+          key: 'lastName',
+          label: 'LastName',
+          placeholder: 'Enter lastName:',
+          required: true,
+          controlType: 'input',
+          type: 'text',
+        }),
+        new FormElement({
+          value: '',
+          key: 'address',
+          label: 'Address',
+          placeholder: 'Enter address:',
+          controlType: 'input',
+          type: 'text',
+        }),
+        new FormElement({
+          value: '',
+          key: 'description',
+          label: 'Description',
+          placeholder: 'Enter description:',
+          controlType: 'textarea',
+        }),
+      ],
+    };
   }
 
-  public onClick(event: FocusEvent): void {
-    console.log(event, 'click');
-  }
-
-  public onKeyUp(event: KeyboardEvent): void {
-    console.log(event, 'keyUp');
+  public onSubmit(form: FormGroup): void {
+    const result: Student = { id: -1, ...form.value };
+    this.submit.emit(result);
   }
 }

@@ -1,13 +1,14 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { ButtonConfig } from '../../../common/entities/ButtonConfig';
 
 @Component({
   selector: 'app-button',
   templateUrl: './button.component.html',
-  styleUrls: ['./button.component.scss']
+  styleUrls: ['./button.component.scss'],
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent {
+  @Input()
+  public config: ButtonConfig;
 
-  constructor() { }
-
-  ngOnInit(): void {}
+  constructor() {}
 }

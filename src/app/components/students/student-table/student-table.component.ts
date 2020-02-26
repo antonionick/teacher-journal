@@ -15,5 +15,4 @@ export class StudentTableComponent implements OnInit {
   constructor() {}
 
   public ngOnInit(): void {}
-
 }
