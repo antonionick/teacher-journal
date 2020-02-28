@@ -1,0 +1,18 @@
+.panel {
+  &__item {
+    flex: 0 1 20%;
+    font-size: 15px;
+    color: white;
+    background-color: #646464;
+    border-radius: 5px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__item-text {
+    display: block;
+    margin: 0 auto;
+  }
+}

@@ -1,4 +1,4 @@
-import { Subject } from '../src/app/models/Subject';
+import { Subject } from '../src/app/common/models/Subject';
 
 export const subjects: Array<Subject> = [
   { id: 1, name: 'Subject1', teacher: 'Teacher1' },

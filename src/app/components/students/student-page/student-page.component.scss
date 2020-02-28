@@ -1,0 +1,14 @@
+.student {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin-top: 30px;
+
+  &__table {
+    align-self: stretch;
+  }
+
+  &__button {
+    margin-top: 30px;
+  }
+}
