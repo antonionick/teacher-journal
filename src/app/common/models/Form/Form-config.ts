@@ -1,4 +1,4 @@
-import { FormElement } from './FormElement';
+import { FormElement } from './Form-element';
 
 export interface FormConfig {
   id: string;

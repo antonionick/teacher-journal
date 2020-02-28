@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { FormConfig } from '../../../common/entities/Form/FormConfig';
-import { FormElement } from '../../../common/entities/Form/FormElement';
+import { FormConfig } from '../../../common/models/Form/Form-config';
+import { FormElement } from '../../../common/models/Form/Form-element';
 import { Student } from '../../../common/models/Student';
 
 @Component({
@@ -14,8 +14,6 @@ export class StudentFormComponent implements OnInit {
   public submit: EventEmitter<Student> = new EventEmitter();
 
   public config: FormConfig;
-
-  constructor() {}
 
   public ngOnInit(): void {
     this.config = {
@@ -60,7 +58,7 @@ export class StudentFormComponent implements OnInit {
   }
 
   public onSubmit(form: FormGroup): void {
-    const result: Student = { id: -1, ...form.value };
+    const result: Student = { id: null, ...form.value };
     form.reset();
     this.submit.emit(result);
   }

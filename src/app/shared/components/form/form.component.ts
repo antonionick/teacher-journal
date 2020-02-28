@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { FormConfig } from '../../../common/entities/Form/FormConfig';
-import { ButtonConfig } from '../../../common/entities/ButtonConfig';
+import { FormConfig } from '../../../common/models/Form/Form-config';
+import { ButtonConfig } from '../../../common/models/Button-config';
 
 @Component({
   selector: 'app-form',
@@ -9,8 +9,16 @@ import { ButtonConfig } from '../../../common/entities/ButtonConfig';
   styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit {
+  private _config: FormConfig;
+
   @Input()
-  public config: FormConfig;
+  public set config(config: FormConfig) {
+    this._config = config;
+  }
+  public get config(): FormConfig {
+    return this._config;
+  }
+
   @Output()
   public ngSubmit: EventEmitter<FormGroup> = new EventEmitter();
 

@@ -3,8 +3,8 @@ import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Student } from '../../../common/models/Student';
 import { students } from '../../../../../mock-data/students';
-import { TableHeaderConfig } from '../../../common/entities/Table/TableHeaderConfig';
-import { getMaxId } from '../../../common/helpers/id';
+import { TableHeaderConfig } from '../../../common/models/Table/Table-header-config';
+import { getProperties } from '../../../common/helpers/utils';
 
 @Component({
   selector: 'app-student-page',
@@ -18,6 +18,11 @@ export class StudentPageComponent implements OnInit {
 
   constructor() {
     this.students = students;
+  }
+
+  private _getMaxId(): number {
+    const idArray: Array<number> = getProperties<Student, number>(this.students, 'id');
+    return Math.max(...idArray);
   }
 
   public ngOnInit(): void {
@@ -46,8 +51,8 @@ export class StudentPageComponent implements OnInit {
   }
 
   public addData(data: Student): void {
-    const id: number = getMaxId(this.students) + 1;
-    data.id = id;
+    const id: number = this._getMaxId();
+    data.id = id + 1;
     this.students = [...this.students, data];
   }
 }

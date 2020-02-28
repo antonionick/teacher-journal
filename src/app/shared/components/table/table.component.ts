@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, Input, ViewChild, SimpleChanges } from '@
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
-import { TableHeaderConfig } from '../../../common/entities/Table/TableHeaderConfig';
+import { TableHeaderConfig } from '../../../common/models/Table/Table-header-config';
 
 @Component({
   selector: 'app-table',
@@ -14,16 +14,16 @@ export class TableComponent<T> implements OnInit, OnChanges {
   public data: Array<T>;
   @Input('columnHeaders')
   public displayedColumns: Array<TableHeaderConfig>;
-  @ViewChild(MatSort, {static: true})
+  @ViewChild(MatSort, { static: true })
   public sort: MatSort;
 
   public dataSource: MatTableDataSource<T>;
   public headers: Array<string>;
 
-  constructor() {}
-
   public ngOnChanges(change: SimpleChanges): void {
-    const { data: { currentValue } } = change;
+    const {
+      data: { currentValue },
+    } = change;
     this.dataSource = new MatTableDataSource(currentValue);
     this.dataSource.sort = this.sort;
   }
