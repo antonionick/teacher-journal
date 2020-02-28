@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Student } from '../../../common/models/Student';
-import { students } from '../../../../../mock-data/students';
 import { TableHeaderConfig } from '../../../common/models/Table/Table-header-config';
-import { getProperties } from '../../../common/helpers/utils';
+
+import { StudentService } from '../../../common/services/student.service';
 
 @Component({
   selector: 'app-student-page',
@@ -16,16 +16,10 @@ export class StudentPageComponent implements OnInit {
   public headers: Array<TableHeaderConfig>;
   public plusIcon: IconDefinition = faPlus;
 
-  constructor() {
-    this.students = students;
-  }
-
-  private _getMaxId(): number {
-    const idArray: Array<number> = getProperties<Student, number>(this.students, 'id');
-    return Math.max(...idArray);
-  }
+  constructor(private _studentsService: StudentService) {}
 
   public ngOnInit(): void {
+    this.students = this._studentsService.students;
     this.headers = [
       {
         value: 'id',
@@ -50,9 +44,8 @@ export class StudentPageComponent implements OnInit {
     ];
   }
 
-  public addData(data: Student): void {
-    const id: number = this._getMaxId();
-    data.id = id + 1;
-    this.students = [...this.students, data];
+  public addStudent(data: Student): void {
+    this._studentsService.addStudent(data);
+    this.students = this._studentsService.students;
   }
 }
