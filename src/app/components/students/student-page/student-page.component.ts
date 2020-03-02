@@ -19,7 +19,10 @@ export class StudentPageComponent implements OnInit {
   constructor(private _studentsService: StudentService) {}
 
   public ngOnInit(): void {
-    this.students = this._studentsService.students;
+    this._studentsService.fetchStudents().subscribe((student: Array<Student>) => {
+      this.students = <Array<Student>>student;
+    });
+
     this.headers = [
       {
         value: 'id',
@@ -44,8 +47,9 @@ export class StudentPageComponent implements OnInit {
     ];
   }
 
-  public addStudent(data: Student): void {
-    this._studentsService.addStudent(data);
-    this.students = this._studentsService.students;
+  public addStudent(student: Student): void {
+    this._studentsService.addStudent(student).subscribe(() => {
+      this.students = this._studentsService.students;
+    });
   }
 }

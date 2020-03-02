@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MatChipsModule } from '@angular/material/chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,7 +18,7 @@ import { StudentService } from './common/services/student.service';
 
 @NgModule({
   declarations: [AppComponent, PanelComponent, StudentFormComponent, StudentTableComponent, StudentPageComponent],
-  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, MatChipsModule, SharedModule, FontAwesomeModule],
+  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, MatChipsModule, SharedModule, FontAwesomeModule, HttpClientModule],
   providers: [FormBuilder, StudentService],
   bootstrap: [AppComponent],
 })
