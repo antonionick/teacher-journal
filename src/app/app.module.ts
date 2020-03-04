@@ -1,25 +1,30 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-
-import { MatChipsModule } from '@angular/material/chips';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { HttpClientModule } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
+import { StudentsModule } from './components/students/students.module';
+import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
-import { PanelComponent } from './components/panel/panel.component';
-import { StudentFormComponent } from './components/students/student-form/student-form.component';
-import { StudentTableComponent } from './components/students/student-table/student-table.component';
-import { StudentPageComponent } from './components/students/student-page/student-page.component';
-import { StudentService } from './common/services/student.service';
+import { PanelComponent } from './components';
 
 @NgModule({
-  declarations: [AppComponent, PanelComponent, StudentFormComponent, StudentTableComponent, StudentPageComponent],
-  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, MatChipsModule, SharedModule, FontAwesomeModule, HttpClientModule],
-  providers: [FormBuilder, StudentService],
+  declarations: [AppComponent, PanelComponent, AppRoutingModule.components],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MatTabsModule,
+    SharedModule,
+    FontAwesomeModule,
+    StudentsModule,
+    AppRoutingModule,
+  ],
+  providers: [FormBuilder],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

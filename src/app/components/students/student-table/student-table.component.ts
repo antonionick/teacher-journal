@@ -1,6 +1,9 @@
-import { Component, Input } from '@angular/core';
-import { Student } from '../../../common/models/Student';
+import { Component, OnInit } from '@angular/core';
+import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { ActivatedRoute } from '@angular/router';
 
+import { Student } from '../../../common/models/Student';
+import { StudentService } from '../services/student.service';
 import { TableHeaderConfig } from '../../../common/models/Table/Table-header-config';
 
 @Component({
@@ -8,9 +11,39 @@ import { TableHeaderConfig } from '../../../common/models/Table/Table-header-con
   templateUrl: './student-table.component.html',
   styleUrls: ['./student-table.component.scss'],
 })
-export class StudentTableComponent {
-  @Input()
+export class StudentTableComponent implements OnInit {
   public data: Array<Student>;
-  @Input('columnHeaders')
   public displayedColumns: Array<TableHeaderConfig>;
+  public plusIcon: IconDefinition = faPlus;
+
+  constructor(private _studentService: StudentService, private _route: ActivatedRoute) { }
+
+  public ngOnInit(): void {
+    this._studentService.fetchStudents().subscribe((students: Array<Student>) => {
+      this.data = <Array<Student>>students;
+    });
+
+    this.displayedColumns = [
+      {
+        value: 'id',
+        isSort: true,
+      },
+      {
+        value: 'name',
+        isSort: true,
+      },
+      {
+        value: 'lastName',
+        isSort: true,
+      },
+      {
+        value: 'address',
+        isSort: true,
+      },
+      {
+        value: 'description',
+        isSort: true,
+      },
+    ];
+  }
 }

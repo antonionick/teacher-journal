@@ -8,9 +8,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { TableComponent } from './components/table/table.component';
-import { ButtonComponent } from './components/button/button.component';
-import { FormComponent } from './components/form/form.component';
+import { TableComponent , ButtonComponent, FormComponent} from './components';
 
 const publicComponents = [TableComponent, ButtonComponent, FormComponent];
 const publicModules = [
