@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { FormConfig } from '../../../common/models/Form/Form-config';
@@ -44,6 +44,10 @@ export class StudentFormComponent implements OnInit {
   }
 
   public showSaveQuestion(): Observable<boolean> {
+    if (this._isAdding) {
+      return of(true);
+    }
+
     const { form, buttonConfig: { disable } } = this.formComponent;
     const student: Student = this._getStudent(form);
 

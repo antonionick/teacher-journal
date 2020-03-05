@@ -50,33 +50,21 @@ export class StudentFormService {
     };
   }
 
-  private _changeValue(key: string, value: string): void {
-    this.config.elements.forEach((item) => {
-      if (item.key !== key) {
-        return;
-      }
-
-      item.value = value;
-    });
-  }
-
   public changeConfig(student: Student): void {
-    Object.keys(student).forEach((key) => {
-      if (key === '' || key === null) {
-        return;
+    this.config.elements.forEach((item) => {
+      if (student[item.key]) {
+        item.value = student[item.key];
       }
-
-      this._changeValue(key, student[key]);
     });
   }
 
   public clearData(): void {
-    this.config.elements.forEach((item) => {
-      if (item.key === 'id') {
-        item.key = null;
-      }
+    const student: Student = new Student();
 
-      item.value = '';
+    this.config.elements.forEach((item) => {
+      if (student[item.key] !== undefined) {
+        item.value = student[item.key];
+      }
     });
   }
 }

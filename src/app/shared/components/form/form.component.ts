@@ -36,7 +36,9 @@ export class FormComponent implements OnInit {
     const group: { [key: string]: AbstractControl } = {};
 
     elements.forEach((item) => {
-      group[item.key] = item.required ? new FormControl(item.value, Validators.required) : new FormControl(item.value);
+      group[item.key] = item.required
+        ? new FormControl(item.value, Validators.required)
+        : new FormControl(item.value);
     });
 
     this.form = new FormGroup(group);

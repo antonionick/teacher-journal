@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, from } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { HttpService } from '../../../common/services/http.service';
@@ -7,8 +7,9 @@ import { LocalStorageService } from '../../../common/services/local-storage.serv
 import { StudentFormService } from './student-form.service';
 import { FormConfig } from '../../../common/models/Form/Form-config';
 import { Student } from '../../../common/models/Student';
+import { url } from '../../../url';
 
-const studentUrl: string = 'http://localhost:3000/students';
+const { students: studentUrl } = url;
 
 @Injectable()
 export class StudentService {
@@ -50,14 +51,9 @@ export class StudentService {
     return this._form.config;
   }
 
-  public checkEmpty(student: Student, omitKeys: Array<string>): boolean {
-    return Object.keys(student).every((key: string) => {
-      if (omitKeys.includes(key)) {
-        return true;
-      }
-
-      return student[key] === '' || student[key] === null;
-    });
+  public clearFormData(): void {
+    this._form.clearData();
+    this._storage.removeItem('student');
   }
 
   public confirm(
@@ -65,14 +61,13 @@ export class StudentService {
     disable: boolean,
     message: string = 'Do you want to save information?',
   ): Observable<boolean> {
-    if (this.checkEmpty(student, ['id'])) {
+    if (this.checkEmpty(student)) {
       return of(true);
     }
 
     const confirmation: boolean = window.confirm(message);
     if (!confirmation) {
-      this._form.clearData();
-      this._storage.removeItem('student');
+      this.clearFormData();
       return of(!confirmation);
     }
 
@@ -84,5 +79,15 @@ export class StudentService {
     return this.addStudent(student).pipe(
       map(() => true),
     );
+  }
+
+  public checkEmpty(student: Student): boolean {
+    const emptyStudent: Student = new Student();
+
+    return Object.keys(student).every((key: string) => {
+      if (emptyStudent[key] === student[key]) {
+        return true;
+      }
+    });
   }
 }

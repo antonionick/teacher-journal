@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute } from '@angular/router';
 
 import { Student } from '../../../common/models/Student';
 import { StudentService } from '../services/student.service';
@@ -16,7 +15,7 @@ export class StudentTableComponent implements OnInit {
   public displayedColumns: Array<TableHeaderConfig>;
   public plusIcon: IconDefinition = faPlus;
 
-  constructor(private _studentService: StudentService, private _route: ActivatedRoute) { }
+  constructor(private _studentService: StudentService) { }
 
   public ngOnInit(): void {
     this._studentService.fetchStudents().subscribe((students: Array<Student>) => {
