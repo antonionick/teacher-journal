@@ -1,3 +1,3 @@
-export interface ButtonConfig {
+export interface IButtonConfig {
   disable: boolean;
 }

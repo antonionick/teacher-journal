@@ -3,11 +3,11 @@
 .header {
   display: flex;
   flex-flow: column;
-  padding: 10px 20px;
 
   &__logo-wrapper {
     display: flex;
     max-width: 300px;
+    align-self: center;
     justify-content: space-between;
     color: white;
     text-decoration: none;

@@ -1,22 +1,42 @@
-<mat-chip-list class="panel">
-  <mat-chip class="panel__item">
-    <span class="panel__item-text">
-      Students
-    </span>
-  </mat-chip>
-  <mat-chip class="panel__item">
-    <span class="panel__item-text">
-      Subjects
-    </span>
-  </mat-chip>
-  <mat-chip class="panel__item">
-    <span class="panel__item-text">
-      Statistics
-    </span>
-  </mat-chip>
-  <mat-chip class="panel__item">
-    <span class="panel__item-text">
-      Export
-    </span>
-  </mat-chip>
-</mat-chip-list>
+<nav mat-tab-nav-bar class="panel">
+  <a
+    mat-tab-link
+    [routerLink]="['/students']"
+    routerLinkActive="panel__link_active"
+    #students="routerLinkActive"
+    [active]="students.isActive"
+    class="panel__link"
+  >
+    Students
+  </a>
+  <a
+    mat-tab-link
+    [routerLink]="['/subjects']"
+    routerLinkActive="panel__link_active"
+    #subjects="routerLinkActive"
+    [active]="subjects.isActive"
+    class="panel__link"
+  >
+    Subjects
+  </a>
+  <a
+    mat-tab-link
+    [routerLink]="['/statistics']"
+    routerLinkActive="panel__link_active"
+    #statistics="routerLinkActive"
+    [active]="statistics.isActive"
+    class="panel__link"
+  >
+    Statistics
+  </a>
+  <a
+    mat-tab-link
+    [routerLink]="['/export']"
+    routerLinkActive="panel__link_active"
+    #export="routerLinkActive"
+    [active]="export.isActive"
+    class="panel__link"
+  >
+    Export
+  </a>
+</nav>

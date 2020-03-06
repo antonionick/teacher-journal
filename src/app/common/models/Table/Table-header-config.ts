@@ -1,4 +1,4 @@
-export interface TableHeaderConfig {
+export interface ITableHeaderConfig {
   value: string;
   isSort: boolean;
 }

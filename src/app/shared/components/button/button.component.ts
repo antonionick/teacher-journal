@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ButtonConfig } from '../../../common/models/Button-config';
+import { IButtonConfig } from '../../../common/models/Button-config';
 
 @Component({
   selector: 'app-button',
@@ -8,5 +8,5 @@ import { ButtonConfig } from '../../../common/models/Button-config';
 })
 export class ButtonComponent {
   @Input()
-  public config: ButtonConfig;
+  public config: IButtonConfig;
 }
