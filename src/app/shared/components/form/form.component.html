@@ -1,5 +1,5 @@
-<form id="{{ config.id }}" class="form {{ config.classes }}" [formGroup]="form" (ngSubmit)="onSubmit($event)">
-  <div class="form__row" *ngFor="let item of config.elements">
+<form id="{{ formConfig.id }}" class="form {{ formConfig.classes }}" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="form__row" *ngFor="let item of formConfig.elements">
     <mat-form-field class="form__column">
       <mat-label>{{ item.label }}</mat-label>
 

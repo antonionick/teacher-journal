@@ -1,3 +1,3 @@
-export interface Url {
-  students: string;
+export interface IUrl {
+  [key: string]: string;
 }

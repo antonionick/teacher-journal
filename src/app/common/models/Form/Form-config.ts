@@ -1,6 +1,6 @@
 import { FormElement } from './Form-element';
 
-export interface FormConfig {
+export interface IFormConfig {
   id: string;
   classes: Array<string>;
   elements: FormElement<string>[];

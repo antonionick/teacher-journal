@@ -1,5 +1,5 @@
-import { Url } from './common/models/Url';
+import { IUrl } from './common/models/Url';
 
-export const url: Url = {
+export const urlProvider: IUrl = {
   students: 'http://localhost:3000/students',
 };

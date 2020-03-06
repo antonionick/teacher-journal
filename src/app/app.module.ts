@@ -7,7 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
-import { StudentsModule } from './components/students/students.module';
+import { StudentsModule } from './students/students.module';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
 import { PanelComponent } from './components';
