@@ -27,12 +27,12 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   @Output()
-  public ngSubmit: EventEmitter<FormGroup> = new EventEmitter();
+  public submit: EventEmitter<FormGroup> = new EventEmitter();
   public form: FormGroup;
   public buttonConfig: IButtonConfig;
 
   constructor() {
-    this.buttonConfig = buttonConfig;
+    this.buttonConfig = { ...buttonConfig };
   }
 
   public ngOnInit(): void {
@@ -58,7 +58,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   public onSubmit(event: Event): void {
     event.stopPropagation();
-    this.ngSubmit.emit(this.form);
+    this.submit.emit(this.form);
   }
 
   public ngOnDestroy(): void {

@@ -1,14 +1,24 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { SubjectPageComponent, SubjectListComponent } from './index';
+import { SubjectPageComponent, SubjectListComponent, SubjectFormComponent } from './index';
+import { CanDeactivateGuard } from './can-deactivate.guard';
 
 const routes: Routes = [
   {
     path: 'subjects',
     component: SubjectPageComponent,
     children: [
-      { path: '', component: SubjectListComponent },
+      {
+        path: '',
+        component: SubjectListComponent,
+        pathMatch: 'full',
+      },
+      {
+        path: 'add',
+        component: SubjectFormComponent,
+        canDeactivate: [CanDeactivateGuard],
+      },
     ],
   },
 ];
@@ -18,5 +28,5 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class SubjectsRoutingModule {
-  public static components = [SubjectPageComponent];
+  public static components = [SubjectPageComponent, SubjectListComponent, SubjectFormComponent];
 }

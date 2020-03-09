@@ -60,9 +60,6 @@ export class StudentFormService {
 
   public clearData(): void {
     const student: Student = new Student();
-
-    this.config.elements.forEach((item) => {
-      item.value = student[item.key] || '';
-    });
+    this.updateFormData(student);
   }
 }

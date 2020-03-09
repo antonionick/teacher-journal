@@ -4,7 +4,7 @@ import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
 import { SubjectService } from '../services/subject.service';
-import { ISubject } from 'src/app/common/models/Subject';
+import { Subject } from 'src/app/common/models/Subject';
 
 @Component({
   selector: 'app-subject-list',
@@ -21,9 +21,9 @@ export class SubjectListComponent implements OnInit, OnDestroy {
   ) { }
 
   public ngOnInit(): void {
-    this.subscription = this.subjectService.fetchSubjectsServer()
+    this.subscription = this.subjectService.fetchSubjectServer()
       .subscribe((data) => {
-        this.subjects = data.map((subject: ISubject) => subject.name);
+        this.subjects = data.map((subject: Subject) => subject.name);
       });
   }
 
