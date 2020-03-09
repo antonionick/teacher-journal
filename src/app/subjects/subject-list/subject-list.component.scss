@@ -1,0 +1,41 @@
+.subject {
+  display: flex;
+  flex-flow: column;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 30%;
+    min-width: 320px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    box-sizing: border-box;
+    width: 50%;
+    margin-bottom: 20px;
+
+    &:nth-child(2n) {
+      text-align: right;
+    }
+  }
+
+  &__link {
+    &::ng-deep .button {
+      box-sizing: border-box;
+      padding: 10px 15px;
+      font-size: 19px;
+      line-height: 110%;
+      color: white;
+      background-color: #646464;
+      border-radius: 4px;
+    }
+  }
+
+  &__button {
+    align-self: center;
+  }
+}

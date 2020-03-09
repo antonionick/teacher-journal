@@ -8,7 +8,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { TableComponent , ButtonComponent, FormComponent} from './components';
+import { TableComponent, ButtonComponent, FormComponent } from './components';
 
 const publicComponents = [TableComponent, ButtonComponent, FormComponent];
 const publicModules = [
@@ -22,8 +22,8 @@ const publicModules = [
 ];
 
 @NgModule({
-  declarations: [...publicComponents],
-  imports: [CommonModule, ...publicModules],
-  exports: [...publicModules, ...publicComponents],
+  declarations: [publicComponents],
+  imports: [CommonModule, publicModules],
+  exports: [publicModules, publicComponents],
 })
-export class SharedModule {}
+export class SharedModule { }

@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { StudentFormComponent, StudentPageComponent, StudentTableComponent } from './';
+import { StudentFormComponent, StudentComponent, StudentTableComponent } from './index';
 import { CanDeactivateGuard } from './can-deactivate.guard';
 
 const routes: Routes = [
   {
     path: 'students',
-    component: StudentPageComponent,
+    component: StudentComponent,
     children: [
       {
         path: '',
@@ -29,5 +29,5 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class StudentsRoutingModule {
-  static components = [StudentFormComponent, StudentPageComponent, StudentTableComponent];
+  public static components = [StudentFormComponent, StudentComponent, StudentTableComponent];
 }

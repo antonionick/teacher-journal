@@ -8,6 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { StudentsModule } from './students/students.module';
+import { SubjectsModule } from './subjects/subjects.module';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
 import { PanelComponent } from './components';
@@ -22,6 +23,7 @@ import { PanelComponent } from './components';
     SharedModule,
     FontAwesomeModule,
     StudentsModule,
+    SubjectsModule,
     AppRoutingModule,
   ],
   providers: [FormBuilder],
