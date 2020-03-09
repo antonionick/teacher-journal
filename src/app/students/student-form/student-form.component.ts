@@ -3,17 +3,19 @@ import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Observable, of, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { IFormConfig } from '../../common/models/Form/Form-config';
 import { Student } from '../../common/models/Student';
 import { StudentService } from '../services/student.service';
 import { FormComponent } from '../../shared/components/index';
+import { ConfirmSaveService } from '../../common/services/index';
+import { IConfirmSave } from '../../common/models/Confirm-save';
 
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
+  providers: [ConfirmSaveService],
 })
 export class StudentFormComponent implements OnInit {
   private isAdding: boolean = false;
@@ -22,7 +24,11 @@ export class StudentFormComponent implements OnInit {
   public formComponent: FormComponent;
   public config: IFormConfig;
 
-  constructor(private router: Router, private studentService: StudentService) { }
+  constructor(
+    private router: Router,
+    private studentService: StudentService,
+    private confirmSave: ConfirmSaveService<Student>,
+  ) { }
 
   private getStudent(form: FormGroup): Student {
     return { id: null, ...form.value };
@@ -54,11 +60,15 @@ export class StudentFormComponent implements OnInit {
 
     const { form, buttonConfig: { disable } } = this.formComponent;
     const student: Student = this.getStudent(form);
+    const config: IConfirmSave<Student> = {
+      disable,
+      message: 'Do you want to save information?',
+      checkEmpty: (data: Student) => this.studentService.checkEmpty(data),
+      addToServer: (data: Student) => this.studentService.addStudentServer(data),
+      addToStorage: (data: Student) => this.studentService.addStorageStudent(data),
+      removeFromStorage: () => this.studentService.clearFormData(),
+    };
 
-    return this.studentService.confirmNavigation(student, disable).pipe(
-      map((data: boolean) => {
-        return data;
-      }),
-    );
+    return this.confirmSave.confirmNavigation(student, config);
   }
 }

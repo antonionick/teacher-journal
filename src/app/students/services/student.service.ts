@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { HttpService } from '../../common/services/http.service';
 import { LocalStorageService } from '../../common/services/local-storage.service';
@@ -26,7 +25,7 @@ export class StudentService {
     return JSON.parse(data);
   }
 
-  private addStorageStudent(student: Student): void {
+  public addStorageStudent(student: Student): void {
     this.storage.addItem('student', JSON.stringify(student));
   }
 
@@ -51,29 +50,6 @@ export class StudentService {
   public clearFormData(): void {
     this.form.clearData();
     this.storage.removeItem('student');
-  }
-
-  public confirmNavigation(
-    student: Student,
-    disable: boolean,
-    message: string = 'Do you want to save information?',
-  ): Observable<boolean> {
-    if (this.checkEmpty(student)) {
-      return of(true);
-    }
-
-    const confirmation: boolean = window.confirm(message);
-    if (!confirmation) {
-      this.clearFormData();
-      return of(!confirmation);
-    }
-
-    if (disable) {
-      this.addStorageStudent(student);
-      return of(true);
-    }
-
-    return this.addStudentServer(student).pipe(map(() => true));
   }
 
   public checkEmpty(student: Student): boolean {

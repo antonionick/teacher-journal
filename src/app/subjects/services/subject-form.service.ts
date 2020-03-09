@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
 
 import { SubjectService } from './subject.service';
 import { IFormConfig, FormElement } from '../../common/models/Form/index';
 import { Subject } from 'src/app/common/models/Subject';
-import { FormGroup } from '@angular/forms';
 
 const formConfig: IFormConfig = {
   id: '',
@@ -84,31 +81,5 @@ export class SubjectFormService {
 
   public getSubjectOfForm(data: FormGroup): Subject {
     return { id: null, ...data.value };
-  }
-
-  public confirmNavigation(
-    form: FormGroup,
-    disable: boolean,
-    message: string = 'Do you want to save information?',
-  ): Observable<boolean> {
-    const subject: Subject = this.getSubjectOfForm(form);
-    if (this.subjectService.checkEmptySubject(subject)) {
-      return of(true);
-    }
-
-    const confirmation: boolean = window.confirm(message);
-    if (!confirmation) {
-      this.subjectService.removeSubjectStorage();
-      return of(!confirmation);
-    }
-
-    if (disable) {
-      this.subjectService.addSubjectStorage(subject);
-      return of(true);
-    }
-
-    return this.subjectService.addSubjectServer(subject).pipe(
-      map(() => true),
-    );
   }
 }
