@@ -2,12 +2,8 @@ import { Component, OnInit, OnDestroy, Input, EventEmitter, Output } from '@angu
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 
 import { IFormConfig } from '../../../common/models/Form/Form-config';
-import { IButtonConfig } from '../../../common/models/Button-config';
 import { Subscription } from 'rxjs';
-
-const buttonConfig: IButtonConfig = {
-  disable: true,
-};
+import { IButtonConfig } from 'src/app/common/models/Button-config';
 
 @Component({
   selector: 'app-form',
@@ -29,11 +25,7 @@ export class FormComponent implements OnInit, OnDestroy {
   @Output()
   public submit: EventEmitter<FormGroup> = new EventEmitter();
   public form: FormGroup;
-  public buttonConfig: IButtonConfig;
-
-  constructor() {
-    this.buttonConfig = { ...buttonConfig };
-  }
+  public submitButton: IButtonConfig;
 
   public ngOnInit(): void {
     const { elements } = this.config;
@@ -48,12 +40,18 @@ export class FormComponent implements OnInit, OnDestroy {
     this.form = new FormGroup(group);
     this.subscription = this.form.statusChanges.subscribe((valid: string) => {
       if (valid !== 'VALID') {
-        this.buttonConfig.disable = true;
+        this.submitButton.disable = true;
         return;
       }
 
-      this.buttonConfig.disable = false;
+      this.submitButton.disable = false;
     });
+
+    this.submitButton = this.config.buttons[0]
+      ? this.config.buttons[0]
+      : {
+        disable: false,
+      } as IButtonConfig;
   }
 
   public onSubmit(event: Event): void {
@@ -62,6 +60,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.submitButton.disable = true;
     this.subscription.unsubscribe();
   }
 }

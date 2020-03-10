@@ -45,6 +45,18 @@ const formConfig: IFormConfig = {
       controlType: 'textarea',
     }),
   ],
+  buttons: [
+    {
+      value: 'Add',
+      type: 'submit',
+      disable: true,
+    },
+    {
+      value: 'clear',
+      type: 'button',
+      disable: false,
+    },
+  ],
 };
 
 @Injectable()

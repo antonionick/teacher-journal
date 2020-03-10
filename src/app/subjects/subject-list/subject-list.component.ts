@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { SubjectService } from '../services/subject.service';
 import { Subject } from 'src/app/common/models/Subject';
@@ -22,8 +23,10 @@ export class SubjectListComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.subscription = this.subjectService.fetchSubjectServer()
-      .subscribe((data) => {
-        this.subjects = data.map((subject: Subject) => subject.name);
+      .pipe(
+        map((data) => data.map((subject: Subject) => subject.name)),
+      ).subscribe((subjects) => {
+        this.subjects = subjects;
       });
   }
 

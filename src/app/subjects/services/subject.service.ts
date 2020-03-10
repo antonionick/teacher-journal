@@ -43,7 +43,7 @@ export class SubjectService {
     const emptySubject: Subject = new Subject();
 
     return Object.keys(subject).every((key) => (
-      subject[key] === emptySubject[key]
+      subject[key] === emptySubject[key] || subject[key] === null
     ));
   }
 }

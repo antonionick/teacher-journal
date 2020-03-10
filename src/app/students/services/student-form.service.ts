@@ -42,6 +42,18 @@ const config: IFormConfig = {
       controlType: 'textarea',
     }),
   ],
+  buttons: [
+    {
+      value: 'Add',
+      type: 'submit',
+      disable: true,
+    },
+    {
+      value: 'Clear',
+      type: 'button',
+      disable: false,
+    },
+  ],
 };
 
 @Injectable()
@@ -52,7 +64,7 @@ export class StudentFormService {
     this.config = config;
   }
 
-  public updateFormData(student: Student): void {
+  public updateConfigData(student: Student): void {
     this.config.elements.forEach((item) => {
       item.value = student[item.key] || '';
     });
@@ -60,6 +72,6 @@ export class StudentFormService {
 
   public clearData(): void {
     const student: Student = new Student();
-    this.updateFormData(student);
+    this.updateConfigData(student);
   }
 }

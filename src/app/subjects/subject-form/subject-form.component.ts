@@ -35,6 +35,14 @@ export class SubjectFormComponent implements OnInit {
 
   public ngOnInit(): void {
     this.config = this.formService.config;
+
+    // set clear function for form
+    this.config.buttons[1].onClick = () => {
+      const { form } = this.form;
+
+      form.reset();
+      this.subjectService.removeSubjectStorage();
+    };
   }
 
   public onSubmit(data: FormGroup): void {

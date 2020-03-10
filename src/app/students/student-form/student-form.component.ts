@@ -36,6 +36,13 @@ export class StudentFormComponent implements OnInit {
 
   public ngOnInit(): void {
     this.config = this.studentService.getFormConfig();
+
+    // set clear function for form
+    this.config.buttons[1].onClick = () => {
+      const { form } = this.formComponent;
+      form.reset();
+      this.studentService.clearConfigData();
+    };
   }
 
   public onSubmit(form: FormGroup): void {
@@ -58,7 +65,7 @@ export class StudentFormComponent implements OnInit {
       return of(true);
     }
 
-    const { form, buttonConfig: { disable } } = this.formComponent;
+    const { form, submitButton: { disable } } = this.formComponent;
     const student: Student = this.getStudent(form);
     const config: IConfirmSave<Student> = {
       disable,
@@ -66,7 +73,7 @@ export class StudentFormComponent implements OnInit {
       checkEmpty: (data: Student) => this.studentService.checkEmpty(data),
       addToServer: (data: Student) => this.studentService.addStudentServer(data),
       addToStorage: (data: Student) => this.studentService.addStorageStudent(data),
-      removeFromStorage: () => this.studentService.clearFormData(),
+      removeFromStorage: () => this.studentService.clearConfigData(),
     };
 
     return this.confirmSave.confirmNavigation(student, config);

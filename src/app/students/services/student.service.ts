@@ -43,11 +43,11 @@ export class StudentService {
       return this.form.config;
     }
 
-    this.form.updateFormData(student);
+    this.form.updateConfigData(student);
     return this.form.config;
   }
 
-  public clearFormData(): void {
+  public clearConfigData(): void {
     this.form.clearData();
     this.storage.removeItem('student');
   }
@@ -56,7 +56,7 @@ export class StudentService {
     const emptyStudent: Student = new Student();
 
     return Object.keys(student).every((key: string) => {
-      if (emptyStudent[key] === student[key]) {
+      if (emptyStudent[key] === student[key] || student[key] === null) {
         return true;
       }
     });
