@@ -1,3 +1,29 @@
 .table {
   width: 100%;
+  overflow: auto;
+
+  &__cell {
+    &_header-picker {
+      box-sizing: border-box;
+      max-width: 160px;
+      width: 160px;
+      padding: 0 5px;
+    }
+  }
+
+  &__item {
+    &_input-date-picker {
+      box-sizing: border-box;
+      width: 80px;
+      margin-top: 5px;
+      padding: 0 10px;
+      text-align: center;
+      border: 0;
+      outline: 0;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
 }

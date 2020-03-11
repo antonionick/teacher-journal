@@ -8,6 +8,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 import { TableComponent, ButtonComponent, FormComponent } from './components';
 
 const publicComponents = [TableComponent, ButtonComponent, FormComponent];
@@ -17,6 +20,8 @@ const publicModules = [
   MatFormFieldModule,
   MatInputModule,
   MatSortModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
   ReactiveFormsModule,
   FormsModule,
 ];

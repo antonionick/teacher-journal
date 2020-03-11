@@ -1,34 +1,37 @@
-import { Component, OnInit, OnChanges, Input, ViewChild, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  SimpleChanges,
+  Input,
+  OnChanges,
+} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
-import { ITableHeaderConfig } from '../../../common/models/Table/Table-header-config';
+import { ITableConfig, TableHeaderConfig } from '../../../common/models/Table';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
 })
-export class TableComponent<T> implements OnInit, OnChanges {
-  @Input()
-  public data: Array<T>;
-  @Input('columnHeaders')
-  public displayedColumns: Array<ITableHeaderConfig>;
+export class TableComponent<T> implements OnChanges {
   @ViewChild(MatSort, { static: true })
-  public sort: MatSort;
+  private sort: MatSort;
 
+  @Input()
+  public config: ITableConfig<T>;
+  public columnHeaders: Array<string>;
   public dataSource: MatTableDataSource<T>;
-  public headers: Array<string>;
 
   public ngOnChanges(change: SimpleChanges): void {
     const {
-      data: { currentValue },
+      config: { currentValue },
     } = change;
-    this.dataSource = new MatTableDataSource(currentValue);
-    this.dataSource.sort = this.sort;
-  }
 
-  public ngOnInit(): void {
-    this.headers = this.displayedColumns.map((item) => item.value);
+    this.columnHeaders = currentValue.headers
+      .map((item: TableHeaderConfig) => item.value);
+    this.dataSource = new MatTableDataSource(currentValue.body);
+    this.dataSource.sort = this.sort;
   }
 }
