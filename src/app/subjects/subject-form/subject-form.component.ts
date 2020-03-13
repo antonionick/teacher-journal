@@ -49,6 +49,7 @@ export class SubjectFormComponent implements OnInit {
     this.isSaving = true;
 
     const subject: Subject = this.formService.getSubjectOfForm(data);
+    subject.name = subject.name.toLowerCase();
     const subscription: Subscription = this.subjectService.addSubjectServer(subject)
       .subscribe(() => {
         this.router.navigate(['subjects']);

@@ -1,5 +1,7 @@
+import { TNullable } from './TNullable';
+
 interface IStudent {
-  id: number | null;
+  id: TNullable<number>;
   name: string;
   lastName: string;
   subjects: Array<number>;
@@ -8,7 +10,7 @@ interface IStudent {
 }
 
 export class Student {
-  public id: number | null;
+  public id: TNullable<number>;
   public name: string;
   public lastName: string;
   public subjects: Array<number>;

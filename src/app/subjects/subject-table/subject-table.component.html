@@ -1,0 +1,18 @@
+<div class="subject">
+  <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
+  <app-table
+    class="subject__table"
+    [config]="config"
+    (headerChange)="onUpdateHeaders($event)"
+  >
+  </app-table>
+
+  <div class="subject__content">
+    <label class="subject__label">
+      <span class="subject__label-title">Teacher:</span>
+      <input class="subject__label-item" matInput type="text" [formControl]="teacherControl" />
+    </label>
+  </div>
+
+  <app-button class="subject__button" (click)="onSaveTeacher()"> Save </app-button>
+</div>

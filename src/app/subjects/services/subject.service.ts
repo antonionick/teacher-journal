@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { HttpService, LocalStorageService } from '../../common/services/index';
 import { Subject } from '../../common/models/Subject';
@@ -37,6 +37,15 @@ export class SubjectService {
 
   public addSubjectServer(subject: Subject): Observable<Subject> {
     return this.http.postData(subjectUrl, subject);
+  }
+
+  public updateSubject(subject: Subject): Observable<Subject> {
+    if (!subject.id) {
+      return of(subject);
+    }
+
+    const id: number = subject.id;
+    return this.http.putData(`${subjectUrl}/${id}`, subject);
   }
 
   public checkEmptySubject(subject: Subject): boolean {

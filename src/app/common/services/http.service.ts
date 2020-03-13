@@ -32,4 +32,10 @@ export class HttpService<T> {
       catchError(this.handleError),
     );
   }
+
+  public putData(url: string, data: T): Observable<T> {
+    return this.http.put<T>(url, data).pipe(
+      catchError(this.handleError),
+    );
+  }
 }

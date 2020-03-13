@@ -11,6 +11,12 @@
     }
   }
 
+  &__row {
+    &_mark {
+      text-align: center;
+    }
+  }
+
   &__item {
     &_input-date-picker {
       box-sizing: border-box;

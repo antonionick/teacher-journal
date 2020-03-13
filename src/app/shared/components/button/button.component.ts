@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+
 import { IButtonConfig } from '../../../common/models/Button-config';
 
 @Component({

@@ -4,9 +4,12 @@ import {
   SimpleChanges,
   Input,
   OnChanges,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 import { ITableConfig, TableHeaderConfig } from '../../../common/models/Table';
 
@@ -24,6 +27,9 @@ export class TableComponent<T> implements OnChanges {
   public columnHeaders: Array<string>;
   public dataSource: MatTableDataSource<T>;
 
+  @Output('headerChange')
+  public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
+
   public ngOnChanges(change: SimpleChanges): void {
     const {
       config: { currentValue },
@@ -33,5 +39,9 @@ export class TableComponent<T> implements OnChanges {
       .map((item: TableHeaderConfig) => item.value);
     this.dataSource = new MatTableDataSource(currentValue.body);
     this.dataSource.sort = this.sort;
+  }
+
+  public onDateChange(event: MatDatepickerInputEvent<Date>): void {
+    this.dateChange.emit(event);
   }
 }

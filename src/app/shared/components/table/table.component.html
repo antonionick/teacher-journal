@@ -13,12 +13,15 @@
           <input
             class="table__item table__item_input-date-picker"
             matInput
+            [formControl]="item.inputControl"
             [matDatepicker]="datePicker"
-            [value]="item.value"
-            readonly
+            [min]="item.min"
+            [max]="item.max"
+            (dateChange)="onDateChange($event)"
+            disabled
           />
           <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-          <mat-datepicker #datePicker></mat-datepicker>
+          <mat-datepicker #datePicker disabled="false"></mat-datepicker>
         </ng-container>
 
         <ng-template #value>
@@ -26,7 +29,11 @@
         </ng-template>
       </th>
 
-      <td mat-cell *matCellDef="let cell">
+      <td
+        mat-cell
+        *matCellDef="let cell"
+        [class.table__row_mark]="item.datePicker"
+      >
         <span> {{ cell[item.value] }} </span>
       </td>
     </ng-container>

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, Input, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 
-import { IFormConfig } from '../../../common/models/Form/Form-config';
 import { Subscription } from 'rxjs';
+
+import { IFormConfig } from '../../../common/models/Form/Form-config';
 import { IButtonConfig } from 'src/app/common/models/Button-config';
 
 @Component({
