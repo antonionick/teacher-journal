@@ -7,6 +7,7 @@
         mat-header-cell
         mat-sort-header
         [disabled]="item.sort ? null : ''"
+        [start]="item.isAscSortStart ? 'asc': 'desc'"
         *matHeaderCellDef
       >
         <ng-container *ngIf="item.datePicker; else value">
@@ -18,7 +19,6 @@
             [min]="item.min"
             [max]="item.max"
             (dateChange)="onDateChange($event)"
-            disabled
           />
           <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
           <mat-datepicker #datePicker disabled="false"></mat-datepicker>

@@ -7,17 +7,25 @@ import { Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { BaseComponent } from 'src/app/components/base/base.component';
+import { ITableConfig, ICell } from 'src/app/common/models/Table';
+import { Subject } from '../../common/models/Subject';
+
+import { SubjectService } from '../services/subject.service';
 import { SubjectTableService } from '../services/subject-table.service';
 import { SubjectTableConfigService } from '../services/subject-table-config.service';
-import { ITableConfig, ICell } from 'src/app/common/models/Table';
-import { Subject } from 'src/app/common/models/Subject';
-import { SubjectService } from '../services/subject.service';
+import { SubjectTableHeaderService } from '../services/subject-table-header.service';
+import { SubjectTableBodyService } from '../services/subject-table-body.service';
 
 @Component({
   selector: 'app-subject-table',
   templateUrl: './subject-table.component.html',
   styleUrls: ['./subject-table.component.scss'],
-  providers: [SubjectTableService, SubjectTableConfigService],
+  providers: [
+    SubjectTableService,
+    SubjectTableConfigService,
+    SubjectTableHeaderService,
+    SubjectTableBodyService,
+  ],
 })
 export class SubjectTableComponent extends BaseComponent implements OnInit {
   public subject: Subject;
@@ -33,14 +41,15 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   private getSubject(name: string): void {
-    this.tableService.fetchSubject(name).pipe(
-      takeUntil(this.unsubscribe$),
-    ).subscribe({
-      next: (subject: Subject) => {
-        this.subject = subject || new Subject();
-        this.teacherControl.setValue(this.subject.teacher);
-      },
-    });
+    this.tableService
+      .fetchSubject(name)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (subject: Subject) => {
+          this.subject = subject || new Subject();
+          this.teacherControl.setValue(this.subject.teacher);
+        },
+      });
   }
 
   public ngOnInit(): void {
@@ -50,9 +59,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.teacherControl = new FormControl('');
     this.config = this.tableService.getFullConfig();
 
-    this.route.paramMap.pipe(
-      takeUntil(this.unsubscribe$),
-    ).subscribe({
+    this.route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (params: ParamMap): void => {
         const subjectName: string = params.get('subject');
         this.getSubject(subjectName);
@@ -71,7 +78,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
 
     const { value } = this.teacherControl;
     this.subject.teacher = value;
-    const subscription: Subscription = this.subjectService.updateSubject(this.subject)
+    const subscription: Subscription = this.subjectService
+      .updateSubject(this.subject)
       .subscribe(() => subscription.unsubscribe());
   }
 }

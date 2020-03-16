@@ -5,6 +5,7 @@ import { TNullable } from '../TNullable';
 interface ITableHeaderConfig {
   value: TNullable<string>;
   sort: boolean;
+  isAscSortStart: boolean;
   sticky: boolean;
   datePicker: boolean;
   inputControl: TNullable<FormControl | null>;
@@ -15,6 +16,7 @@ interface ITableHeaderConfig {
 export class TableHeaderConfig implements ITableHeaderConfig {
   public value: TNullable<string>;
   public sort: boolean;
+  public isAscSortStart: boolean;
   public sticky: boolean;
   public datePicker: boolean;
   public inputControl: TNullable<FormControl>;
@@ -24,6 +26,7 @@ export class TableHeaderConfig implements ITableHeaderConfig {
   constructor({
     value,
     sort = false,
+    isAscSortStart = true,
     sticky = false,
     datePicker = false,
     inputControl = null,
@@ -32,6 +35,7 @@ export class TableHeaderConfig implements ITableHeaderConfig {
   }: Partial<ITableHeaderConfig> = {}) {
     this.value = value;
     this.sort = sort;
+    this.isAscSortStart = isAscSortStart;
     this.sticky = sticky;
     this.datePicker = datePicker;
     this.inputControl = inputControl;
