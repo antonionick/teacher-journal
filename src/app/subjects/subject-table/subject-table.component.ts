@@ -15,6 +15,7 @@ import { SubjectTableService } from '../services/subject-table.service';
 import { SubjectTableConfigService } from '../services/subject-table-config.service';
 import { SubjectTableHeaderService } from '../services/subject-table-header.service';
 import { SubjectTableBodyService } from '../services/subject-table-body.service';
+import { ReturnStatement } from '@angular/compiler';
 
 @Component({
   selector: 'app-subject-table',
@@ -57,7 +58,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
 
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
-    this.config = this.tableService.getFullConfig();
+    this.config = this.tableService.createConfig();
 
     this.route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (params: ParamMap): void => {
@@ -81,5 +82,21 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     const subscription: Subscription = this.subjectService
       .updateSubject(this.subject)
       .subscribe(() => subscription.unsubscribe());
+  }
+
+  public onAddDateHeader(event: Event): void {
+    this.config = this.tableService.addHeader();
+  }
+
+  public onDeleteDateHeader(event: MouseEvent): void {
+    const classList: DOMTokenList = (event.target as HTMLInputElement).classList;
+
+    if (
+      !(classList.contains('table__item_input-date-picker') && (event.ctrlKey || event.metaKey))
+    ) {
+      return;
+    }
+
+    this.config = this.tableService.deleteHeader(event.target as HTMLInputElement);
   }
 }

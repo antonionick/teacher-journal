@@ -24,4 +24,8 @@ export class DateService {
     this.resetDate(prevDay);
     return prevDay;
   }
+
+  public compareDates(a: Date, b: Date): boolean {
+    return a.getTime() === b.getTime();
+  }
 }

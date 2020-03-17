@@ -1,8 +1,20 @@
+@import '../../../../styles/variables.scss';
+
+.content {
+  box-sizing: border-box;
+  max-width: $max-table-width;
+  width: 100%;
+  margin: 0 auto;
+  overflow: auto;
+  border-radius: 5px;
+}
+
 .table {
   width: 100%;
-  overflow: auto;
 
   &__cell {
+    padding: 17px 10px;
+
     &_header-picker {
       box-sizing: border-box;
       max-width: 160px;
@@ -22,7 +34,6 @@
       box-sizing: border-box;
       width: 80px;
       margin-top: 5px;
-      padding: 0 10px;
       text-align: center;
       border: 0;
       outline: 0;

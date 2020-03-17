@@ -1,18 +1,31 @@
-<div class="subject">
+<article class="subject">
   <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
-  <app-table
-    class="subject__table"
-    [config]="config"
-    (headerChange)="onUpdateHeaders($event)"
-  >
-  </app-table>
+  <section class="subject__content subject__content_table">
+    <app-table
+      class="subject__table"
+      [config]="config"
+      (headerChange)="onUpdateHeaders($event)"
+      (dblclick)="onDeleteDateHeader($event)"
+    >
+    </app-table>
+    <div class="subject__table-button-wrapper" >
+      <app-button
+        class="subject__button subject__table-button subject__table-button_add"
+        (click)="onAddDateHeader($event)"
+      >
+        Add
+      </app-button>
+    </div>
+  </section>
 
-  <div class="subject__content">
+  <section class="subject__content subject__content_form">
     <label class="subject__label">
       <span class="subject__label-title">Teacher:</span>
       <input class="subject__label-item" matInput type="text" [formControl]="teacherControl" />
     </label>
-  </div>
+  </section>
 
-  <app-button class="subject__button" (click)="onSaveTeacher()"> Save </app-button>
-</div>
+  <app-button class="subject__button subject__button_save" (click)="onSaveTeacher()">
+    Save
+  </app-button>
+</article>

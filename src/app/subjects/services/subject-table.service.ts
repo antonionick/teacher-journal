@@ -17,6 +17,7 @@ const headerConfig: Array<TableHeaderConfig> = [
   }),
   new TableHeaderConfig({
     value: 'lastName',
+    sticky: true,
   }),
   new TableHeaderConfig({
     value: 'average mark',
@@ -77,20 +78,26 @@ const mockMarks: Array<Mark> = [
 
 @Injectable()
 export class SubjectTableService {
-  public config: ITableConfig<ICell<string>>;
-
   constructor(
     private configService: SubjectTableConfigService,
     private studentService: StudentService,
     private subjectService: SubjectService,
   ) { }
 
-  public getFullConfig(): ITableConfig<ICell<string>> {
+  public createConfig(): ITableConfig<ICell<string>> {
     return this.configService.createConfig(headerConfig, mockStudents, mockMarks);
   }
 
   public updateConfig(): ITableConfig<ICell<string>> {
     return this.configService.updateConfig();
+  }
+
+  public addHeader(): ITableConfig<ICell<string>> {
+    return this.configService.addHeader();
+  }
+
+  public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
+    return this.configService.deleteHeader(input);
   }
 
   public fetchSubject(name: string): Observable<Subject> {
