@@ -35,8 +35,7 @@ export class TableComponent<T> implements OnChanges {
       config: { currentValue },
     } = change;
 
-    this.columnHeaders = currentValue.headers
-      .map((item: TableHeaderConfig) => item.value);
+    this.columnHeaders = currentValue.headers.map((item: TableHeaderConfig) => item.value);
     this.dataSource = new MatTableDataSource(currentValue.body);
     this.dataSource.sort = this.sort;
   }

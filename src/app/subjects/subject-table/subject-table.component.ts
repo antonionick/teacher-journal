@@ -69,7 +69,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   public onUpdateHeaders(event: MatDatepickerInputEvent<Date>): void {
-    this.tableService.updateConfig();
+    this.config = this.tableService.updateConfig();
   }
 
   public onSaveTeacher(): void {

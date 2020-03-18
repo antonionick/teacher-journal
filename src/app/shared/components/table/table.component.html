@@ -35,6 +35,8 @@
           class="table__cell"
           *matCellDef="let cell"
           [class.table__row_mark]="item.datePicker"
+          appEditMark
+          [editMarkConfig]="item.datePicker ? config.editCell : null"
         >
           <span> {{ cell[item.value] }} </span>
         </td>

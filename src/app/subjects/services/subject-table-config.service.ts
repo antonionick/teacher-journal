@@ -6,9 +6,11 @@ import { Student } from '../../common/models/Student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
 import { SubjectTableBodyService } from './subject-table-body.service';
 import { DateChanges } from 'src/app/common/models/Date-changes';
+import { EditMark } from 'src/app/common/models/Edit-mark';
 
 @Injectable()
 export class SubjectTableConfigService {
+  private editConfig: EditMark;
   private headerConfig: Array<TableHeaderConfig>;
   private dateChanges: DateChanges;
 
@@ -18,9 +20,12 @@ export class SubjectTableConfigService {
     private headerService: SubjectTableHeaderService,
     private bodyService: SubjectTableBodyService,
   ) {
+    this.editConfig = new EditMark();
+
     this.config = {
       headers: [],
       body: [],
+      editCell: this.editConfig,
     };
   }
 
@@ -28,6 +33,7 @@ export class SubjectTableConfigService {
     return {
       headers: [...this.config.headers],
       body: [...this.config.body],
+      editCell: this.editConfig,
     };
   }
 
@@ -82,10 +88,7 @@ export class SubjectTableConfigService {
   public updateConfig(): ITableConfig<ICell<string>> {
     this.config.headers = this.updateHeaders();
 
-    this.config.body = this.bodyService.updateMarksByDate(
-      this.config.body,
-      this.dateChanges,
-    );
+    this.config.body = this.bodyService.updateMarksByDate(this.config.body, this.dateChanges);
 
     return this.resetRefConfig();
   }

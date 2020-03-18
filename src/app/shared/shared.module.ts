@@ -11,8 +11,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableComponent, ButtonComponent, FormComponent } from './components';
+import { EditMarkDirective } from 'src/app/common/directives/edit-mark.directive';
 
-const publicComponents = [TableComponent, ButtonComponent, FormComponent];
+const publicComponents = [TableComponent, ButtonComponent, FormComponent, EditMarkDirective];
 const publicModules = [
   MatTableModule,
   MatButtonModule,

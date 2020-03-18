@@ -82,7 +82,7 @@ export class SubjectTableService {
     private configService: SubjectTableConfigService,
     private studentService: StudentService,
     private subjectService: SubjectService,
-  ) { }
+  ) {}
 
   public createConfig(): ITableConfig<ICell<string>> {
     return this.configService.createConfig(headerConfig, mockStudents, mockMarks);

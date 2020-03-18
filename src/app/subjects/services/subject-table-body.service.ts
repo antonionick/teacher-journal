@@ -16,14 +16,14 @@ export class SubjectTableBodyService {
     return student === null
       ? null
       : {
-        id: student.id.toString(),
-        name: student.name,
-        lastName: student.lastName,
-        'average mark': '',
-      };
+          id: student.id.toString(),
+          name: student.name,
+          lastName: student.lastName,
+          'average mark': '',
+        };
   }
 
-  private findBodyFieldByMark(body: Array<ICell<string>>, mark: Mark): TNullable<ICell<string>> {
+  private findBodyByMarkId(body: Array<ICell<string>>, mark: Mark): TNullable<ICell<string>> {
     for (let i: number = 0; i < body.length; i++) {
       if (+body[i].id === mark.studentId) {
         return body[i];
@@ -56,7 +56,7 @@ export class SubjectTableBodyService {
     const body: Array<ICell<string>> = [];
 
     marks.forEach((mark) => {
-      let field: TNullable<ICell<string>> = this.findBodyFieldByMark(body, mark);
+      let field: TNullable<ICell<string>> = this.findBodyByMarkId(body, mark);
       let isNeedAdd: boolean = false;
 
       if (field === null) {
@@ -89,9 +89,9 @@ export class SubjectTableBodyService {
       }
 
       const item: ICell<string> = Object.assign({}, field);
-      const mark: string = item[prev];
+      item[current] = item[prev];
       delete item[prev];
-      item[current] = mark;
+      return item;
     });
   }
 
@@ -110,7 +110,7 @@ export class SubjectTableBodyService {
     body.forEach((item) => {
       const averageMark: number = this.computeAverageMarkByField(item);
       if (averageMark === 0) {
-        return item['average mark'] = '';
+        return (item['average mark'] = '');
       }
 
       item['average mark'] = averageMark.toString();
