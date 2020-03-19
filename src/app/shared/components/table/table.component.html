@@ -33,10 +33,13 @@
         <td
           mat-cell
           class="table__cell"
-          *matCellDef="let cell"
+          *matCellDef="let cell; let i = index"
           [class.table__row_mark]="item.datePicker"
           appEditMark
           [editMarkConfig]="item.datePicker ? config.editCell : null"
+          [column]="item.datePicker ? item.value : null"
+          [row]="i"
+          (changeMark)="onChangeMark($event)"
         >
           <span> {{ cell[item.value] }} </span>
         </td>

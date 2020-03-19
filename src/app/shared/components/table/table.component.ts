@@ -11,7 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
-import { ITableConfig, TableHeaderConfig } from '../../../common/models/Table';
+import { ITableConfig, TableHeaderConfig, IChangeField } from '../../../common/models/Table';
 
 @Component({
   selector: 'app-table',
@@ -29,6 +29,8 @@ export class TableComponent<T> implements OnChanges {
 
   @Output('headerChange')
   public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
+  @Output()
+  public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
 
   public ngOnChanges(change: SimpleChanges): void {
     const {
@@ -42,5 +44,9 @@ export class TableComponent<T> implements OnChanges {
 
   public onDateChange(event: MatDatepickerInputEvent<Date>): void {
     this.dateChange.emit(event);
+  }
+
+  public onChangeMark(change: IChangeField<number>): void {
+    this.changeField.emit(change);
   }
 }

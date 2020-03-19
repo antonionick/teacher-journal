@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { BaseComponent } from 'src/app/components/base/base.component';
-import { ITableConfig, ICell } from 'src/app/common/models/Table';
+import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/Table';
 import { Subject } from '../../common/models/Subject';
 
 import { SubjectService } from '../services/subject.service';
@@ -15,7 +15,6 @@ import { SubjectTableService } from '../services/subject-table.service';
 import { SubjectTableConfigService } from '../services/subject-table-config.service';
 import { SubjectTableHeaderService } from '../services/subject-table-header.service';
 import { SubjectTableBodyService } from '../services/subject-table-body.service';
-import { ReturnStatement } from '@angular/compiler';
 
 @Component({
   selector: 'app-subject-table',
@@ -98,5 +97,9 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     }
 
     this.config = this.tableService.deleteHeader(event.target as HTMLInputElement);
+  }
+
+  public onChangeMark(change: IChangeField<number>): void {
+    this.config = this.tableService.updateMark(change);
   }
 }

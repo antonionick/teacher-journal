@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ICell, TableHeaderConfig, ITableConfig } from '../../common/models/Table';
+import { ICell, TableHeaderConfig, ITableConfig, IChangeField } from '../../common/models/Table';
 import { Mark } from '../../common/models/Mark';
 import { Student } from '../../common/models/Student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
@@ -58,7 +58,7 @@ export class SubjectTableConfigService {
   }
 
   private updateHeaders(): Array<TableHeaderConfig> {
-    let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(3);
+    let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(this.headerConfig.length);
     this.dateChanges = this.headerService.checkChangeHeader(dateHeaders);
     dateHeaders = this.headerService.setMinMaxDateHeaders(dateHeaders);
     return [...this.headerConfig, ...dateHeaders];
@@ -85,16 +85,18 @@ export class SubjectTableConfigService {
     return this.config;
   }
 
-  public updateConfig(): ITableConfig<ICell<string>> {
+  public updateConfigByDateChange(): ITableConfig<ICell<string>> {
     this.config.headers = this.updateHeaders();
 
-    this.config.body = this.bodyService.updateMarksByDate(this.config.body, this.dateChanges);
+    if (this.dateChanges.current !== null) {
+      this.config.body = this.bodyService.updateMarksByDate(this.config.body, this.dateChanges);
+    }
 
     return this.resetRefConfig();
   }
 
   public addHeader(): ITableConfig<ICell<string>> {
-    let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(3);
+    let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(this.headerConfig.length);
     dateHeaders = this.headerService.addDateHeader(dateHeaders);
     dateHeaders = this.headerService.sortDateHeaders(dateHeaders);
     dateHeaders = this.headerService.setMinMaxDateHeaders(dateHeaders);
@@ -105,7 +107,13 @@ export class SubjectTableConfigService {
   public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
     const milliseconds: number = new Date(input.value).getTime();
     this.config.headers = this.headerService.deleteDateHeader(milliseconds, this.config.headers);
-    this.config.body = this.bodyService.deleteMark(milliseconds, this.config.body);
+    this.config.body = this.bodyService.deleteMarksByDate(milliseconds, this.config.body);
+    return this.resetRefConfig();
+  }
+
+  public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
+    this.config.body = this.bodyService.updateMark(this.config.body, change);
+    this.bodyService.computeAverageMarkByBody(this.config.body);
     return this.resetRefConfig();
   }
 }

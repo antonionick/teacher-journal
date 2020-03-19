@@ -9,11 +9,13 @@ import {
 } from '@angular/core';
 
 import {
-  handleKeyDown as keyDown,
+  setMinMax,
+  checkValidKeyDown as keyDown,
   validKeyCodesInteger as validKeyCodes,
 } from '../helpers/validate-number-input';
 import { EditMark } from '../models/Edit-mark';
 import { TNullable } from '../models/TNullable';
+import { IChangeField } from '../models/Table/Table-change-field';
 
 @Directive({
   selector: '[appEditMark]',
@@ -22,10 +24,14 @@ export class EditMarkDirective {
   private config: EditMark;
   private input: HTMLInputElement;
   private child: HTMLElement;
-  private childDisplay: string;
-  private isChildHide: boolean;
-  private isProcess: boolean;
+  private sourceChildDisplay: string;
   private sourceMark: number;
+  private isProcess: boolean;
+
+  @Input('column')
+  private column: number;
+  @Input()
+  private row: number;
 
   @Input('editMarkConfig')
   public set appEditMark(config: TNullable<EditMark>) {
@@ -42,19 +48,34 @@ export class EditMarkDirective {
   }
 
   @Output()
-  public changeMark: EventEmitter<number> = new EventEmitter();
+  public changeMark: EventEmitter<IChangeField<number>> = new EventEmitter();
 
   constructor(private elementRef: ElementRef, private render: Renderer2) {}
 
   private resetSettings(): void {
     this.child = null;
-    this.isChildHide = false;
-    this.childDisplay = '';
+    this.sourceChildDisplay = '';
     this.isProcess = false;
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
-    keyDown.call(this, validKeyCodes, this.input, this.config, event);
+    const isValid: boolean = keyDown(validKeyCodes, event);
+    if (!isValid) {
+      event.preventDefault();
+      return;
+    }
+
+    if (Number.isNaN(+event.key)) {
+      return;
+    }
+
+    const { value } = this.input;
+    const { min, max } = this.config;
+    const fullValue: number = +(value + event.key);
+    const resultValue: string = setMinMax(fullValue, min, max).toString();
+
+    this.render.setProperty(this.input, 'value', resultValue);
+    event.preventDefault();
   }
 
   private createInput(value: string): HTMLInputElement {
@@ -77,7 +98,7 @@ export class EditMarkDirective {
 
   private updateInput(value: string): HTMLInputElement {
     if (!this.input) {
-      this.sourceMark = +value;
+      this.sourceMark = value !== '' ? +value : -1;
       return this.createInput(value);
     }
 
@@ -97,7 +118,7 @@ export class EditMarkDirective {
   }
 
   private hideChildElement(parent: HTMLElement): void {
-    this.childDisplay = getComputedStyle(this.child).display;
+    this.sourceChildDisplay = getComputedStyle(this.child).display;
     this.render.setStyle(this.child, 'display', 'none');
     this.render.appendChild(parent, this.input);
     this.input.focus();
@@ -105,8 +126,18 @@ export class EditMarkDirective {
 
   private showChildElement(parent: HTMLElement): void {
     this.render.removeChild(parent, this.input);
-    this.render.setStyle(this.child, 'display', this.childDisplay);
+    this.render.setStyle(this.child, 'display', this.sourceChildDisplay);
     this.render.setProperty(this.child, 'textContent', this.input.value);
+  }
+
+  private emitChangeEvent(mark: number): void {
+    const change: IChangeField<number> = {
+      column: this.column,
+      row: this.row,
+      value: mark,
+    };
+
+    this.changeMark.emit(change);
   }
 
   private startEdit(): void {
@@ -133,7 +164,9 @@ export class EditMarkDirective {
     }
 
     const { nativeElement: parent } = this.elementRef;
-    const mark: number = +this.input.value;
+    // if empty input, need to delete mark, but if coerce empty string to number get 0
+    // -1 it's delete mark
+    let mark: number = this.input.value !== '' ? +this.input.value : -1;
 
     this.showChildElement(parent);
     this.resetSettings();
@@ -144,8 +177,7 @@ export class EditMarkDirective {
     }
 
     this.sourceMark = mark;
-    console.log('emit');
-    this.changeMark.emit(mark);
+    this.emitChangeEvent(mark);
   }
 
   @HostListener('click')

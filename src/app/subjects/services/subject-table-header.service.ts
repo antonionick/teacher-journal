@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+import {
+  resetDate,
+  getClosestEmptyDate,
+  getPrevDay,
+  getNextDay,
+} from 'src/app/common/helpers/date';
 import { TableHeaderConfig } from 'src/app/common/models/Table';
 import { TNullable } from 'src/app/common/models/TNullable';
 import { Mark } from 'src/app/common/models/Mark';
-import { DateService } from 'src/app/common/services/date.service';
 import { DateChanges } from 'src/app/common/models/Date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {
-  constructor(private dateService: DateService) { }
-
   private createDateHeaderByMark(mark: Mark): TableHeaderConfig {
     const markDate: Date = new Date(mark.date);
 
@@ -38,25 +41,6 @@ export class SubjectTableHeaderService {
     return headers.every((header) => +header.value !== date.getTime());
   }
 
-  private getClosestEmptyDate(date: Date, headers: Array<TableHeaderConfig>): Date {
-    let emptyDate: Date = new Date(date.getTime());
-
-    headers.every((item) => {
-      const milliseconds: number = +item.value;
-      if (milliseconds > emptyDate.getTime()) {
-        return false;
-      }
-
-      if (milliseconds === emptyDate.getTime()) {
-        emptyDate = this.dateService.getNextDay(emptyDate.getTime());
-      }
-
-      return true;
-    });
-
-    return emptyDate;
-  }
-
   private sortDateHeadersFunc(a: TableHeaderConfig, b: TableHeaderConfig): number {
     return +a.value - +b.value;
   }
@@ -69,11 +53,11 @@ export class SubjectTableHeaderService {
 
   public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
     let date: Date = new Date();
-    this.dateService.resetDate(date);
+    resetDate(date);
 
     const unique: boolean = this.checkDateOnUnique(date, headers);
     if (!unique) {
-      date = this.getClosestEmptyDate(date, headers);
+      date = getClosestEmptyDate(date, headers);
     }
 
     const header: TableHeaderConfig = this.createDateHeaderByDate(date);
@@ -110,7 +94,7 @@ export class SubjectTableHeaderService {
 
     return headers.map((item, i) => {
       if (i + 1 !== headers.length) {
-        maxDate = this.dateService.getPrevDay(+headers[i + 1].value);
+        maxDate = getPrevDay(+headers[i + 1].value);
       } else {
         maxDate = null;
       }
@@ -118,7 +102,7 @@ export class SubjectTableHeaderService {
       const header: TableHeaderConfig = Object.assign({}, item);
       header.min = minDate;
       header.max = maxDate;
-      minDate = this.dateService.getNextDay(+header.value);
+      minDate = getNextDay(+header.value);
       return header;
     });
   }

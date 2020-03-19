@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ICell } from 'src/app/common/models/Table';
+import { ICell, IChangeField } from 'src/app/common/models/Table';
 import { Student } from 'src/app/common/models/Student';
 import { Mark } from 'src/app/common/models/Mark';
 import { TNullable } from 'src/app/common/models/TNullable';
@@ -13,14 +13,12 @@ export class SubjectTableBodyService {
   }
 
   private createBodyField(student: Student): TNullable<ICell<string>> {
-    return student === null
-      ? null
-      : {
-          id: student.id.toString(),
-          name: student.name,
-          lastName: student.lastName,
-          'average mark': '',
-        };
+    return {
+      id: student.id.toString(),
+      name: student.name,
+      lastName: student.lastName,
+      'average mark': '',
+    };
   }
 
   private findBodyByMarkId(body: Array<ICell<string>>, mark: Mark): TNullable<ICell<string>> {
@@ -33,7 +31,7 @@ export class SubjectTableBodyService {
     return null;
   }
 
-  private getStudentByMark(students: Array<Student>, mark: Mark): TNullable<Student> {
+  private getStudentByMarkId(students: Array<Student>, mark: Mark): TNullable<Student> {
     for (let i: number = 0; i < students.length; i++) {
       if (students[i].id === mark.studentId) {
         return students[i];
@@ -49,7 +47,7 @@ export class SubjectTableBodyService {
       return Number.isNaN(+key) ? acc : (count++, acc + +field[key]);
     }, 0);
 
-    return count === 0 ? 0 : sum / count;
+    return count === 0 ? -1 : sum / count;
   }
 
   public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
@@ -57,19 +55,20 @@ export class SubjectTableBodyService {
 
     marks.forEach((mark) => {
       let field: TNullable<ICell<string>> = this.findBodyByMarkId(body, mark);
-      let isNeedAdd: boolean = false;
+      let isCreated: boolean = false;
 
       if (field === null) {
-        const student: TNullable<Student> = this.getStudentByMark(students, mark);
+        const student: TNullable<Student> = this.getStudentByMarkId(students, mark);
+        if (student === null) {
+          return;
+        }
+
         field = this.createBodyField(student);
-        isNeedAdd = true;
-      }
-      if (field === null) {
-        return;
+        isCreated = true;
       }
 
-      field[mark.date] = mark.value.toString();
-      if (isNeedAdd) {
+      field[mark.date] = `${mark.value}`;
+      if (isCreated) {
         body.push(field);
       }
     });
@@ -78,9 +77,6 @@ export class SubjectTableBodyService {
   }
 
   public updateMarksByDate(body: Array<ICell<string>>, changes: DateChanges): Array<ICell<string>> {
-    if (changes.current === null) {
-      return body;
-    }
     const { current, previously: prev } = changes;
 
     return body.map((field) => {
@@ -95,7 +91,28 @@ export class SubjectTableBodyService {
     });
   }
 
-  public deleteMark(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
+  public updateMark(
+    body: Array<ICell<string>>,
+    change: IChangeField<number>,
+  ): Array<ICell<string>> {
+    const { value: mark, column: date, row: rowIndex } = change;
+
+    return body.map((item, index) => {
+      if (index !== rowIndex) {
+        return item;
+      }
+
+      if (mark !== -1) {
+        item[date] = `${mark}`;
+      } else {
+        delete item[date];
+      }
+
+      return item;
+    });
+  }
+
+  public deleteMarksByDate(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
     const newBody: Array<ICell<string>> = body.map((item) => {
       const newItem: ICell<string> = Object.assign({}, item);
       delete newItem[milliseconds];
@@ -109,11 +126,11 @@ export class SubjectTableBodyService {
   public computeAverageMarkByBody(body: Array<ICell<string>>): void {
     body.forEach((item) => {
       const averageMark: number = this.computeAverageMarkByField(item);
-      if (averageMark === 0) {
+      if (averageMark === -1) {
         return (item['average mark'] = '');
       }
 
-      item['average mark'] = averageMark.toString();
+      item['average mark'] = `${averageMark}`;
     });
   }
 

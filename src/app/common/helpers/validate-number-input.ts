@@ -44,7 +44,7 @@ function checkValidKeyCodes(codes: Array<KeyCheck>, code: number): boolean {
   });
 }
 
-function checkMinMaxValid(value: number, min: number, max: number): number {
+function setMinMax(value: number, min: number, max: number): number {
   if (+value < min) {
     return min;
   } else if (+value > max) {
@@ -54,29 +54,12 @@ function checkMinMaxValid(value: number, min: number, max: number): number {
   return value;
 }
 
-function handleKeyDown<T extends { min: number; max: number }>(
-  keyCodes: Array<KeyCheck>,
-  input: HTMLInputElement,
-  config: T,
-  event: KeyboardEvent,
-): void {
+function checkValidKeyDown(keyCodes: Array<KeyCheck>, event: KeyboardEvent): boolean {
   if (!checkValidKeyCodes(keyCodes, event.keyCode)) {
-    event.preventDefault();
-    return;
-  }
-  if (Number.isNaN(+event.key)) {
-    return;
+    return false;
   }
 
-  const { value } = input;
-  const { min, max } = config;
-  const fullValue: number = +(value + event.key);
-  let resultValue: string;
-
-  resultValue = checkMinMaxValid(fullValue, min, max).toString();
-
-  this.render.setProperty(input, 'value', resultValue);
-  event.preventDefault();
+  return true;
 }
 
-export { validKeyCodesInteger, checkValidKeyCodes, handleKeyDown, checkMinMaxValid };
+export { validKeyCodesInteger, checkValidKeyCodes, checkValidKeyDown, setMinMax };

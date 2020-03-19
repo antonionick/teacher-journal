@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ITableConfig, ICell, TableHeaderConfig } from '../../common/models/Table';
+import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../common/models/Table';
 import { StudentService } from 'src/app/students/services/student.service';
 import { Subject } from '../../common/models/Subject';
 import { Student } from 'src/app/common/models/Student';
@@ -89,7 +89,7 @@ export class SubjectTableService {
   }
 
   public updateConfig(): ITableConfig<ICell<string>> {
-    return this.configService.updateConfig();
+    return this.configService.updateConfigByDateChange();
   }
 
   public addHeader(): ITableConfig<ICell<string>> {
@@ -98,6 +98,10 @@ export class SubjectTableService {
 
   public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
     return this.configService.deleteHeader(input);
+  }
+
+  public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
+    return this.configService.updateMark(change);
   }
 
   public fetchSubject(name: string): Observable<Subject> {
