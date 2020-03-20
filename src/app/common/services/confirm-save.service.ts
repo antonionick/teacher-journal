@@ -3,29 +3,29 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { IConfirmSave } from '../models/Confirm-save';
+import { IConfirmSave } from '../models/confirm-save';
 
 @Injectable()
 export class ConfirmSaveService<T> {
-  public confirmNavigation(component: T, config: IConfirmSave<T>): Observable<boolean> {
+  public confirmNavigation(
+    component: T,
+    config: IConfirmSave<T>,
+  ): Observable<boolean> {
     if (config.checkEmpty(component)) {
       return of(true);
     }
 
-    const { message, disable } = config;
-    const confirmation: boolean = window.confirm(message);
+    const confirmation: boolean = window.confirm(config.message);
     if (!confirmation) {
       config.removeFromStorage();
       return of(!confirmation);
     }
 
-    if (disable) {
+    if (config.disable) {
       config.addToStorage(component);
       return of(true);
     }
 
-    return config.addToServer(component).pipe(
-      map(() => true),
-    );
+    return config.addToServer(component).pipe(map(() => true));
   }
 }

@@ -1,5 +1,5 @@
 import { TableHeaderConfig, Paginator } from './index';
-import { EditMark } from '../Edit-mark';
+import { EditMark } from '../edit-mark';
 
 export interface ITableConfig<T> {
   headers: Array<TableHeaderConfig>;

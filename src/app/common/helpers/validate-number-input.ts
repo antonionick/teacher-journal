@@ -1,4 +1,4 @@
-import { KeyCheck } from '../models/Key-check';
+import { KeyCheck } from '../models/key-check';
 
 /*
   keys from 0 to 9:
@@ -44,22 +44,15 @@ function checkValidKeyCodes(codes: Array<KeyCheck>, code: number): boolean {
   });
 }
 
-function setMinMax(value: number, min: number, max: number): number {
-  if (+value < min) {
+function getNumberInRange(value: number, min: number, max: number): number {
+  if (Math.min(value, min) === value) {
     return min;
-  } else if (+value > max) {
+  }
+  if (Math.max(value, max) === value) {
     return max;
   }
 
   return value;
 }
 
-function checkValidKeyDown(keyCodes: Array<KeyCheck>, event: KeyboardEvent): boolean {
-  if (!checkValidKeyCodes(keyCodes, event.keyCode)) {
-    return false;
-  }
-
-  return true;
-}
-
-export { validKeyCodesInteger, checkValidKeyCodes, checkValidKeyDown, setMinMax };
+export { validKeyCodesInteger, checkValidKeyCodes, getNumberInRange };

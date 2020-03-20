@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 
 import { SubjectService } from './subject.service';
 import { IFormConfig, FormElement } from '../../common/models/Form/index';
-import { Subject } from 'src/app/common/models/Subject';
+import { Subject } from 'src/app/common/models/subject';
 
 const formConfig: IFormConfig = {
   id: '',

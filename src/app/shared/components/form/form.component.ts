@@ -3,8 +3,8 @@ import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/fo
 
 import { Subscription } from 'rxjs';
 
-import { IFormConfig } from '../../../common/models/Form/Form-config';
-import { IButtonConfig } from 'src/app/common/models/Button-config';
+import { IFormConfig } from '../../../common/models/Form/form-config';
+import { IButtonConfig } from 'src/app/common/models/button-config';
 
 @Component({
   selector: 'app-form',

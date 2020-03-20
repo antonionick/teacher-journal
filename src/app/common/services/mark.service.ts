@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { HttpService } from './http.service';
-import { Mark } from '../models/Mark';
+import { Mark } from '../models/mark';
 import { urlProvider } from '../../url';
 
 const {

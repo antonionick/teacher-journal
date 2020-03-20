@@ -1,5 +1,5 @@
-import { FormElement } from './Form-element';
-import { IButtonConfig } from '../Button-config';
+import { FormElement } from './form-element';
+import { IButtonConfig } from '../button-config';
 
 export interface IFormConfig {
   id: string;

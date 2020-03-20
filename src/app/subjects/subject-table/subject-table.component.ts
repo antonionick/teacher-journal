@@ -7,8 +7,8 @@ import { Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { BaseComponent } from 'src/app/components/base/base.component';
-import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/Table';
-import { Subject } from '../../common/models/Subject';
+import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
+import { Subject } from '../../common/models/subject';
 
 import { SubjectService } from '../services/subject.service';
 import { SubjectTableService } from '../services/subject-table.service';
@@ -45,8 +45,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       .fetchSubject(name)
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe({
-        next: (subject: Subject) => {
-          this.subject = subject || new Subject();
+        next: (subject: Subject = new Subject()) => {
+          this.subject = subject;
           this.teacherControl.setValue(this.subject.teacher);
         },
       });

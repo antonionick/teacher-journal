@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { ICell, IChangeField } from 'src/app/common/models/Table';
-import { Student } from 'src/app/common/models/Student';
-import { Mark } from 'src/app/common/models/Mark';
-import { TNullable } from 'src/app/common/models/TNullable';
-import { DateChanges } from 'src/app/common/models/Date-changes';
+import { ICell, IChangeField } from 'src/app/common/models/table';
+import { Student } from 'src/app/common/models/student';
+import { Mark } from 'src/app/common/models/mark';
+import { TNullable } from 'src/app/common/models/tnullable';
+import { DateChanges } from 'src/app/common/models/date-changes';
+import { findById } from 'src/app/common/helpers/utils';
 
 @Injectable()
 export class SubjectTableBodyService {
@@ -21,26 +22,6 @@ export class SubjectTableBodyService {
     };
   }
 
-  private findBodyByMarkId(body: Array<ICell<string>>, mark: Mark): TNullable<ICell<string>> {
-    for (let i: number = 0; i < body.length; i++) {
-      if (+body[i].id === mark.studentId) {
-        return body[i];
-      }
-    }
-
-    return null;
-  }
-
-  private getStudentByMarkId(students: Array<Student>, mark: Mark): TNullable<Student> {
-    for (let i: number = 0; i < students.length; i++) {
-      if (students[i].id === mark.studentId) {
-        return students[i];
-      }
-    }
-
-    return null;
-  }
-
   private computeAverageMarkByField(field: ICell<string>): number {
     let count: number = 0;
     const sum: number = Object.keys(field).reduce((acc, key) => {
@@ -50,15 +31,21 @@ export class SubjectTableBodyService {
     return count === 0 ? -1 : sum / count;
   }
 
-  public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
-    const body: Array<ICell<string>> = [];
+  public getComputedAverageMark(field: ICell<string>): string {
+    const mark: number = this.computeAverageMarkByField(field);
+    return mark === -1 ? '' : `${mark}`;
+  }
 
-    marks.forEach((mark) => {
-      let field: TNullable<ICell<string>> = this.findBodyByMarkId(body, mark);
+  public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
+    return marks.reduce((body: Array<ICell<string>>, mark) => {
       let isCreated: boolean = false;
+      let field: TNullable<ICell<string>> = findById<{ id: string }>(
+        <Array<{ id: string }>>body,
+        mark.studentId,
+      );
 
       if (field === null) {
-        const student: TNullable<Student> = this.getStudentByMarkId(students, mark);
+        const student: TNullable<Student> = findById<Student>(students, mark.studentId);
         if (student === null) {
           return;
         }
@@ -71,14 +58,15 @@ export class SubjectTableBodyService {
       if (isCreated) {
         body.push(field);
       }
-    });
 
-    return body;
+      return body;
+    }, []);
   }
 
-  public updateMarksByDate(body: Array<ICell<string>>, changes: DateChanges): Array<ICell<string>> {
-    const { current, previously: prev } = changes;
-
+  public updateMarksByDate(
+    body: Array<ICell<string>>,
+    { current, previously: prev }: DateChanges,
+  ): Array<ICell<string>> {
     return body.map((field) => {
       if (!field[prev]) {
         return field;
@@ -93,9 +81,8 @@ export class SubjectTableBodyService {
 
   public updateMark(
     body: Array<ICell<string>>,
-    change: IChangeField<number>,
+    { value: mark, column: date, row: rowIndex }: IChangeField<number>,
   ): Array<ICell<string>> {
-    const { value: mark, column: date, row: rowIndex } = change;
 
     return body.map((item, index) => {
       if (index !== rowIndex) {
@@ -107,30 +94,18 @@ export class SubjectTableBodyService {
       } else {
         delete item[date];
       }
+      item['average mark'] = this.getComputedAverageMark(item);
 
       return item;
     });
   }
 
   public deleteMarksByDate(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
-    const newBody: Array<ICell<string>> = body.map((item) => {
+    return body.map((item) => {
       const newItem: ICell<string> = Object.assign({}, item);
       delete newItem[milliseconds];
+      newItem['average mark'] = this.getComputedAverageMark(item);
       return newItem;
-    });
-
-    this.computeAverageMarkByBody(newBody);
-    return newBody;
-  }
-
-  public computeAverageMarkByBody(body: Array<ICell<string>>): void {
-    body.forEach((item) => {
-      const averageMark: number = this.computeAverageMarkByField(item);
-      if (averageMark === -1) {
-        return (item['average mark'] = '');
-      }
-
-      item['average mark'] = `${averageMark}`;
     });
   }
 

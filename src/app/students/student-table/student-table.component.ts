@@ -3,10 +3,10 @@ import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription } from 'rxjs';
 
-import { Student } from '../../common/models/Student';
+import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { TableHeaderConfig } from '../../common/models/Table/Table-header-config';
-import { ITableConfig } from 'src/app/common/models/Table/index';
+import { TableHeaderConfig } from '../../common/models/table/table-header-config';
+import { ITableConfig } from 'src/app/common/models/table/index';
 
 const displayedColumns: Array<TableHeaderConfig> = [
   new TableHeaderConfig({

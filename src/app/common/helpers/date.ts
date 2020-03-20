@@ -19,10 +19,6 @@ function getPrevDay(milliseconds: number): Date {
   return prevDay;
 }
 
-function compareDates(a: Date, b: Date): boolean {
-  return a.getTime() === b.getTime();
-}
-
 function getClosestEmptyDate<T extends { value: string }>(date: Date, headers: Array<T>): Date {
   let emptyDate: Date = new Date(date.getTime());
 
@@ -42,4 +38,4 @@ function getClosestEmptyDate<T extends { value: string }>(date: Date, headers: A
   return emptyDate;
 }
 
-export { resetDate, getNextDay, getPrevDay, compareDates, getClosestEmptyDate };
+export { resetDate, getNextDay, getPrevDay, getClosestEmptyDate };

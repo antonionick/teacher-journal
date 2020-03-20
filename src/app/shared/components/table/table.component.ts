@@ -11,7 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
-import { ITableConfig, TableHeaderConfig, IChangeField } from '../../../common/models/Table';
+import { ITableConfig, TableHeaderConfig, IChangeField } from '../../../common/models/table';
 
 @Component({
   selector: 'app-table',

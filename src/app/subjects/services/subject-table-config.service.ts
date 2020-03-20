@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { ICell, TableHeaderConfig, ITableConfig, IChangeField } from '../../common/models/Table';
-import { Mark } from '../../common/models/Mark';
-import { Student } from '../../common/models/Student';
+import { ICell, TableHeaderConfig, ITableConfig, IChangeField } from '../../common/models/table';
+import { Mark } from '../../common/models/mark';
+import { Student } from '../../common/models/student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
 import { SubjectTableBodyService } from './subject-table-body.service';
-import { DateChanges } from 'src/app/common/models/Date-changes';
-import { EditMark } from 'src/app/common/models/Edit-mark';
+import { DateChanges } from 'src/app/common/models/date-changes';
+import { EditMark } from 'src/app/common/models/edit-mark';
 
 @Injectable()
 export class SubjectTableConfigService {
@@ -66,8 +66,10 @@ export class SubjectTableConfigService {
 
   private createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
     let body: Array<ICell<string>> = this.bodyService.createBody(marks, students);
-    this.bodyService.computeAverageMarkByBody(body);
     body = this.bodyService.sortBody(body);
+    body.forEach((item) => {
+      item['average mark'] = this.bodyService.getComputedAverageMark(item);
+    });
     return body;
   }
 
@@ -113,7 +115,6 @@ export class SubjectTableConfigService {
 
   public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
     this.config.body = this.bodyService.updateMark(this.config.body, change);
-    this.bodyService.computeAverageMarkByBody(this.config.body);
     return this.resetRefConfig();
   }
 }

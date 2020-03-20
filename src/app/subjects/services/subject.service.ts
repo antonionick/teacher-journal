@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import { HttpService, LocalStorageService } from '../../common/services/index';
-import { Subject } from '../../common/models/Subject';
+import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/TNullable';
+import { TNullable } from '../../common/models/tnullable';
 
 const { subjects: subjectUrl } = urlProvider;
 

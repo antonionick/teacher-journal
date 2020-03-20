@@ -7,10 +7,10 @@ import { Subscription, Observable, of } from 'rxjs';
 import { SubjectFormService } from '../services/subject-form.service';
 import { FormComponent } from '../../shared/components/index';
 import { IFormConfig } from 'src/app/common/models/Form';
-import { Subject } from '../../common/models/Subject';
+import { Subject } from '../../common/models/subject';
 import { SubjectService } from '../services/subject.service';
 import { ConfirmSaveService } from '../../common/services/index';
-import { IConfirmSave } from '../../common/models/Confirm-save';
+import { IConfirmSave } from '../../common/models/confirm-save';
 
 @Component({
   selector: 'app-subject-form',
@@ -50,10 +50,9 @@ export class SubjectFormComponent implements OnInit {
 
     const subject: Subject = this.formService.getSubjectOfForm(data);
     subject.name = subject.name.toLowerCase();
-    const subscription: Subscription = this.subjectService.addSubjectServer(subject)
+    this.subjectService.addSubjectServer(subject)
       .subscribe(() => {
         this.router.navigate(['subjects']);
-        subscription.unsubscribe();
       });
   }
 

@@ -7,10 +7,10 @@ import {
   getPrevDay,
   getNextDay,
 } from 'src/app/common/helpers/date';
-import { TableHeaderConfig } from 'src/app/common/models/Table';
-import { TNullable } from 'src/app/common/models/TNullable';
-import { Mark } from 'src/app/common/models/Mark';
-import { DateChanges } from 'src/app/common/models/Date-changes';
+import { TableHeaderConfig } from 'src/app/common/models/table';
+import { TNullable } from 'src/app/common/models/tnullable';
+import { Mark } from 'src/app/common/models/mark';
+import { DateChanges } from 'src/app/common/models/date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {

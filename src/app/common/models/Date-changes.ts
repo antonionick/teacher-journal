@@ -1,4 +1,4 @@
-import { TNullable } from './TNullable';
+import { TNullable } from './tnullable';
 
 interface IDateChanges {
   current: TNullable<number>;

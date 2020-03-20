@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../common/models/Table';
+import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../common/models/table';
 import { StudentService } from 'src/app/students/services/student.service';
-import { Subject } from '../../common/models/Subject';
-import { Student } from 'src/app/common/models/Student';
-import { Mark } from 'src/app/common/models/Mark';
+import { Subject } from '../../common/models/subject';
+import { Student } from 'src/app/common/models/student';
+import { Mark } from 'src/app/common/models/mark';
 import { SubjectService } from './subject.service';
 import { SubjectTableConfigService } from './subject-table-config.service';
 
@@ -82,7 +82,7 @@ export class SubjectTableService {
     private configService: SubjectTableConfigService,
     private studentService: StudentService,
     private subjectService: SubjectService,
-  ) {}
+  ) { }
 
   public createConfig(): ITableConfig<ICell<string>> {
     return this.configService.createConfig(headerConfig, mockStudents, mockMarks);

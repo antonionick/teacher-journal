@@ -9,13 +9,13 @@ import {
 } from '@angular/core';
 
 import {
-  setMinMax,
-  checkValidKeyDown as keyDown,
+  getNumberInRange,
   validKeyCodesInteger as validKeyCodes,
+  checkValidKeyCodes,
 } from '../helpers/validate-number-input';
-import { EditMark } from '../models/Edit-mark';
-import { TNullable } from '../models/TNullable';
-import { IChangeField } from '../models/Table/Table-change-field';
+import { EditMark } from '../models/edit-mark';
+import { TNullable } from '../models/tnullable';
+import { IChangeField } from '../models/table/table-change-field';
 
 @Directive({
   selector: '[appEditMark]',
@@ -29,10 +29,9 @@ export class EditMarkDirective {
   private isProcess: boolean;
 
   @Input('column')
-  private column: number;
+  public column: number;
   @Input()
-  private row: number;
-
+  public row: number;
   @Input('editMarkConfig')
   public set appEditMark(config: TNullable<EditMark>) {
     if (config instanceof EditMark) {
@@ -46,11 +45,25 @@ export class EditMarkDirective {
     this.input = null;
     this.resetSettings();
   }
-
   @Output()
   public changeMark: EventEmitter<IChangeField<number>> = new EventEmitter();
 
-  constructor(private elementRef: ElementRef, private render: Renderer2) {}
+  constructor(private elementRef: ElementRef, private render: Renderer2) { }
+
+  @HostListener('click')
+  private onClick(): void {
+    this.startEdit();
+  }
+
+  @HostListener('keyup.enter')
+  private onEnter(): void {
+    this.endEdit();
+  }
+
+  @HostListener('focusout')
+  private onMouseLeave(): void {
+    this.endEdit();
+  }
 
   private resetSettings(): void {
     this.child = null;
@@ -59,7 +72,7 @@ export class EditMarkDirective {
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
-    const isValid: boolean = keyDown(validKeyCodes, event);
+    const isValid: boolean = checkValidKeyCodes(validKeyCodes, event.keyCode);
     if (!isValid) {
       event.preventDefault();
       return;
@@ -72,7 +85,7 @@ export class EditMarkDirective {
     const { value } = this.input;
     const { min, max } = this.config;
     const fullValue: number = +(value + event.key);
-    const resultValue: string = setMinMax(fullValue, min, max).toString();
+    const resultValue: string = getNumberInRange(fullValue, min, max).toString();
 
     this.render.setProperty(this.input, 'value', resultValue);
     event.preventDefault();
@@ -178,20 +191,5 @@ export class EditMarkDirective {
 
     this.sourceMark = mark;
     this.emitChangeEvent(mark);
-  }
-
-  @HostListener('click')
-  public onClick(): void {
-    this.startEdit();
-  }
-
-  @HostListener('keyup.enter')
-  public onEnter(): void {
-    this.endEdit();
-  }
-
-  @HostListener('focusout')
-  public onMouseLeave(): void {
-    this.endEdit();
   }
 }
