@@ -10,7 +10,7 @@ import { EditMark } from 'src/app/common/models/edit-mark';
 
 @Injectable()
 export class SubjectTableConfigService {
-  private editConfig: EditMark;
+  private readonly editConfig: EditMark;
   private headerConfig: Array<TableHeaderConfig>;
   private dateChanges: DateChanges;
 
@@ -53,23 +53,20 @@ export class SubjectTableConfigService {
     const uniqueDates: Array<Mark> = this.getUniqueDates(marks);
     let dateHeaders: Array<TableHeaderConfig> = this.headerService.createDateHeaders(uniqueDates);
     dateHeaders = this.headerService.sortDateHeaders(dateHeaders);
-    dateHeaders = this.headerService.setMinMaxDateHeaders(dateHeaders);
+    dateHeaders = this.headerService.setRangeDateHeaders(dateHeaders);
     return [...this.headerConfig, ...dateHeaders];
   }
 
   private updateHeaders(): Array<TableHeaderConfig> {
     let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(this.headerConfig.length);
-    this.dateChanges = this.headerService.checkChangeHeader(dateHeaders);
-    dateHeaders = this.headerService.setMinMaxDateHeaders(dateHeaders);
+    this.dateChanges = this.headerService.updateDateByChanges(dateHeaders);
+    dateHeaders = this.headerService.setRangeDateHeaders(dateHeaders);
     return [...this.headerConfig, ...dateHeaders];
   }
 
   private createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
     let body: Array<ICell<string>> = this.bodyService.createBody(marks, students);
     body = this.bodyService.sortBody(body);
-    body.forEach((item) => {
-      item['average mark'] = this.bodyService.getComputedAverageMark(item);
-    });
     return body;
   }
 
@@ -79,21 +76,17 @@ export class SubjectTableConfigService {
     marks: Array<Mark>,
   ): ITableConfig<ICell<string>> {
     this.headerConfig = headerConfig;
-
     this.config.headers = this.createHeaders(marks);
-
     this.config.body = this.createBody(marks, students);
-
     return this.config;
   }
 
   public updateConfigByDateChange(): ITableConfig<ICell<string>> {
     this.config.headers = this.updateHeaders();
-
-    if (this.dateChanges.current !== null) {
-      this.config.body = this.bodyService.updateMarksByDate(this.config.body, this.dateChanges);
-    }
-
+    this.config.body = this.bodyService.updateBodyByDateChanges(
+      this.config.body,
+      this.dateChanges,
+    );
     return this.resetRefConfig();
   }
 
@@ -101,7 +94,7 @@ export class SubjectTableConfigService {
     let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(this.headerConfig.length);
     dateHeaders = this.headerService.addDateHeader(dateHeaders);
     dateHeaders = this.headerService.sortDateHeaders(dateHeaders);
-    dateHeaders = this.headerService.setMinMaxDateHeaders(dateHeaders);
+    dateHeaders = this.headerService.setRangeDateHeaders(dateHeaders);
     this.config.headers = [...this.headerConfig, ...dateHeaders];
     return this.resetRefConfig();
   }
@@ -109,7 +102,7 @@ export class SubjectTableConfigService {
   public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
     const milliseconds: number = new Date(input.value).getTime();
     this.config.headers = this.headerService.deleteDateHeader(milliseconds, this.config.headers);
-    this.config.body = this.bodyService.deleteMarksByDate(milliseconds, this.config.body);
+    this.config.body = this.bodyService.deleteMarkByDate(milliseconds, this.config.body);
     return this.resetRefConfig();
   }
 

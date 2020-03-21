@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable, of } from 'rxjs';
 
-import { HttpService, LocalStorageService } from '../../common/services/index';
+import { HttpService, LocalStorageService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
 import { TNullable } from '../../common/models/tnullable';
@@ -45,7 +45,7 @@ export class SubjectService {
     }
 
     const id: number = subject.id;
-    return this.http.putData(`${subjectUrl}/${id}`, subject);
+    return this.http.putData(`${ subjectUrl }/${ id }`, subject);
   }
 
   public checkEmptySubject(subject: Subject): boolean {

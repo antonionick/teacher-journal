@@ -19,10 +19,10 @@ function getPrevDay(milliseconds: number): Date {
   return prevDay;
 }
 
-function getClosestEmptyDate<T extends { value: string }>(date: Date, headers: Array<T>): Date {
+function getClosestEmptyDate<T extends { value: string }>(date: Date, dates: Array<T>): Date {
   let emptyDate: Date = new Date(date.getTime());
 
-  headers.every((item) => {
+  dates.every((item) => {
     const milliseconds: number = +item.value;
     if (milliseconds > emptyDate.getTime()) {
       return false;

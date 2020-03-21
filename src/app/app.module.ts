@@ -11,10 +11,10 @@ import { StudentsModule } from './students/students.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
-import { PanelComponent } from './components';
+import { PanelComponent, BaseComponent } from './components';
 
 @NgModule({
-  declarations: [AppComponent, PanelComponent, AppRoutingModule.components],
+  declarations: [AppComponent, PanelComponent, BaseComponent, AppRoutingModule.components],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

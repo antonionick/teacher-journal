@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { HttpService } from '../../common/services/http.service';
-import { LocalStorageService } from '../../common/services/local-storage.service';
+import { HttpService, LocalStorageService } from '../../common/services';
 import { StudentFormService } from './student-form.service';
-import { IFormConfig } from '../../common/models/Form/form-config';
+import { IFormConfig } from '../../common/models/Form';
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
 import { TNullable } from '../../common/models/tnullable';

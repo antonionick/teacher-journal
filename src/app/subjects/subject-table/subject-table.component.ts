@@ -53,13 +53,13 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    super.ngOnInit();
-
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
     this.config = this.tableService.createConfig();
 
-    this.route.paramMap.pipe(takeUntil(this.unsubscribe$)).subscribe({
+    this.route.paramMap.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe({
       next: (params: ParamMap): void => {
         const subjectName: string = params.get('subject');
         this.getSubject(subjectName);

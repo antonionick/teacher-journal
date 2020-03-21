@@ -15,14 +15,14 @@ export class SubjectTableBodyService {
 
   private createBodyField(student: Student): TNullable<ICell<string>> {
     return {
-      id: student.id.toString(),
+      id: `${student.id}`,
       name: student.name,
       lastName: student.lastName,
       'average mark': '',
     };
   }
 
-  private computeAverageMarkByField(field: ICell<string>): number {
+  private computeAverageMark(field: ICell<string>): number {
     let count: number = 0;
     const sum: number = Object.keys(field).reduce((acc, key) => {
       return Number.isNaN(+key) ? acc : (count++, acc + +field[key]);
@@ -32,12 +32,15 @@ export class SubjectTableBodyService {
   }
 
   public getComputedAverageMark(field: ICell<string>): string {
-    const mark: number = this.computeAverageMarkByField(field);
+    const mark: number = this.computeAverageMark(field);
     return mark === -1 ? '' : `${mark}`;
   }
 
   public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
-    return marks.reduce((body: Array<ICell<string>>, mark) => {
+    const createdBody: Array<ICell<string>> = marks.reduce((
+      body: Array<ICell<string>>,
+      mark,
+    ) => {
       let isCreated: boolean = false;
       let field: TNullable<ICell<string>> = findById<{ id: string }>(
         <Array<{ id: string }>>body,
@@ -61,12 +64,22 @@ export class SubjectTableBodyService {
 
       return body;
     }, []);
+
+    createdBody.forEach((item) => {
+      item['average mark'] = this.getComputedAverageMark(item);
+    });
+
+    return createdBody;
   }
 
-  public updateMarksByDate(
+  public updateBodyByDateChanges(
     body: Array<ICell<string>>,
     { current, previously: prev }: DateChanges,
   ): Array<ICell<string>> {
+    if (current === null) {
+      return body;
+    }
+
     return body.map((field) => {
       if (!field[prev]) {
         return field;
@@ -83,7 +96,6 @@ export class SubjectTableBodyService {
     body: Array<ICell<string>>,
     { value: mark, column: date, row: rowIndex }: IChangeField<number>,
   ): Array<ICell<string>> {
-
     return body.map((item, index) => {
       if (index !== rowIndex) {
         return item;
@@ -100,7 +112,7 @@ export class SubjectTableBodyService {
     });
   }
 
-  public deleteMarksByDate(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
+  public deleteMarkByDate(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
     return body.map((item) => {
       const newItem: ICell<string> = Object.assign({}, item);
       delete newItem[milliseconds];

@@ -11,29 +11,19 @@ import { TableHeaderConfig } from 'src/app/common/models/table';
 import { TNullable } from 'src/app/common/models/tnullable';
 import { Mark } from 'src/app/common/models/mark';
 import { DateChanges } from 'src/app/common/models/date-changes';
+import { hasErrors } from '@angular/compiler-cli/ngcc/src/packages/transformer';
+import { createMissingDateImplError } from '@angular/material/datepicker/datepicker-errors';
 
 @Injectable()
 export class SubjectTableHeaderService {
-  private createDateHeaderByMark(mark: Mark): TableHeaderConfig {
-    const markDate: Date = new Date(mark.date);
 
+  private createDateHeader({ date }: { date: Date }): TableHeaderConfig {
     return new TableHeaderConfig({
-      value: mark.date.toString(),
-      datePicker: true,
-      inputControl: new FormControl({ value: markDate, disabled: true }),
-      sort: true,
-      isAscSortStart: false,
-    });
-  }
-
-  private createDateHeaderByDate(date: Date): TableHeaderConfig {
-    return new TableHeaderConfig({
-      value: date.getTime().toString(),
+      value: `${date.getTime()}`,
       datePicker: true,
       inputControl: new FormControl({ value: date, disabled: true }),
       sort: true,
       isAscSortStart: false,
-      isDelete: true,
     });
   }
 
@@ -46,9 +36,7 @@ export class SubjectTableHeaderService {
   }
 
   public createDateHeaders(marks: Array<Mark>): Array<TableHeaderConfig> {
-    return marks.map((mark) => {
-      return this.createDateHeaderByMark(mark);
-    });
+    return marks.map((mark) => this.createDateHeader({ date: new Date(mark.date) }));
   }
 
   public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
@@ -60,7 +48,7 @@ export class SubjectTableHeaderService {
       date = getClosestEmptyDate(date, headers);
     }
 
-    const header: TableHeaderConfig = this.createDateHeaderByDate(date);
+    const header: TableHeaderConfig = this.createDateHeader({ date: date });
     return [...headers, header];
   }
 
@@ -71,24 +59,30 @@ export class SubjectTableHeaderService {
     return headers.filter((item) => +item.value !== milliseconds);
   }
 
-  public checkChangeHeader(headers: Array<TableHeaderConfig>): TNullable<DateChanges> {
+  public updateDateByChanges(headers: Array<TableHeaderConfig>): TNullable<DateChanges> {
     const changeDates: DateChanges = new DateChanges();
+    let date: Date;
+    let milliseconds: number;
 
-    headers.forEach((header) => {
-      const date: Date = new Date(header.inputControl.value);
-      if (header.value === date.getTime().toString()) {
-        return;
-      }
+    const updatedHeader: TableHeaderConfig = headers.find((header) => {
+      date = new Date(header.inputControl.value);
+      milliseconds = date.getTime();
 
-      changeDates.current = date.getTime();
-      changeDates.previously = +header.value;
-      header.value = date.getTime().toString();
-    });
+      return header.value !== `${ milliseconds }`;
+    }) || null;
 
-    return changeDates.current !== null ? changeDates : null;
+    if (updatedHeader === null) {
+      return null;
+    }
+
+    changeDates.current = milliseconds;
+    changeDates.previously = +updatedHeader.value;
+    updatedHeader.value = `${ milliseconds }`;
+
+    return changeDates;
   }
 
-  public setMinMaxDateHeaders(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
+  public setRangeDateHeaders(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
     let minDate: TNullable<Date> = null;
     let maxDate: TNullable<Date> = null;
 

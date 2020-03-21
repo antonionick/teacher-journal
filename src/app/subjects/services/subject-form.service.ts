@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { SubjectService } from './subject.service';
-import { IFormConfig, FormElement } from '../../common/models/Form/index';
+import { IFormConfig, FormElement } from '../../common/models/Form';
 import { Subject } from 'src/app/common/models/subject';
 
 const formConfig: IFormConfig = {
@@ -61,7 +61,8 @@ const formConfig: IFormConfig = {
 
 @Injectable()
 export class SubjectFormService {
-  private formConfig: IFormConfig;
+  private readonly formConfig: IFormConfig;
+
   public get config(): IFormConfig {
     return this.formConfig;
   }

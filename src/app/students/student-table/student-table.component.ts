@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 
 import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { TableHeaderConfig } from '../../common/models/table/table-header-config';
-import { ITableConfig } from 'src/app/common/models/table/index';
+import { TableHeaderConfig } from '../../common/models/table';
+import { ITableConfig } from 'src/app/common/models/table';
 
 const displayedColumns: Array<TableHeaderConfig> = [
   new TableHeaderConfig({

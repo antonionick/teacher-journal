@@ -2,14 +2,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Subscription, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { SubjectFormService } from '../services/subject-form.service';
-import { FormComponent } from '../../shared/components/index';
+import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/Form';
 import { Subject } from '../../common/models/subject';
 import { SubjectService } from '../services/subject.service';
-import { ConfirmSaveService } from '../../common/services/index';
+import { ConfirmSaveService } from '../../common/services';
 import { IConfirmSave } from '../../common/models/confirm-save';
 
 @Component({
@@ -20,6 +20,7 @@ import { IConfirmSave } from '../../common/models/confirm-save';
 })
 export class SubjectFormComponent implements OnInit {
   private isSaving: boolean;
+
   @ViewChild('form')
   public form: FormComponent;
   public config: IFormConfig;

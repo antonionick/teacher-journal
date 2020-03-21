@@ -15,7 +15,7 @@ import {
 } from '../helpers/validate-number-input';
 import { EditMark } from '../models/edit-mark';
 import { TNullable } from '../models/tnullable';
-import { IChangeField } from '../models/table/table-change-field';
+import { IChangeField } from '../models/Table';
 
 @Directive({
   selector: '[appEditMark]',

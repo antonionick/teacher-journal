@@ -21,8 +21,6 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
   }
 
   public ngOnInit(): void {
-    super.ngOnInit();
-
     this.subjectService
       .fetchSubjectServer()
       .pipe(
