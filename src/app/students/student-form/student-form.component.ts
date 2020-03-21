@@ -3,17 +3,19 @@ import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Observable, of, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 
-import { IFormConfig } from '../../common/models/Form/Form-config';
-import { Student } from '../../common/models/Student';
+import { IFormConfig } from '../../common/models/Form';
+import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { FormComponent } from '../../shared/components/index';
+import { FormComponent } from '../../shared/components';
+import { ConfirmSaveService } from '../../common/services';
+import { IConfirmSave } from '../../common/models/confirm-save';
 
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
+  providers: [ConfirmSaveService],
 })
 export class StudentFormComponent implements OnInit {
   private isAdding: boolean = false;
@@ -22,7 +24,11 @@ export class StudentFormComponent implements OnInit {
   public formComponent: FormComponent;
   public config: IFormConfig;
 
-  constructor(private router: Router, private studentService: StudentService) { }
+  constructor(
+    private router: Router,
+    private studentService: StudentService,
+    private confirmSave: ConfirmSaveService<Student>,
+  ) { }
 
   private getStudent(form: FormGroup): Student {
     return { id: null, ...form.value };
@@ -30,6 +36,13 @@ export class StudentFormComponent implements OnInit {
 
   public ngOnInit(): void {
     this.config = this.studentService.getFormConfig();
+
+    // set clear function for form
+    this.config.buttons[1].onClick = () => {
+      const { form } = this.formComponent;
+      form.reset();
+      this.studentService.clearConfigData();
+    };
   }
 
   public onSubmit(form: FormGroup): void {
@@ -52,13 +65,17 @@ export class StudentFormComponent implements OnInit {
       return of(true);
     }
 
-    const { form, buttonConfig: { disable } } = this.formComponent;
+    const { form, submitButton: { disable } } = this.formComponent;
     const student: Student = this.getStudent(form);
+    const config: IConfirmSave<Student> = {
+      disable,
+      message: 'Do you want to save information?',
+      checkEmpty: (data: Student) => this.studentService.checkEmpty(data),
+      addToServer: (data: Student) => this.studentService.addStudentServer(data),
+      addToStorage: (data: Student) => this.studentService.addStorageStudent(data),
+      removeFromStorage: () => this.studentService.clearConfigData(),
+    };
 
-    return this.studentService.confirmNavigation(student, disable).pipe(
-      map((data: boolean) => {
-        return data;
-      }),
-    );
+    return this.confirmSave.confirmNavigation(student, config);
   }
 }

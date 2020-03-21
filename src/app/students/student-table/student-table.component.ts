@@ -3,31 +3,32 @@ import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription } from 'rxjs';
 
-import { Student } from '../../common/models/Student';
+import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { ITableHeaderConfig } from '../../common/models/Table/Table-header-config';
+import { TableHeaderConfig } from '../../common/models/table';
+import { ITableConfig } from 'src/app/common/models/table';
 
-const displayedColumns: Array<ITableHeaderConfig> = [
-  {
+const displayedColumns: Array<TableHeaderConfig> = [
+  new TableHeaderConfig({
     value: 'id',
-    isSort: true,
-  },
-  {
+    sort: true,
+  }),
+  new TableHeaderConfig({
     value: 'name',
-    isSort: true,
-  },
-  {
+    sort: true,
+  }),
+  new TableHeaderConfig({
     value: 'lastName',
-    isSort: true,
-  },
-  {
+    sort: true,
+  }),
+  new TableHeaderConfig({
     value: 'address',
-    isSort: true,
-  },
-  {
+    sort: true,
+  }),
+  new TableHeaderConfig({
     value: 'description',
-    isSort: true,
-  },
+    sort: true,
+  }),
 ];
 
 @Component({
@@ -38,19 +39,24 @@ const displayedColumns: Array<ITableHeaderConfig> = [
 export class StudentTableComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
-  public data: Array<Student>;
-  public displayedColumns: Array<ITableHeaderConfig>;
+  public config: ITableConfig<Student>;
   public plusIcon: IconDefinition = faPlus;
 
   constructor(private studentService: StudentService) {
-    this.displayedColumns = displayedColumns;
+    this.config = {
+      headers: displayedColumns,
+      body: [],
+    };
   }
 
   public ngOnInit(): void {
     this.subscription = this.studentService.fetchStudentsServer()
       .subscribe({
         next: (students: Array<Student>) => {
-          this.data = <Array<Student>>students;
+          this.config = {
+            headers: displayedColumns,
+            body: students,
+          };
         },
       });
   }

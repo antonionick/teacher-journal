@@ -128,5 +128,8 @@
       }
     }
   },
-  "defaultProject": "teacher-journal"
+  "defaultProject": "teacher-journal",
+  "cli": {
+    "analytics": false
+  }
 }

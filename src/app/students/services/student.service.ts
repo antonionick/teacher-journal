@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-import { HttpService } from '../../common/services/http.service';
-import { LocalStorageService } from '../../common/services/local-storage.service';
+import { HttpService, LocalStorageService } from '../../common/services';
 import { StudentFormService } from './student-form.service';
-import { IFormConfig } from '../../common/models/Form/Form-config';
-import { Student } from '../../common/models/Student';
+import { IFormConfig } from '../../common/models/Form';
+import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/TNullable';
+import { TNullable } from '../../common/models/tnullable';
 
 const { students: studentUrl } = urlProvider;
 
@@ -26,7 +24,7 @@ export class StudentService {
     return JSON.parse(data);
   }
 
-  private addStorageStudent(student: Student): void {
+  public addStorageStudent(student: Student): void {
     this.storage.addItem('student', JSON.stringify(student));
   }
 
@@ -44,43 +42,20 @@ export class StudentService {
       return this.form.config;
     }
 
-    this.form.updateFormData(student);
+    this.form.updateConfigData(student);
     return this.form.config;
   }
 
-  public clearFormData(): void {
+  public clearConfigData(): void {
     this.form.clearData();
     this.storage.removeItem('student');
-  }
-
-  public confirmNavigation(
-    student: Student,
-    disable: boolean,
-    message: string = 'Do you want to save information?',
-  ): Observable<boolean> {
-    if (this.checkEmpty(student)) {
-      return of(true);
-    }
-
-    const confirmation: boolean = window.confirm(message);
-    if (!confirmation) {
-      this.clearFormData();
-      return of(!confirmation);
-    }
-
-    if (disable) {
-      this.addStorageStudent(student);
-      return of(true);
-    }
-
-    return this.addStudentServer(student).pipe(map(() => true));
   }
 
   public checkEmpty(student: Student): boolean {
     const emptyStudent: Student = new Student();
 
     return Object.keys(student).every((key: string) => {
-      if (emptyStudent[key] === student[key]) {
+      if (emptyStudent[key] === student[key] || student[key] === null) {
         return true;
       }
     });

@@ -1,15 +1,53 @@
-<table class="table" mat-table [dataSource]="dataSource" #sort matSort>
-  <ng-container *ngFor="let column of displayedColumns">
-    <ng-container matColumnDef="{{ column.value }}">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.value | titlecase }}
-      </th>
-      <td mat-cell *matCellDef="let item">
-        {{ item[column.value] }}
-      </td>
-    </ng-container>
-  </ng-container>
+<div class="content">
+  <table class="table" mat-table [dataSource]="dataSource" matSort>
+    <ng-container *ngFor="let item of config.headers">
+      <ng-container [matColumnDef]="item.value" [sticky]="item.sticky ? '' : null" >
+        <th
+          class="table__cell table__cell_header"
+          [class.table__cell_header-picker]="item.datePicker"
+          mat-header-cell
+          mat-sort-header
+          [start]="item.isAscSortStart ? 'asc': 'desc'"
+          [disabled]="item.sort ? null : ''"
+          *matHeaderCellDef
+        >
+          <ng-container *ngIf="item.datePicker; else value">
+            <input
+              class="table__item table__item_input-date-picker"
+              matInput
+              [formControl]="item.inputControl"
+              [matDatepicker]="datePicker"
+              [min]="item.min"
+              [max]="item.max"
+              (dateChange)="onDateChange($event)"
+            />
+            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker disabled="false"></mat-datepicker>
+          </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="headers"></tr>
-  <tr mat-row *matRowDef="let row; columns: headers"></tr>
-</table>
+          <ng-template #value>
+            <span>{{ item.value | titlecase }}</span>
+          </ng-template>
+        </th>
+
+        <td
+          mat-cell
+          class="table__cell"
+          *matCellDef="let cell; let i = index"
+          [class.table__row_mark]="item.datePicker"
+          appEditMark
+          [editMarkConfig]="item.datePicker ? config.editCell : null"
+          [column]="item.datePicker ? item.value : null"
+          [row]="i"
+          (changeMark)="onChangeMark($event)"
+        >
+          <span> {{ cell[item.value] }} </span>
+        </td>
+      </ng-container>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
+  </table>
+
+</div>

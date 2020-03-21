@@ -11,7 +11,7 @@ export class HttpService<T> {
 
   constructor(private http: HttpClient) { }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     if (error.error instanceof ErrorEvent) {
       console.error(`An error occurred: ${error.error.message}`);
     } else {
@@ -29,6 +29,12 @@ export class HttpService<T> {
 
   public postData(url: string, data: T): Observable<T> {
     return this.http.post<T>(url, data).pipe(
+      catchError(this.handleError),
+    );
+  }
+
+  public putData(url: string, data: T): Observable<T> {
+    return this.http.put<T>(url, data).pipe(
       catchError(this.handleError),
     );
   }

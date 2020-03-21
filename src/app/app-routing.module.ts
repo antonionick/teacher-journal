@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SubjectPageComponent } from './components/subjects/subject-page/subject-page.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { PageNotFoundComponent } from './components';
 
 const routes: Routes = [
   { path: '', redirectTo: '/students', pathMatch: 'full' },
-  { path: 'subjects', component: SubjectPageComponent },
   { path: '**', component: PageNotFoundComponent },
 ];
 
@@ -15,5 +13,5 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {
-  static components = [SubjectPageComponent, PageNotFoundComponent];
+  public static components = [PageNotFoundComponent];
 }

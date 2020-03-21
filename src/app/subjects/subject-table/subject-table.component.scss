@@ -1,0 +1,87 @@
+@import '../../../styles/variables.scss';
+
+.subject {
+  &__title {
+    text-align: center;
+  }
+
+  &__content {
+    &_table {
+      position: relative;
+      max-width: $max-table-width;
+      margin: 0 auto;
+    }
+
+    &_form {
+      display: flex;
+      justify-content: center;
+      max-width: 600px;
+      margin: 60px auto 0;
+    }
+  }
+
+  &__table {
+    &::ng-deep .table {
+      width: 100%;
+    }
+
+    &::ng-deep .table__cell_header{
+      padding-top: 20px;
+    }
+  }
+
+  &__table-button-wrapper {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    border-radius: 4px;
+    box-shadow: 0 0 3px rgb(51, 51, 51);
+  }
+
+  &__table-button {
+    &::ng-deep button {
+      box-sizing: border-box;
+      width: auto;
+      padding: 7px;
+      font-size: 16px;
+      line-height: 110%;
+      border-radius: 4px;
+      background-color: white;
+    }
+  }
+
+  &__label {
+    display: flex;
+    flex-flow: column;
+  }
+
+  &__label-title {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  &__label-item {
+    padding: 10px 6px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+  }
+
+  &__button {
+    &_save {
+      display: block;
+      width: 194px;
+      margin: 15px auto 0;
+
+      &::ng-deep button {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 20px;
+        line-height: 110%;
+        border-radius: 4px;
+      }
+    }
+  }
+}

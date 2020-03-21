@@ -13,6 +13,18 @@
     color: black;
   }
 
+  &__row {
+    &_button {
+      display: flex;
+      flex-flow: row-reverse;
+      justify-content: space-between;
+    }
+  }
+
+  &__button {
+    width: 49%;
+  }
+
   &::ng-deep .button {
     box-sizing: border-box;
     width: 100%;

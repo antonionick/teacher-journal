@@ -1,4 +1,9 @@
-<form id="{{ formConfig.id }}" class="form {{ formConfig.classes }}" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+<form
+  id="{{ formConfig.id }}"
+  class="form {{ formConfig.classes }}"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit($event)"
+>
   <div class="form__row" *ngFor="let item of formConfig.elements">
     <mat-form-field class="form__column">
       <mat-label>{{ item.label }}</mat-label>
@@ -26,7 +31,13 @@
     </mat-form-field>
   </div>
 
-  <div class="form__row">
-    <app-button class="form__button" [config]="buttonConfig">Add</app-button>
+  <div class="form__row form__row_button">
+    <app-button
+      class="form__button"
+      *ngFor="let config of formConfig.buttons"
+      [config]="config"
+    >
+      {{ config.value }}
+    </app-button>
   </div>
 </form>
