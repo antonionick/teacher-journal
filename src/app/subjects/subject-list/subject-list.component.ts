@@ -22,7 +22,7 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
 
   public ngOnInit(): void {
     this.subjectService
-      .fetchSubjectServer()
+      .fetchSubjectsServer()
       .pipe(
         map((data) => data.map((subject: Subject) => subject.name)),
         takeUntil(this.unsubscribe$),

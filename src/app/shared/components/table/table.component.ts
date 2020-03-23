@@ -33,9 +33,15 @@ export class TableComponent<T> implements OnChanges {
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
 
   public ngOnChanges(change: SimpleChanges): void {
-    const {
+    let {
       config: { currentValue },
     } = change;
+    if (currentValue === null) {
+      this.config = currentValue = {
+        headers: [],
+        body: [],
+      };
+    }
 
     this.columnHeaders = currentValue.headers.map((item: TableHeaderConfig) => item.value);
     this.dataSource = new MatTableDataSource(currentValue.body);

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 
 import { ICell, TableHeaderConfig, ITableConfig, IChangeField } from '../../common/models/table';
-import { Mark } from '../../common/models/mark';
+import { Mark } from '../../common/models/mark/mark';
 import { Student } from '../../common/models/student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
 import { SubjectTableBodyService } from './subject-table-body.service';
-import { DateChanges } from 'src/app/common/models/date-changes';
-import { EditMark } from 'src/app/common/models/edit-mark';
+import { DateChanges } from 'src/app/common/models/useful/date-changes';
+import { EditMark } from 'src/app/common/models/mark/edit-mark';
+import { resetDate } from 'src/app/common/helpers/date';
 
 @Injectable()
 export class SubjectTableConfigService {

@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 
-import { TNullable } from '../tnullable';
+import { TNullable } from '../useful/tnullable';
 
 interface ITableHeaderConfig {
   value: TNullable<string>;

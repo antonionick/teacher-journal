@@ -1,4 +1,4 @@
-import { TNullable } from './tnullable';
+import { TNullable } from './useful/tnullable';
 
 interface IStudent {
   id: TNullable<number>;

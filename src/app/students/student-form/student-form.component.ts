@@ -9,7 +9,7 @@ import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
 import { FormComponent } from '../../shared/components';
 import { ConfirmSaveService } from '../../common/services';
-import { IConfirmSave } from '../../common/models/confirm-save';
+import { IConfirmSave } from '../../common/models/useful/confirm-save';
 
 @Component({
   selector: 'app-student-form',

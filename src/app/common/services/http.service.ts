@@ -4,11 +4,12 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
+import { Options } from '../models/useful/http-options';
+
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService<T> {
-
   constructor(private http: HttpClient) { }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
@@ -20,10 +21,25 @@ export class HttpService<T> {
     return throwError('Something bad happened; please try again later.');
   }
 
-  public getData(url: string, retryCount: number = 3): Observable<Array<T>> {
-    return this.http.get<Array<T>>(url).pipe(
+  public getDataArray(
+    url: string,
+    options: Options = new Options(),
+    retryCount: number = 3,
+  ): Observable<Array<T>> {
+    return this.http.get<Array<T>>(url, options).pipe(
       retry(retryCount),
-      catchError(this.handleError),
+      // catchError(this.handleError),
+    );
+  }
+
+  public getData(
+    url: string,
+    options: Options = new Options(),
+    retryCount: number = 3,
+  ): Observable<T> {
+    return this.http.get<T>(url, options).pipe(
+      retry(retryCount),
+      // catchError(this.handleError),
     );
   }
 

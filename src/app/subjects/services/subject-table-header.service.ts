@@ -8,15 +8,12 @@ import {
   getNextDay,
 } from 'src/app/common/helpers/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
-import { TNullable } from 'src/app/common/models/tnullable';
-import { Mark } from 'src/app/common/models/mark';
-import { DateChanges } from 'src/app/common/models/date-changes';
-import { hasErrors } from '@angular/compiler-cli/ngcc/src/packages/transformer';
-import { createMissingDateImplError } from '@angular/material/datepicker/datepicker-errors';
+import { TNullable } from 'src/app/common/models/useful/tnullable';
+import { Mark } from 'src/app/common/models/mark/mark';
+import { DateChanges } from 'src/app/common/models/useful/date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {
-
   private createDateHeader({ date }: { date: Date }): TableHeaderConfig {
     return new TableHeaderConfig({
       value: `${date.getTime()}`,
@@ -56,7 +53,14 @@ export class SubjectTableHeaderService {
     milliseconds: number,
     headers: Array<TableHeaderConfig>,
   ): Array<TableHeaderConfig> {
-    return headers.filter((item) => +item.value !== milliseconds);
+    return headers.filter((item) => {
+      if (Number.isNaN(+item.value)) {
+        return true;
+      }
+
+      const value: number = resetDate(new Date(+item.value)).getTime();
+      return value !== milliseconds;
+    });
   }
 
   public updateDateByChanges(headers: Array<TableHeaderConfig>): TNullable<DateChanges> {
@@ -68,7 +72,7 @@ export class SubjectTableHeaderService {
       date = new Date(header.inputControl.value);
       milliseconds = date.getTime();
 
-      return header.value !== `${ milliseconds }`;
+      return header.value !== `${milliseconds}`;
     }) || null;
 
     if (updatedHeader === null) {
@@ -77,7 +81,7 @@ export class SubjectTableHeaderService {
 
     changeDates.current = milliseconds;
     changeDates.previously = +updatedHeader.value;
-    updatedHeader.value = `${ milliseconds }`;
+    updatedHeader.value = `${milliseconds}`;
 
     return changeDates;
   }

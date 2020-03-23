@@ -13,8 +13,8 @@ import {
   validKeyCodesInteger as validKeyCodes,
   checkValidKeyCodes,
 } from '../helpers/validate-number-input';
-import { EditMark } from '../models/edit-mark';
-import { TNullable } from '../models/tnullable';
+import { EditMark } from '../models/mark/edit-mark';
+import { TNullable } from '../models/useful/tnullable';
 import { IChangeField } from '../models/Table';
 
 @Directive({
@@ -29,9 +29,9 @@ export class EditMarkDirective {
   private isProcess: boolean;
 
   @Input('column')
-  public column: number;
+  public column: string;
   @Input()
-  public row: number;
+  public row: string;
   @Input('editMarkConfig')
   public set appEditMark(config: TNullable<EditMark>) {
     if (config instanceof EditMark) {
@@ -145,8 +145,8 @@ export class EditMarkDirective {
 
   private emitChangeEvent(mark: number): void {
     const change: IChangeField<number> = {
-      column: this.column,
-      row: this.row,
+      column: +this.column,
+      row: +this.row,
       value: mark,
     };
 

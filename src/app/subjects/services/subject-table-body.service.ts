@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { ICell, IChangeField } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
-import { Mark } from 'src/app/common/models/mark';
-import { TNullable } from 'src/app/common/models/tnullable';
-import { DateChanges } from 'src/app/common/models/date-changes';
+import { Mark } from 'src/app/common/models/mark/mark';
+import { TNullable } from 'src/app/common/models/useful/tnullable';
+import { DateChanges } from 'src/app/common/models/useful/date-changes';
 import { findById } from 'src/app/common/helpers/utils';
 
 @Injectable()
@@ -31,45 +31,40 @@ export class SubjectTableBodyService {
     return count === 0 ? -1 : sum / count;
   }
 
+  private updateAverageMark(field: ICell<string>, value: string): void {
+    field['average mark'] = value;
+  }
+
   public getComputedAverageMark(field: ICell<string>): string {
     const mark: number = this.computeAverageMark(field);
     return mark === -1 ? '' : `${mark}`;
   }
 
   public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
-    const createdBody: Array<ICell<string>> = marks.reduce((
-      body: Array<ICell<string>>,
-      mark,
-    ) => {
-      let isCreated: boolean = false;
+    const body: Array<ICell<string>> = students.reduce((arr, student) => {
+      const field: ICell<string> = this.createBodyField(student);
+      arr.push(field);
+      return arr;
+    }, []);
+
+    marks.forEach((mark) => {
       let field: TNullable<ICell<string>> = findById<{ id: string }>(
         <Array<{ id: string }>>body,
         mark.studentId,
       );
 
       if (field === null) {
-        const student: TNullable<Student> = findById<Student>(students, mark.studentId);
-        if (student === null) {
-          return;
-        }
-
-        field = this.createBodyField(student);
-        isCreated = true;
+        return;
       }
 
       field[mark.date] = `${mark.value}`;
-      if (isCreated) {
-        body.push(field);
-      }
-
-      return body;
     }, []);
 
-    createdBody.forEach((item) => {
-      item['average mark'] = this.getComputedAverageMark(item);
+    body.forEach((item) => {
+      this.updateAverageMark(item, this.getComputedAverageMark(item));
     });
 
-    return createdBody;
+    return body;
   }
 
   public updateBodyByDateChanges(
@@ -96,8 +91,8 @@ export class SubjectTableBodyService {
     body: Array<ICell<string>>,
     { value: mark, column: date, row: rowIndex }: IChangeField<number>,
   ): Array<ICell<string>> {
-    return body.map((item, index) => {
-      if (index !== rowIndex) {
+    return body.map((item) => {
+      if (+item.id !== rowIndex) {
         return item;
       }
 
@@ -106,7 +101,7 @@ export class SubjectTableBodyService {
       } else {
         delete item[date];
       }
-      item['average mark'] = this.getComputedAverageMark(item);
+      this.updateAverageMark(item, this.getComputedAverageMark(item));
 
       return item;
     });
@@ -116,7 +111,7 @@ export class SubjectTableBodyService {
     return body.map((item) => {
       const newItem: ICell<string> = Object.assign({}, item);
       delete newItem[milliseconds];
-      newItem['average mark'] = this.getComputedAverageMark(item);
+      this.updateAverageMark(newItem, this.getComputedAverageMark(item));
       return newItem;
     });
   }

@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, tap, mergeMap, catchError } from 'rxjs/operators';
 
 import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../common/models/table';
 import { StudentService } from 'src/app/students/services/student.service';
 import { Subject } from '../../common/models/subject';
 import { Student } from 'src/app/common/models/student';
-import { Mark } from 'src/app/common/models/mark';
+import { Mark } from 'src/app/common/models/mark/mark';
 import { SubjectService } from './subject.service';
 import { SubjectTableConfigService } from './subject-table-config.service';
+import { Options } from 'src/app/common/models/useful/http-options';
+import { filterByIds } from 'src/app/common/helpers/utils';
+import { MarkService } from 'src/app/common/services';
 
 const headerConfig: Array<TableHeaderConfig> = [
   new TableHeaderConfig({
@@ -26,66 +30,75 @@ const headerConfig: Array<TableHeaderConfig> = [
   }),
 ];
 
-const mockStudents: Array<Student> = [
-  {
-    id: 1,
-    name: 'Student1',
-    lastName: 'LastName1',
-    address: 'It is my address',
-    description: 'It is description',
-    subjects: [],
-  },
-  {
-    id: 2,
-    name: 'dada',
-    lastName: 'adadas',
-    address: '',
-    description: '',
-    subjects: [],
-  },
-];
-
-const mockMarks: Array<Mark> = [
-  {
-    id: 1,
-    studentId: 1,
-    subjectId: 1,
-    date: 1026000000,
-    value: 5,
-  },
-  {
-    id: 2,
-    studentId: 1,
-    subjectId: 1,
-    date: 5432400000,
-    value: 6,
-  },
-  {
-    id: 3,
-    studentId: 2,
-    subjectId: 1,
-    date: 5778000000,
-    value: 5,
-  },
-  {
-    id: 4,
-    studentId: 2,
-    subjectId: 1,
-    date: 1026000000,
-    value: 7,
-  },
-];
-
 @Injectable()
 export class SubjectTableService {
+  private students: Array<Student>;
+  private marks: Array<Mark>;
+
   constructor(
     private configService: SubjectTableConfigService,
     private studentService: StudentService,
     private subjectService: SubjectService,
-  ) { }
+    private markService: MarkService,
+  ) {
+    this.students = [];
+    this.marks = [];
+  }
+
+  public fetchSubject(value: string, key: string = 'name'): Observable<Subject> {
+    const options: Options = new Options({
+      params: new HttpParams().set(key, value),
+    });
+
+    return this.subjectService.fetchSubjectServer(options).pipe(
+      map((response) => {
+        const subject: Subject = response[0] || null;
+        if (subject === null) {
+          throw Error('this subject is not exist');
+        }
+
+        return subject;
+      })
+    );
+  }
+
+  public fetchSubjectStudents(studentsID: Array<number>): Observable<Array<Student>> {
+    return this.studentService.fetchStudentsServer().pipe(
+      map((students: Array<Student>) => {
+        return this.students = filterByIds(students, studentsID);
+      }),
+      catchError((error) => {
+        console.log(error);
+        return [];
+      }),
+    );
+  }
+
+  public fetchSubjectMarks(subjectId: number): Observable<Array<Mark>> {
+    const options: Options = new Options({
+      params: new HttpParams().set('subjectId', `${subjectId}`),
+    });
+
+    return this.markService.fetchMarks(options).pipe(
+      tap((marks) => this.marks = marks),
+    );
+  }
+
+  public fetchAndSetConfigData({ id, students }: Subject): Observable<null> {
+    return this.fetchSubjectStudents(students).pipe(
+      mergeMap((response = []) => {
+        this.students = response;
+        return this.fetchSubjectMarks(id);
+      }),
+      mergeMap((response = []) => {
+        this.marks = response;
+        return of(null);
+      }),
+    );
+  }
 
   public createConfig(): ITableConfig<ICell<string>> {
-    return this.configService.createConfig(headerConfig, mockStudents, mockMarks);
+    return this.configService.createConfig(headerConfig, this.students, this.marks);
   }
 
   public updateConfig(): ITableConfig<ICell<string>> {
@@ -102,34 +115,5 @@ export class SubjectTableService {
 
   public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
     return this.configService.updateMark(change);
-  }
-
-  public fetchSubject(name: string): Observable<Subject> {
-    return this.subjectService.fetchSubjectServer().pipe(
-      map((subjects: Array<Subject>) => {
-        for (let i: number = 0; i < subjects.length; i++) {
-          if (subjects[i].name === name) {
-            return subjects[i];
-          }
-        }
-
-        return null;
-      }),
-    );
-  }
-
-  public fetchSubjectStudents(studentsID: Array<number>): Observable<Array<Student>> {
-    return this.studentService.fetchStudentsServer().pipe(
-      map((students: Array<Student>) => {
-        const ids: { [key: string]: boolean } = {};
-        studentsID.forEach((id: number) => {
-          ids[id] = true;
-        });
-
-        return students.filter((student: Student) => {
-          return ids[student.id];
-        });
-      }),
-    );
   }
 }

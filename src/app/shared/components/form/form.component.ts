@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Subscription } from 'rxjs';
 
 import { IFormConfig } from '../../../common/models/Form';
-import { IButtonConfig } from 'src/app/common/models/button-config';
+import { IButtonConfig } from 'src/app/common/models/button/button-config';
 
 @Component({
   selector: 'app-form',

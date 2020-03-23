@@ -10,7 +10,7 @@ import { IFormConfig } from 'src/app/common/models/Form';
 import { Subject } from '../../common/models/subject';
 import { SubjectService } from '../services/subject.service';
 import { ConfirmSaveService } from '../../common/services';
-import { IConfirmSave } from '../../common/models/confirm-save';
+import { IConfirmSave } from '../../common/models/useful/confirm-save';
 
 @Component({
   selector: 'app-subject-form',

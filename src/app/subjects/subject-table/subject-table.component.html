@@ -9,7 +9,7 @@
       (changeField)="onChangeMark($event)"
     >
     </app-table>
-    <div class="subject__table-button-wrapper" >
+    <div class="subject__table-button-wrapper" *ngIf="config">
       <app-button
         class="subject__button subject__table-button subject__table-button_add"
         (click)="onAddDateHeader($event)"

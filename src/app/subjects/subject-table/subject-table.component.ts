@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 import { Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, mergeMap } from 'rxjs/operators';
 
 import { BaseComponent } from 'src/app/components/base/base.component';
 import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
@@ -34,35 +34,39 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private tableService: SubjectTableService,
     private subjectService: SubjectService,
   ) {
     super();
   }
 
-  private getSubject(name: string): void {
-    this.tableService
-      .fetchSubject(name)
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe({
-        next: (subject: Subject = new Subject()) => {
-          this.subject = subject;
-          this.teacherControl.setValue(this.subject.teacher);
-        },
-      });
+  private setSubject(subject: Subject): void {
+    this.subject = subject;
+    this.teacherControl.setValue(subject.teacher);
   }
 
   public ngOnInit(): void {
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
-    this.config = this.tableService.createConfig();
+    this.config = null;
 
     this.route.paramMap.pipe(
-      takeUntil(this.unsubscribe$),
+      mergeMap((params: ParamMap) => {
+        const name: string = params.get('subject');
+        return this.tableService.fetchSubject(name);
+      }),
+      mergeMap((subject: Subject) => {
+        this.setSubject(subject);
+        return this.tableService.fetchAndSetConfigData(subject);
+      }),
+      takeUntil(this.unsubscribe$)
     ).subscribe({
-      next: (params: ParamMap): void => {
-        const subjectName: string = params.get('subject');
-        this.getSubject(subjectName);
+      next: (): void => {
+        this.config = this.tableService.createConfig();
+      },
+      error: (): void => {
+        this.router.navigate(['subjects']);
       },
     });
   }

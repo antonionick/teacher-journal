@@ -1,4 +1,4 @@
-import { IUrl } from './common/models/url';
+import { IUrl } from './common/models/useful/url';
 
 export const urlProvider: IUrl = {
   students: 'http://localhost:3000/students',
