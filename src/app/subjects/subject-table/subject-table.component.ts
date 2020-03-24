@@ -10,11 +10,14 @@ import { BaseComponent } from 'src/app/components/base/base.component';
 import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
 import { Subject } from '../../common/models/subject';
 
-import { SubjectService } from '../services/subject.service';
-import { SubjectTableService } from '../services/subject-table.service';
-import { SubjectTableConfigService } from '../services/subject-table-config.service';
-import { SubjectTableHeaderService } from '../services/subject-table-header.service';
-import { SubjectTableBodyService } from '../services/subject-table-body.service';
+import {
+  SubjectService,
+  SubjectTableService,
+  SubjectTableConfigService,
+  SubjectTableBodyService,
+  SubjectTableHeaderService,
+  TableConfigHistoryService,
+} from '../services/index';
 
 @Component({
   selector: 'app-subject-table',
@@ -25,6 +28,7 @@ import { SubjectTableBodyService } from '../services/subject-table-body.service'
     SubjectTableConfigService,
     SubjectTableHeaderService,
     SubjectTableBodyService,
+    TableConfigHistoryService,
   ],
 })
 export class SubjectTableComponent extends BaseComponent implements OnInit {
@@ -51,34 +55,38 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.teacherControl = new FormControl('');
     this.config = null;
 
-    this.route.paramMap.pipe(
-      mergeMap((params: ParamMap) => {
-        const name: string = params.get('subject');
-        return this.tableService.fetchSubject(name);
-      }),
-      mergeMap((subject: Subject) => {
-        this.setSubject(subject);
-        return this.tableService.fetchAndSetConfigData(subject);
-      }),
-      takeUntil(this.unsubscribe$)
-    ).subscribe({
-      next: (): void => {
-        this.config = this.tableService.createConfig();
-      },
-      error: (): void => {
-        this.router.navigate(['subjects']);
-      },
-    });
+    this.route.paramMap
+      .pipe(
+        mergeMap((params: ParamMap) => {
+          const name: string = params.get('subject');
+          return this.tableService.fetchSubject(name);
+        }),
+        mergeMap((subject: Subject) => {
+          this.setSubject(subject);
+          return this.tableService.fetchConfigData(subject);
+        }),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe({
+        next: (): void => {
+          this.config = this.tableService.createConfig();
+        },
+        error: (): void => {
+          this.router.navigate(['subjects']);
+        },
+      });
   }
 
   public onUpdateHeaders(event: MatDatepickerInputEvent<Date>): void {
     this.config = this.tableService.updateConfig();
   }
 
-  public onSaveTeacher(): void {
+  public onSave(): void {
     if (!this.subject) {
       return;
     }
+
+    this.tableService.saveChanges(this.subject.id);
 
     const { value } = this.teacherControl;
     this.subject.teacher = value;

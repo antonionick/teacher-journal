@@ -6,6 +6,11 @@ function resetDate(date: Date): Date {
   return date;
 }
 
+function getEmptyDate(milliseconds: number): Date {
+  const date: Date = new Date(milliseconds);
+  return resetDate(date);
+}
+
 function getNextDay(milliseconds: number): Date {
   const dayMilliseconds: number = 86400000;
   const nextDay: Date = new Date(milliseconds + dayMilliseconds);
@@ -37,4 +42,4 @@ function getClosestEmptyDate<T extends { value: string }>(date: Date, dates: Arr
   return emptyDate;
 }
 
-export { resetDate, getNextDay, getPrevDay, getClosestEmptyDate };
+export { resetDate, getNextDay, getPrevDay, getClosestEmptyDate, getEmptyDate };

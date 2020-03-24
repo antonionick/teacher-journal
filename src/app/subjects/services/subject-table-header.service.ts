@@ -9,7 +9,7 @@ import {
 } from 'src/app/common/helpers/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
 import { TNullable } from 'src/app/common/models/useful/tnullable';
-import { Mark } from 'src/app/common/models/mark/mark';
+import { IMarksByDate } from 'src/app/common/models/mark';
 import { DateChanges } from 'src/app/common/models/useful/date-changes';
 
 @Injectable()
@@ -32,8 +32,10 @@ export class SubjectTableHeaderService {
     return +a.value - +b.value;
   }
 
-  public createDateHeaders(marks: Array<Mark>): Array<TableHeaderConfig> {
-    return marks.map((mark) => this.createDateHeader({ date: new Date(mark.date) }));
+  public createDateHeaders(marks: IMarksByDate): Array<TableHeaderConfig> {
+    return Object.keys(marks).map((milliseconds) =>
+      this.createDateHeader({ date: new Date(+milliseconds) }),
+    );
   }
 
   public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
@@ -45,7 +47,7 @@ export class SubjectTableHeaderService {
       date = getClosestEmptyDate(date, headers);
     }
 
-    const header: TableHeaderConfig = this.createDateHeader({ date: date });
+    const header: TableHeaderConfig = this.createDateHeader({ date });
     return [...headers, header];
   }
 
@@ -58,22 +60,21 @@ export class SubjectTableHeaderService {
         return true;
       }
 
-      const value: number = resetDate(new Date(+item.value)).getTime();
-      return value !== milliseconds;
+      return +item.value !== milliseconds;
     });
   }
 
   public updateDateByChanges(headers: Array<TableHeaderConfig>): TNullable<DateChanges> {
     const changeDates: DateChanges = new DateChanges();
-    let date: Date;
     let milliseconds: number;
 
-    const updatedHeader: TableHeaderConfig = headers.find((header) => {
-      date = new Date(header.inputControl.value);
-      milliseconds = date.getTime();
+    const updatedHeader: TableHeaderConfig =
+      headers.find((header) => {
+        const date: Date = new Date(header.inputControl.value);
+        milliseconds = date.getTime();
 
-      return header.value !== `${milliseconds}`;
-    }) || null;
+        return +header.value !== milliseconds;
+      }) || null;
 
     if (updatedHeader === null) {
       return null;

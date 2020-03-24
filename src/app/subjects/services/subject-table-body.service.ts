@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { ICell, IChangeField } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
-import { Mark } from 'src/app/common/models/mark/mark';
+import { IMarksByDate, Mark } from 'src/app/common/models/mark';
 import { TNullable } from 'src/app/common/models/useful/tnullable';
 import { DateChanges } from 'src/app/common/models/useful/date-changes';
-import { findById } from 'src/app/common/helpers/utils';
 
 @Injectable()
 export class SubjectTableBodyService {
@@ -40,25 +39,24 @@ export class SubjectTableBodyService {
     return mark === -1 ? '' : `${mark}`;
   }
 
-  public createBody(marks: Array<Mark>, students: Array<Student>): Array<ICell<string>> {
+  public createBody(marks: IMarksByDate, students: Array<Student>): Array<ICell<string>> {
     const body: Array<ICell<string>> = students.reduce((arr, student) => {
       const field: ICell<string> = this.createBodyField(student);
       arr.push(field);
       return arr;
     }, []);
 
-    marks.forEach((mark) => {
-      let field: TNullable<ICell<string>> = findById<{ id: string }>(
-        <Array<{ id: string }>>body,
-        mark.studentId,
-      );
+    Object.keys(marks).forEach((date) => {
+      body.forEach((field) => {
+        const mark: TNullable<Mark> = marks[date][field.id] || null;
 
-      if (field === null) {
-        return;
-      }
+        if (mark === null) {
+          return;
+        }
 
-      field[mark.date] = `${mark.value}`;
-    }, []);
+        field[date] = `${mark.value}`;
+      });
+    });
 
     body.forEach((item) => {
       this.updateAverageMark(item, this.getComputedAverageMark(item));
@@ -89,10 +87,10 @@ export class SubjectTableBodyService {
 
   public updateMark(
     body: Array<ICell<string>>,
-    { value: mark, column: date, row: rowIndex }: IChangeField<number>,
+    { value: mark, column: date, row: id }: IChangeField<number>,
   ): Array<ICell<string>> {
     return body.map((item) => {
-      if (+item.id !== rowIndex) {
+      if (+item.id !== id) {
         return item;
       }
 
@@ -111,7 +109,7 @@ export class SubjectTableBodyService {
     return body.map((item) => {
       const newItem: ICell<string> = Object.assign({}, item);
       delete newItem[milliseconds];
-      this.updateAverageMark(newItem, this.getComputedAverageMark(item));
+      this.updateAverageMark(newItem, this.getComputedAverageMark(newItem));
       return newItem;
     });
   }

@@ -8,12 +8,14 @@ import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../comm
 import { StudentService } from 'src/app/students/services/student.service';
 import { Subject } from '../../common/models/subject';
 import { Student } from 'src/app/common/models/student';
-import { Mark } from 'src/app/common/models/mark/mark';
+import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectService } from './subject.service';
 import { SubjectTableConfigService } from './subject-table-config.service';
 import { Options } from 'src/app/common/models/useful/http-options';
 import { filterByIds } from 'src/app/common/helpers/utils';
 import { MarkService } from 'src/app/common/services';
+import { IDataChanges } from 'src/app/common/models/useful/data-changes';
+import { getEmptyDate } from 'src/app/common/helpers/date';
 
 const headerConfig: Array<TableHeaderConfig> = [
   new TableHeaderConfig({
@@ -33,7 +35,7 @@ const headerConfig: Array<TableHeaderConfig> = [
 @Injectable()
 export class SubjectTableService {
   private students: Array<Student>;
-  private marks: Array<Mark>;
+  private marks: IMarksByDate;
 
   constructor(
     private configService: SubjectTableConfigService,
@@ -42,7 +44,23 @@ export class SubjectTableService {
     private markService: MarkService,
   ) {
     this.students = [];
-    this.marks = [];
+    this.marks = {};
+  }
+
+  private getMarksByDate(marks: Array<Mark>): IMarksByDate {
+    const obj: IMarksByDate = {};
+
+    marks.forEach((item) => {
+      const milliseconds: number = getEmptyDate(item.date).getTime();
+
+      if (!obj[milliseconds]) {
+        obj[milliseconds] = {};
+      }
+
+      obj[milliseconds][item.studentId] = item;
+    });
+
+    return obj;
   }
 
   public fetchSubject(value: string, key: string = 'name'): Observable<Subject> {
@@ -58,17 +76,16 @@ export class SubjectTableService {
         }
 
         return subject;
-      })
+      }),
     );
   }
 
   public fetchSubjectStudents(studentsID: Array<number>): Observable<Array<Student>> {
     return this.studentService.fetchStudentsServer().pipe(
       map((students: Array<Student>) => {
-        return this.students = filterByIds(students, studentsID);
+        return (this.students = filterByIds(students, studentsID));
       }),
-      catchError((error) => {
-        console.log(error);
+      catchError(() => {
         return [];
       }),
     );
@@ -79,22 +96,44 @@ export class SubjectTableService {
       params: new HttpParams().set('subjectId', `${subjectId}`),
     });
 
-    return this.markService.fetchMarks(options).pipe(
-      tap((marks) => this.marks = marks),
-    );
+    return this.markService.fetchMarks(options);
   }
 
-  public fetchAndSetConfigData({ id, students }: Subject): Observable<null> {
+  public fetchConfigData({ id, students }: Subject): Observable<null> {
     return this.fetchSubjectStudents(students).pipe(
       mergeMap((response = []) => {
         this.students = response;
         return this.fetchSubjectMarks(id);
       }),
       mergeMap((response = []) => {
-        this.marks = response;
+        this.marks = this.getMarksByDate(response);
         return of(null);
       }),
     );
+  }
+
+  public postSubjectMarks(marks: Array<Mark>): void {
+    this.markService.postMark(marks[0]).subscribe({
+      next(): void {
+        //
+      },
+    });
+  }
+
+  public putSubjectMarks(marks: Array<Mark>): void {
+    this.markService.putMark(marks[0]).subscribe({
+      next(): void {
+        //
+      },
+    });
+  }
+
+  public deleteSubjectMarks(marks: Array<Mark>): void {
+    this.markService.deleteMark(marks[0].id).subscribe({
+      next(): void {
+        //
+      },
+    });
   }
 
   public createConfig(): ITableConfig<ICell<string>> {
@@ -115,5 +154,18 @@ export class SubjectTableService {
 
   public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
     return this.configService.updateMark(change);
+  }
+
+  public saveChanges(subjectId: number): void {
+    const changes: IDataChanges<Mark> = this.configService.getChanges(this.marks, subjectId);
+    if (changes.deleted.length > 0) {
+      this.deleteSubjectMarks(changes.deleted);
+    }
+    if (changes.created.length > 0) {
+      this.postSubjectMarks(changes.created);
+    }
+    if (changes.updated.length > 0) {
+      this.putSubjectMarks(changes.updated);
+    }
   }
 }
