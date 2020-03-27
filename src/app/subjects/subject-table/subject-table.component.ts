@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
-import { Subscription } from 'rxjs';
-import { takeUntil, mergeMap } from 'rxjs/operators';
+import { Subscription, throwError } from 'rxjs';
+import { takeUntil, mergeMap, switchMap, tap } from 'rxjs/operators';
 
 import { BaseComponent } from 'src/app/components/base/base.component';
 import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
@@ -18,6 +17,7 @@ import {
   SubjectTableHeaderService,
   TableConfigHistoryService,
 } from '../services/index';
+import { ButtonConfig } from 'src/app/common/models/button/button-config';
 
 @Component({
   selector: 'app-subject-table',
@@ -35,6 +35,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   public subject: Subject;
   public config: ITableConfig<ICell<string>>;
   public teacherControl: FormControl;
+  public saveButtonConfig: ButtonConfig;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,15 +54,20 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   public ngOnInit(): void {
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
+    this.saveButtonConfig = new ButtonConfig();
     this.config = null;
 
     this.route.paramMap
       .pipe(
-        mergeMap((params: ParamMap) => {
+        switchMap((params: ParamMap) => {
           const name: string = params.get('subject');
           return this.tableService.fetchSubject(name);
         }),
-        mergeMap((subject: Subject) => {
+        switchMap((subject: Subject) => {
+          if (subject === null) {
+            return throwError('it subject does not exist');
+          }
+
           this.setSubject(subject);
           return this.tableService.fetchConfigData(subject);
         }),
@@ -77,7 +83,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       });
   }
 
-  public onUpdateHeaders(event: MatDatepickerInputEvent<Date>): void {
+  public onUpdateHeaders(): void {
     this.config = this.tableService.updateConfig();
   }
 
@@ -86,16 +92,35 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       return;
     }
 
-    this.tableService.saveChanges(this.subject.id);
-
     const { value } = this.teacherControl;
     this.subject.teacher = value;
-    const subscription: Subscription = this.subjectService
+    this.saveButtonConfig.disable = true;
+
+    const subscription: Subscription = this.tableService
+      .saveChanges(this.subject.id)
+      .pipe(
+        mergeMap(() => {
+          return this.tableService.fetchSubjectMarks(this.subject.id);
+        }),
+        tap((marks = []) => this.tableService.subjectMarks = marks),
+      )
+      .subscribe({
+        next: () => {
+          this.saveButtonConfig.disable = false;
+          this.config = this.tableService.createConfig();
+          subscription.unsubscribe();
+        },
+        error: () => {
+          console.error('bad internet connection!');
+        },
+      });
+
+    const subscriptionSaveSubject: Subscription = this.subjectService
       .updateSubject(this.subject)
-      .subscribe(() => subscription.unsubscribe());
+      .subscribe(() => subscriptionSaveSubject.unsubscribe());
   }
 
-  public onAddDateHeader(event: Event): void {
+  public onAddDateHeader(): void {
     this.config = this.tableService.addHeader();
   }
 

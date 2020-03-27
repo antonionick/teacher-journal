@@ -31,7 +31,7 @@ export class MarkService {
     return this.http.putData(`${marksURL}/${mark.id}`, mark);
   }
 
-  public deleteMark(id: number): Observable<Mark> {
-    return this.http.deleteData(`${marksURL}/${id}`);
+  public deleteMark(mark: Mark): Observable<Mark> {
+    return this.http.deleteData(`${marksURL}/${mark.id}`);
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 
-import { Observable, of } from 'rxjs';
-import { map, tap, mergeMap, catchError } from 'rxjs/operators';
+import { Observable, of, throwError, forkJoin } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators';
 
-import { ITableConfig, ICell, TableHeaderConfig, IChangeField } from '../../common/models/table';
+import { ITableConfig, ICell, IChangeField } from '../../common/models/table';
 import { StudentService } from 'src/app/students/services/student.service';
 import { Subject } from '../../common/models/subject';
 import { Student } from 'src/app/common/models/student';
@@ -17,20 +17,11 @@ import { MarkService } from 'src/app/common/services';
 import { IDataChanges } from 'src/app/common/models/useful/data-changes';
 import { getEmptyDate } from 'src/app/common/helpers/date';
 
-const headerConfig: Array<TableHeaderConfig> = [
-  new TableHeaderConfig({
-    value: 'name',
-  }),
-  new TableHeaderConfig({
-    value: 'lastName',
-    sticky: true,
-  }),
-  new TableHeaderConfig({
-    value: 'average mark',
-    sort: true,
-    isAscSortStart: false,
-  }),
-];
+enum MarkActions {
+  post = 'postMark',
+  put = 'putMark',
+  delete = 'deleteMark',
+}
 
 @Injectable()
 export class SubjectTableService {
@@ -63,28 +54,47 @@ export class SubjectTableService {
     return obj;
   }
 
+  private handleError(): Observable<never> {
+    return throwError('Something bad happened; please try again later.');
+  }
+
+  private actionBySubjectMarks(action: MarkActions, marks: Array<Mark>): Observable<Array<Mark>> {
+    if (marks.length === 0) {
+      return of(null);
+    }
+
+    const requests$: Array<Observable<Mark>> = marks.map((item) => {
+      return this.markService[action](item).pipe(
+        catchError(() => {
+          return this.handleError();
+        }),
+      );
+    });
+
+    return forkJoin(...requests$);
+  }
+
+  public set subjectStudents(students: Array<Student>) {
+    this.students = students;
+  }
+
+  public set subjectMarks(marks: Array<Mark>) {
+    this.marks = this.getMarksByDate(marks);
+  }
+
   public fetchSubject(value: string, key: string = 'name'): Observable<Subject> {
     const options: Options = new Options({
       params: new HttpParams().set(key, value),
     });
 
     return this.subjectService.fetchSubjectServer(options).pipe(
-      map((response) => {
-        const subject: Subject = response[0] || null;
-        if (subject === null) {
-          throw Error('this subject is not exist');
-        }
-
-        return subject;
-      }),
+      map((response) => response[0] || null),
     );
   }
 
   public fetchSubjectStudents(studentsID: Array<number>): Observable<Array<Student>> {
     return this.studentService.fetchStudentsServer().pipe(
-      map((students: Array<Student>) => {
-        return (this.students = filterByIds(students, studentsID));
-      }),
+      map((students) => filterByIds(students, studentsID)),
       catchError(() => {
         return [];
       }),
@@ -99,45 +109,39 @@ export class SubjectTableService {
     return this.markService.fetchMarks(options);
   }
 
-  public fetchConfigData({ id, students }: Subject): Observable<null> {
-    return this.fetchSubjectStudents(students).pipe(
-      mergeMap((response = []) => {
-        this.students = response;
+  public fetchConfigData({ id, students: studentsId }: Subject): Observable<null> {
+    return this.fetchSubjectStudents(studentsId).pipe(
+      mergeMap((students = []) => {
+        this.students = students;
         return this.fetchSubjectMarks(id);
       }),
-      mergeMap((response = []) => {
-        this.marks = this.getMarksByDate(response);
-        return of(null);
+      map((marks = []) => {
+        this.subjectMarks = marks;
+        return null;
       }),
     );
   }
 
-  public postSubjectMarks(marks: Array<Mark>): void {
-    this.markService.postMark(marks[0]).subscribe({
-      next(): void {
-        //
-      },
-    });
-  }
+  public saveChanges(subjectId: number): Observable<Array<Array<Mark>>> {
+    const changes: IDataChanges<Mark> = this.configService.getChanges(this.marks, subjectId);
+    const posts$: Observable<Array<Mark>> = this.actionBySubjectMarks(
+      MarkActions.post,
+      changes.created,
+    );
+    const puts$: Observable<Array<Mark>> = this.actionBySubjectMarks(
+      MarkActions.put,
+      changes.updated,
+    );
+    const deletes$: Observable<Array<Mark>> = this.actionBySubjectMarks(
+      MarkActions.delete,
+      changes.deleted,
+    );
 
-  public putSubjectMarks(marks: Array<Mark>): void {
-    this.markService.putMark(marks[0]).subscribe({
-      next(): void {
-        //
-      },
-    });
-  }
-
-  public deleteSubjectMarks(marks: Array<Mark>): void {
-    this.markService.deleteMark(marks[0].id).subscribe({
-      next(): void {
-        //
-      },
-    });
+    return forkJoin(posts$, puts$, deletes$);
   }
 
   public createConfig(): ITableConfig<ICell<string>> {
-    return this.configService.createConfig(headerConfig, this.students, this.marks);
+    return this.configService.createConfig(this.students, this.marks);
   }
 
   public updateConfig(): ITableConfig<ICell<string>> {
@@ -154,18 +158,5 @@ export class SubjectTableService {
 
   public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
     return this.configService.updateMark(change);
-  }
-
-  public saveChanges(subjectId: number): void {
-    const changes: IDataChanges<Mark> = this.configService.getChanges(this.marks, subjectId);
-    if (changes.deleted.length > 0) {
-      this.deleteSubjectMarks(changes.deleted);
-    }
-    if (changes.created.length > 0) {
-      this.postSubjectMarks(changes.created);
-    }
-    if (changes.updated.length > 0) {
-      this.putSubjectMarks(changes.updated);
-    }
   }
 }

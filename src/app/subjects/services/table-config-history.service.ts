@@ -82,7 +82,6 @@ export class TableConfigHistoryService {
 
   public getChanges(marks: IMarksByDate, subjectId: number): IDataChanges<Mark> {
     const dateChanges: IDataChanges<Mark> = convert(this.historyChanges, marks, subjectId);
-    this.resetHistoryChanges();
     return dateChanges;
   }
 }

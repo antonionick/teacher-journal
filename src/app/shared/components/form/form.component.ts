@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Subscription } from 'rxjs';
 
 import { IFormConfig } from '../../../common/models/Form';
-import { IButtonConfig } from 'src/app/common/models/button/button-config';
+import { ButtonConfig } from 'src/app/common/models/button/button-config';
 
 @Component({
   selector: 'app-form',
@@ -26,7 +26,7 @@ export class FormComponent implements OnInit, OnDestroy {
   @Output()
   public submit: EventEmitter<FormGroup> = new EventEmitter();
   public form: FormGroup;
-  public submitButton: IButtonConfig;
+  public submitButton: ButtonConfig;
 
   public ngOnInit(): void {
     const { elements } = this.config;
@@ -52,7 +52,7 @@ export class FormComponent implements OnInit, OnDestroy {
       ? this.config.buttons[0]
       : {
         disable: false,
-      } as IButtonConfig;
+      } as ButtonConfig;
   }
 
   public onSubmit(event: Event): void {

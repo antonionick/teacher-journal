@@ -9,6 +9,21 @@ import { TableConfigHistoryService } from './table-config-history.service';
 import { IDataChanges } from '../../common/models/useful/data-changes';
 import { DateChanges } from 'src/app/common/models/useful/date-changes';
 
+const headerConfig: Array<TableHeaderConfig> = [
+  new TableHeaderConfig({
+    value: 'name',
+  }),
+  new TableHeaderConfig({
+    value: 'lastName',
+    sticky: true,
+  }),
+  new TableHeaderConfig({
+    value: 'average mark',
+    sort: true,
+    isAscSortStart: false,
+  }),
+];
+
 @Injectable()
 export class SubjectTableConfigService {
   private readonly editConfig: EditMark;
@@ -60,7 +75,6 @@ export class SubjectTableConfigService {
   }
 
   public createConfig(
-    headerConfig: Array<TableHeaderConfig>,
     students: Array<Student>,
     marks: IMarksByDate,
   ): ITableConfig<ICell<string>> {
@@ -104,6 +118,8 @@ export class SubjectTableConfigService {
   }
 
   public getChanges(marks: IMarksByDate, subjectId: number): IDataChanges<Mark> {
-    return this.configHistory.getChanges(marks, subjectId);
+    const changes: IDataChanges<Mark> = this.configHistory.getChanges(marks, subjectId);
+    this.configHistory.resetHistoryChanges();
+    return changes;
   }
 }
