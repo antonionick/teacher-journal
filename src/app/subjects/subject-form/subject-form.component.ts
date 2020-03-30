@@ -4,13 +4,12 @@ import { Router } from '@angular/router';
 
 import { Observable, of } from 'rxjs';
 
-import { SubjectFormService } from '../services/subject-form.service';
+import { SubjectFormService, SubjectService } from '../services';
 import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/Form';
 import { Subject } from '../../common/models/subject';
-import { SubjectService } from '../services/subject.service';
 import { ConfirmSaveService } from '../../common/services';
-import { IConfirmSave } from '../../common/models/confirm-save';
+import { IConfirmSave } from '../../common/models/utils/confirm-save';
 
 @Component({
   selector: 'app-subject-form',

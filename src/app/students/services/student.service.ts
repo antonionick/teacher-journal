@@ -7,7 +7,7 @@ import { StudentFormService } from './student-form.service';
 import { IFormConfig } from '../../common/models/Form';
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/tnullable';
+import { TNullable } from '../../common/models/utils/tnullable';
 
 const { students: studentUrl } = urlProvider;
 
@@ -29,7 +29,7 @@ export class StudentService {
   }
 
   public fetchStudentsServer(): Observable<Array<Student>> {
-    return this.http.getData(studentUrl);
+    return this.http.getDataArray(studentUrl);
   }
 
   public addStudentServer(student: Student): Observable<Student> {

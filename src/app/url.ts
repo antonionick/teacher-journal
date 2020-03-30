@@ -1,7 +1,7 @@
-import { IUrl } from './common/models/url';
+import { IUrl } from './common/models/utils/url';
 
 export const urlProvider: IUrl = {
-  students: 'http://localhost:3000/students',
-  subjects: 'http://localhost:3000/subjects',
-  marks: 'http://localhost:3000/marks',
+  students: 'http://localhost:3001/students',
+  subjects: 'http://localhost:3002/subjects',
+  marks: 'http://localhost:3003/marks',
 };

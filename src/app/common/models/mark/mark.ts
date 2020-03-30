@@ -14,7 +14,7 @@ export class Mark implements IMark {
   public value: number;
 
   constructor({
-    id = 0,
+    id = null,
     studentId = 0,
     subjectId = 0,
     date = Date.now(),

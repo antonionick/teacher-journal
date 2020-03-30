@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { IButtonConfig } from '../../../common/models/button-config';
+import { ButtonConfig } from '../../../common/models/button/button-config';
 
 @Component({
   selector: 'app-button',
@@ -8,10 +8,10 @@ import { IButtonConfig } from '../../../common/models/button-config';
   styleUrls: ['./button.component.scss'],
 })
 export class ButtonComponent {
-  private buttonConfig: IButtonConfig;
+  private buttonConfig: ButtonConfig;
 
   @Input()
-  public set config(config: IButtonConfig) {
+  public set config(config: ButtonConfig) {
     const { onClick } = this.buttonConfig;
 
     this.buttonConfig = config;
@@ -20,7 +20,7 @@ export class ButtonComponent {
     }
   }
 
-  public get config(): IButtonConfig {
+  public get config(): ButtonConfig {
     return this.buttonConfig;
   }
 
@@ -29,6 +29,6 @@ export class ButtonComponent {
       type: 'button',
       disable: false,
       onClick: (event: Event) => undefined,
-    } as IButtonConfig;
+    } as ButtonConfig;
   }
 }

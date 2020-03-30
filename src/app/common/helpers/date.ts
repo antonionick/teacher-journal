@@ -1,22 +1,26 @@
-function resetDate(date: Date): void {
+function startOfDay(date: Date): Date {
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
+  return date;
+}
+
+function getEmptyDate(milliseconds: number): Date {
+  const date: Date = new Date(milliseconds);
+  return startOfDay(date);
 }
 
 function getNextDay(milliseconds: number): Date {
   const dayMilliseconds: number = 86400000;
   const nextDay: Date = new Date(milliseconds + dayMilliseconds);
-  resetDate(nextDay);
-  return nextDay;
+  return startOfDay(nextDay);
 }
 
 function getPrevDay(milliseconds: number): Date {
   const dayMilliseconds: number = 86400000;
   const prevDay: Date = new Date(milliseconds - dayMilliseconds);
-  resetDate(prevDay);
-  return prevDay;
+  return startOfDay(prevDay);
 }
 
 function getClosestEmptyDate<T extends { value: string }>(date: Date, dates: Array<T>): Date {
@@ -38,4 +42,4 @@ function getClosestEmptyDate<T extends { value: string }>(date: Date, dates: Arr
   return emptyDate;
 }
 
-export { resetDate, getNextDay, getPrevDay, getClosestEmptyDate };
+export { startOfDay, getNextDay, getPrevDay, getClosestEmptyDate, getEmptyDate };

@@ -5,13 +5,13 @@ import { Observable, of } from 'rxjs';
 import { HttpService, LocalStorageService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/tnullable';
+import { TNullable } from '../../common/models/utils/tnullable';
+import { Options } from '../../common/models/utils/http-options';
 
 const { subjects: subjectUrl } = urlProvider;
 
 @Injectable()
 export class SubjectService {
-
   constructor(
     private http: HttpService<Subject>,
     private localStorage: LocalStorageService,
@@ -31,8 +31,12 @@ export class SubjectService {
     this.localStorage.removeItem('subject');
   }
 
-  public fetchSubjectServer(): Observable<Array<Subject>> {
-    return this.http.getData(subjectUrl);
+  public fetchSubjectsServer(options: Options = new Options()): Observable<Array<Subject>> {
+    return this.http.getDataArray(subjectUrl, options);
+  }
+
+  public fetchSubjectServer(options: Options = new Options()): Observable<Subject> {
+    return this.http.getData(subjectUrl, options);
   }
 
   public addSubjectServer(subject: Subject): Observable<Subject> {
@@ -45,7 +49,7 @@ export class SubjectService {
     }
 
     const id: number = subject.id;
-    return this.http.putData(`${ subjectUrl }/${ id }`, subject);
+    return this.http.putData(`${subjectUrl}/${id}`, subject);
   }
 
   public checkEmptySubject(subject: Subject): boolean {

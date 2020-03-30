@@ -1,33 +1,37 @@
 import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { HttpService } from './http.service';
 import { Mark } from '../models/mark';
 import { urlProvider } from '../../url';
+import { Options } from '../models/utils/http-options';
 
 const {
   marks: marksURL,
 } = urlProvider;
 
-Injectable({
+@Injectable({
   providedIn: 'root',
-});
+})
 export class MarkService {
   constructor(
     private http: HttpService<Mark>,
   ) { }
 
-  public fetchMarks(): Observable<Array<Mark>> {
-    return this.http.getData(marksURL);
+  public fetchMarks(options: Options = new Options()): Observable<Array<Mark>> {
+    return this.http.getDataArray(marksURL, options);
   }
 
-  public fetchMarksBySubject(subjectID: number): Observable<Array<Mark>> {
-    return this.fetchMarks().pipe(
-      map((marks: Array<Mark>) => {
-        return marks.filter((mark: Mark) => mark.subjectId === subjectID);
-      }),
-    );
+  public postMark(mark: Mark): Observable<Mark> {
+    return this.http.postData(marksURL, mark);
+  }
+
+  public putMark(mark: Mark): Observable<Mark> {
+    return this.http.putData(`${marksURL}/${mark.id}`, mark);
+  }
+
+  public deleteMark(mark: Mark): Observable<Mark> {
+    return this.http.deleteData(`${marksURL}/${mark.id}`);
   }
 }

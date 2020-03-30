@@ -2,21 +2,18 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import {
-  resetDate,
+  startOfDay,
   getClosestEmptyDate,
   getPrevDay,
   getNextDay,
 } from 'src/app/common/helpers/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
-import { TNullable } from 'src/app/common/models/tnullable';
-import { Mark } from 'src/app/common/models/mark';
-import { DateChanges } from 'src/app/common/models/date-changes';
-import { hasErrors } from '@angular/compiler-cli/ngcc/src/packages/transformer';
-import { createMissingDateImplError } from '@angular/material/datepicker/datepicker-errors';
+import { TNullable } from 'src/app/common/models/utils/tnullable';
+import { IMarksByDate } from 'src/app/common/models/mark';
+import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {
-
   private createDateHeader({ date }: { date: Date }): TableHeaderConfig {
     return new TableHeaderConfig({
       value: `${date.getTime()}`,
@@ -35,20 +32,22 @@ export class SubjectTableHeaderService {
     return +a.value - +b.value;
   }
 
-  public createDateHeaders(marks: Array<Mark>): Array<TableHeaderConfig> {
-    return marks.map((mark) => this.createDateHeader({ date: new Date(mark.date) }));
+  public createDateHeaders(marks: IMarksByDate): Array<TableHeaderConfig> {
+    return Object.keys(marks).map((milliseconds) =>
+      this.createDateHeader({ date: new Date(+milliseconds) }),
+    );
   }
 
   public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
     let date: Date = new Date();
-    resetDate(date);
+    startOfDay(date);
 
     const unique: boolean = this.checkDateOnUnique(date, headers);
     if (!unique) {
       date = getClosestEmptyDate(date, headers);
     }
 
-    const header: TableHeaderConfig = this.createDateHeader({ date: date });
+    const header: TableHeaderConfig = this.createDateHeader({ date });
     return [...headers, header];
   }
 
@@ -56,20 +55,26 @@ export class SubjectTableHeaderService {
     milliseconds: number,
     headers: Array<TableHeaderConfig>,
   ): Array<TableHeaderConfig> {
-    return headers.filter((item) => +item.value !== milliseconds);
+    return headers.filter((item) => {
+      if (Number.isNaN(+item.value)) {
+        return true;
+      }
+
+      return +item.value !== milliseconds;
+    });
   }
 
   public updateDateByChanges(headers: Array<TableHeaderConfig>): TNullable<DateChanges> {
     const changeDates: DateChanges = new DateChanges();
-    let date: Date;
     let milliseconds: number;
 
-    const updatedHeader: TableHeaderConfig = headers.find((header) => {
-      date = new Date(header.inputControl.value);
-      milliseconds = date.getTime();
+    const updatedHeader: TableHeaderConfig =
+      headers.find((header) => {
+        const date: Date = new Date(header.inputControl.value);
+        milliseconds = date.getTime();
 
-      return header.value !== `${ milliseconds }`;
-    }) || null;
+        return +header.value !== milliseconds;
+      }) || null;
 
     if (updatedHeader === null) {
       return null;
@@ -77,7 +82,7 @@ export class SubjectTableHeaderService {
 
     changeDates.current = milliseconds;
     changeDates.previously = +updatedHeader.value;
-    updatedHeader.value = `${ milliseconds }`;
+    updatedHeader.value = `${milliseconds}`;
 
     return changeDates;
   }

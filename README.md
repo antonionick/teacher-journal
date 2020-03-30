@@ -8,7 +8,7 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## Json server
 
-Create folder `mock-data` in root folder with `ds.json` file and put `{ "students": [ ], "subjects": [ ], "marks": [ ] }` into file
+Create folder `mock-data` in root folder. In folder create `subjects-db.json` file and put `{ "subjects": [ ] }` into file. Also create `students-db.json` file and put `{ "students": [ ] }`. Also create `marks-db.json` file and put `{ "marks": [ ] }`.
 
 ## Code scaffolding
 
