@@ -6,8 +6,8 @@ import { Student } from '../../common/models/student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
 import { SubjectTableBodyService } from './subject-table-body.service';
 import { TableConfigHistoryService } from './table-config-history.service';
-import { IDataChanges } from '../../common/models/useful/data-changes';
-import { DateChanges } from 'src/app/common/models/useful/date-changes';
+import { IDataChanges } from '../../common/models/utils/data-changes';
+import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 const headerConfig: Array<TableHeaderConfig> = [
   new TableHeaderConfig({

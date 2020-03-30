@@ -11,10 +11,10 @@ import { Student } from 'src/app/common/models/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectService } from './subject.service';
 import { SubjectTableConfigService } from './subject-table-config.service';
-import { Options } from 'src/app/common/models/useful/http-options';
+import { Options } from 'src/app/common/models/utils/http-options';
 import { filterByIds } from 'src/app/common/helpers/utils';
 import { MarkService } from 'src/app/common/services';
-import { IDataChanges } from 'src/app/common/models/useful/data-changes';
+import { IDataChanges } from 'src/app/common/models/utils/data-changes';
 import { getEmptyDate } from 'src/app/common/helpers/date';
 
 enum MarkActions {

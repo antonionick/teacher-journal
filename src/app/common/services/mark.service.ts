@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { HttpService } from './http.service';
-import { Mark } from '../models/mark/mark';
+import { Mark } from '../models/mark';
 import { urlProvider } from '../../url';
-import { Options } from '../models/useful/http-options';
+import { Options } from '../models/utils/http-options';
 
 const {
   marks: marksURL,

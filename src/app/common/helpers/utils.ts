@@ -1,4 +1,4 @@
-import { TNullable } from '../models/useful/tnullable';
+import { TNullable } from '../models/utils/tnullable';
 
 interface IdContains {
   id: number | string;

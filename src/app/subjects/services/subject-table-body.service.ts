@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { ICell, IChangeField } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
 import { IMarksByDate, Mark } from 'src/app/common/models/mark';
-import { TNullable } from 'src/app/common/models/useful/tnullable';
-import { DateChanges } from 'src/app/common/models/useful/date-changes';
+import { TNullable } from 'src/app/common/models/utils/tnullable';
+import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
 export class SubjectTableBodyService {

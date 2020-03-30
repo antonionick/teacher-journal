@@ -7,7 +7,7 @@ import { StudentFormService } from './student-form.service';
 import { IFormConfig } from '../../common/models/Form';
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/useful/tnullable';
+import { TNullable } from '../../common/models/utils/tnullable';
 
 const { students: studentUrl } = urlProvider;
 

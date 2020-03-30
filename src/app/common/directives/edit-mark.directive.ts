@@ -13,8 +13,8 @@ import {
   validKeyCodesInteger as validKeyCodes,
   checkValidKeyCodes,
 } from '../helpers/validate-number-input';
-import { EditMark } from '../models/mark/edit-mark';
-import { TNullable } from '../models/useful/tnullable';
+import { EditMark } from '../models/mark';
+import { TNullable } from '../models/utils/tnullable';
 import { IChangeField } from '../models/Table';
 
 @Directive({

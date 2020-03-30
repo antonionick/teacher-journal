@@ -5,8 +5,8 @@ import { Observable, of } from 'rxjs';
 import { HttpService, LocalStorageService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/useful/tnullable';
-import { Options } from '../../common/models/useful/http-options';
+import { TNullable } from '../../common/models/utils/tnullable';
+import { Options } from '../../common/models/utils/http-options';
 
 const { subjects: subjectUrl } = urlProvider;
 

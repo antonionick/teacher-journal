@@ -1,5 +1,5 @@
-import { TNullable } from '../useful/tnullable';
-import { MarkHistory } from '../mark/mark-history';
+import { TNullable } from '../utils/tnullable';
+import { MarkHistory } from '../mark';
 
 interface ITableConfigHistory {
   source: TNullable<number>;

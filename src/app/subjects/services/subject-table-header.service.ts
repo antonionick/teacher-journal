@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import {
-  resetDate,
+  startOfDay,
   getClosestEmptyDate,
   getPrevDay,
   getNextDay,
 } from 'src/app/common/helpers/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
-import { TNullable } from 'src/app/common/models/useful/tnullable';
+import { TNullable } from 'src/app/common/models/utils/tnullable';
 import { IMarksByDate } from 'src/app/common/models/mark';
-import { DateChanges } from 'src/app/common/models/useful/date-changes';
+import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {
@@ -40,7 +40,7 @@ export class SubjectTableHeaderService {
 
   public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
     let date: Date = new Date();
-    resetDate(date);
+    startOfDay(date);
 
     const unique: boolean = this.checkDateOnUnique(date, headers);
     if (!unique) {

@@ -3,7 +3,7 @@ import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { map, takeUntil } from 'rxjs/operators';
 
-import { SubjectService } from '../services/subject.service';
+import { SubjectService } from '../services';
 import { Subject } from 'src/app/common/models/subject';
 import { BaseComponent } from 'src/app/components/base/base.component';
 

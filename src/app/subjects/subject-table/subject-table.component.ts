@@ -16,7 +16,7 @@ import {
   SubjectTableBodyService,
   SubjectTableHeaderService,
   TableConfigHistoryService,
-} from '../services/index';
+} from '../services';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 
 @Component({
