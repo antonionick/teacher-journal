@@ -1,67 +1,76 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
-import { Subscription } from 'rxjs';
+import { Store, select } from '@ngrx/store';
 
+import { Observable } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { TableHeaderConfig } from '../../common/models/table';
+import { TNullable } from '../../common/models/utils/tnullable';
 import { ITableConfig } from 'src/app/common/models/table';
-
-const displayedColumns: Array<TableHeaderConfig> = [
-  new TableHeaderConfig({
-    value: 'id',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'name',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'lastName',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'address',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'description',
-    sort: true,
-  }),
-];
+import { AppState, IStudentsState, selectStudents } from '../../@ngrx';
+import * as StudentsActions from '../../@ngrx/students/students.actions';
 
 @Component({
   selector: 'app-student-table',
   templateUrl: './student-table.component.html',
   styleUrls: ['./student-table.component.scss'],
 })
-export class StudentTableComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
+export class StudentTableComponent extends BaseComponent implements OnInit {
+  public students$: Observable<Array<Student>>;
+  public config: TNullable<ITableConfig<Student>>;
+  public plusIcon: IconDefinition;
+  public error: Error | string;
+  public isLoading: boolean;
 
-  public config: ITableConfig<Student>;
-  public plusIcon: IconDefinition = faPlus;
+  constructor(private store: Store<AppState>, private studentService: StudentService) {
+    super();
+    this.config = null;
+    this.isLoading = false;
+    this.plusIcon = faPlus;
+    this.students$ = store.pipe(select(selectStudents));
+  }
 
-  constructor(private studentService: StudentService) {
-    this.config = {
-      headers: displayedColumns,
-      body: [],
-    };
+  private isLoad({ loading, loaded, error }: IStudentsState): boolean {
+    this.isLoading = false;
+
+    if (loading) {
+      this.isLoading = true;
+    } else if (error) {
+      this.error = error;
+    } else if (!loaded) {
+      return true;
+    }
+
+    return false;
   }
 
   public ngOnInit(): void {
-    this.subscription = this.studentService.fetchStudentsServer()
-      .subscribe({
-        next: (students: Array<Student>) => {
-          this.config = {
-            headers: displayedColumns,
-            body: students,
-          };
-        },
-      });
-  }
+    this.store.pipe(
+      select('students'),
+      takeUntil(this.unsubscribe$),
+    ).subscribe({
+      next: (studentsState) => {
+        if (!this.isLoad(studentsState)) {
+          return;
+        }
 
-  public ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+        this.store.dispatch(StudentsActions.loadStudents());
+      },
+    });
+
+    this.students$.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe({
+      next: (students) => {
+        this.config = {
+          headers: this.studentService.displayedColumns,
+          body: students,
+        };
+      },
+    });
   }
 }

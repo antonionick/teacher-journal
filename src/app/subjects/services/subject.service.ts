@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable, of } from 'rxjs';
 
-import { HttpService, LocalStorageService } from '../../common/services';
+import { HttpService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
 import { TNullable } from '../../common/models/utils/tnullable';
@@ -14,21 +14,22 @@ const { subjects: subjectUrl } = urlProvider;
 export class SubjectService {
   constructor(
     private http: HttpService<Subject>,
-    private localStorage: LocalStorageService,
+    // private localStorage: LocalStorageService,
   ) { }
 
   public addSubjectStorage(subject: Subject): void {
     const data: string = JSON.stringify(subject);
-    this.localStorage.addItem('subject', data);
+    // this.localStorage.addItem('subject', data);
   }
 
   public getSubjectStorage(): TNullable<Subject> {
-    const data: string = this.localStorage.getItem('subject');
-    return JSON.parse(data);
+    // const data: string = this.localStorage.getItem('subject');
+    // return JSON.parse(data);
+    return null;
   }
 
   public removeSubjectStorage(): void {
-    this.localStorage.removeItem('subject');
+    // this.localStorage.removeItem('subject');
   }
 
   public fetchSubjectsServer(options: Options = new Options()): Observable<Array<Subject>> {

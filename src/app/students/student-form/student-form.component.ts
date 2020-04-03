@@ -2,46 +2,71 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Observable, of, Subscription } from 'rxjs';
+import { select, Store } from '@ngrx/store';
 
-import { IFormConfig } from '../../common/models/Form';
+import { Observable, of } from 'rxjs';
+
+import { BaseComponent } from '../../components';
+import { IFormConfig } from '../../common/models/form';
 import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
 import { FormComponent } from '../../shared/components';
-import { ConfirmSaveService } from '../../common/services';
+import { confirmNavigation } from '../../common/helpers/confirm-navigation';
+import { StudentFormService } from '../services/student-form.service';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
+import { AppState, selectDraftStudent } from '../../@ngrx';
+import * as StudentsActions from '../../@ngrx/students/students.actions';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
-  providers: [ConfirmSaveService],
+  providers: [StudentFormService],
 })
-export class StudentFormComponent implements OnInit {
-  private isAdding: boolean = false;
+export class StudentFormComponent extends BaseComponent implements OnInit {
+  private initialStudent: Student;
+  private isAdding: boolean;
 
   @ViewChild(FormComponent)
   public formComponent: FormComponent;
   public config: IFormConfig;
 
   constructor(
+    private store: Store<AppState>,
     private router: Router,
     private studentService: StudentService,
-    private confirmSave: ConfirmSaveService<Student>,
-  ) { }
-
-  private getStudent(form: FormGroup): Student {
-    return { id: null, ...form.value };
+    private formService: StudentFormService,
+  ) {
+    super();
+    this.isAdding = false;
+    this.initialStudent = null;
   }
 
   public ngOnInit(): void {
-    this.config = this.studentService.getFormConfig();
+    let isFirstGet: boolean = true;
+    this.store.pipe(
+      select(selectDraftStudent),
+      takeUntil(this.unsubscribe$),
+    ).subscribe({
+      next: (student) => {
+        if (student == null && isFirstGet) {
+          isFirstGet = false;
+          return this.store.dispatch(StudentsActions.getDraftStudentLocalStorage());
+        }
 
+        this.initialStudent = student;
+      },
+    });
+
+    if (this.initialStudent === null) {
+      this.initialStudent = new Student();
+    }
+    this.config = this.formService.getFormConfig(this.initialStudent);
     // set clear function for form
     this.config.buttons[1].onClick = () => {
-      const { form } = this.formComponent;
-      form.reset();
-      this.studentService.clearConfigData();
+      this.formComponent.form.reset();
+      this.formService.clearFormConfig();
     };
   }
 
@@ -49,15 +74,12 @@ export class StudentFormComponent implements OnInit {
     if (this.isAdding) {
       return;
     }
-
     this.isAdding = true;
-    const student: Student = this.getStudent(form);
 
-    const subscription: Subscription = this.studentService
-      .addStudentServer(student).subscribe(() => {
-        this.router.navigate(['students']);
-        subscription.unsubscribe();
-      });
+    const student: Student = this.formService.getStudentByForm(form);
+    this.store.dispatch(StudentsActions.addStudentServer({ student }));
+    this.store.dispatch(StudentsActions.updateDraftStudentLocalStorage({ draftStudent: null }));
+    this.router.navigate(['students']);
   }
 
   public showSaveQuestion(): Observable<boolean> {
@@ -66,16 +88,22 @@ export class StudentFormComponent implements OnInit {
     }
 
     const { form, submitButton: { disable } } = this.formComponent;
-    const student: Student = this.getStudent(form);
+    const student: Student = this.formService.getStudentByForm(form);
     const config: IConfirmSave<Student> = {
       disable,
-      message: 'Do you want to save information?',
-      checkEmpty: (data: Student) => this.studentService.checkEmpty(data),
-      addToServer: (data: Student) => this.studentService.addStudentServer(data),
-      addToStorage: (data: Student) => this.studentService.addStorageStudent(data),
-      removeFromStorage: () => this.studentService.clearConfigData(),
+      message: 'Do you want to save changes?',
+      isChanged: (data: Student) => this.studentService.isChanged(this.initialStudent, data),
+      addToServer: (data: Student) => this.store.dispatch(
+        StudentsActions.addStudentServer({ student: data }),
+      ),
+      addToStorage: (data: Student) => this.store.dispatch(
+        StudentsActions.updateDraftStudentLocalStorage({ draftStudent: data }),
+      ),
+      removeFromStorage: () => this.store.dispatch(
+        StudentsActions.updateDraftStudentLocalStorage({ draftStudent: null }),
+      ),
     };
 
-    return this.confirmSave.confirmNavigation(student, config);
+    return confirmNavigation<Student>(student, config);
   }
 }

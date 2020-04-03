@@ -6,16 +6,16 @@ import { Observable, of } from 'rxjs';
 
 import { SubjectFormService, SubjectService } from '../services';
 import { FormComponent } from '../../shared/components';
-import { IFormConfig } from 'src/app/common/models/Form';
+import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
-import { ConfirmSaveService } from '../../common/services';
+import { confirmNavigation } from '../../common/helpers/confirm-navigation';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
 
 @Component({
   selector: 'app-subject-form',
   templateUrl: './subject-form.component.html',
   styleUrls: ['./subject-form.component.scss'],
-  providers: [SubjectFormService, ConfirmSaveService],
+  providers: [SubjectFormService],
 })
 export class SubjectFormComponent implements OnInit {
   private isSaving: boolean;
@@ -27,7 +27,6 @@ export class SubjectFormComponent implements OnInit {
   constructor(
     private formService: SubjectFormService,
     private subjectService: SubjectService,
-    private confirmSave: ConfirmSaveService<Subject>,
     private router: Router,
   ) {
     this.isSaving = false;
@@ -65,13 +64,13 @@ export class SubjectFormComponent implements OnInit {
     const subject: Subject = this.formService.getSubjectOfForm(form);
     const config: IConfirmSave<Subject> = {
       disable: !form.valid,
-      message: 'Do you want to save information?',
-      checkEmpty: (data: Subject) => this.subjectService.checkEmptySubject(data),
+      message: 'Do you want to save changes?',
+      isChanged: (data: Subject) => true,
       addToServer: (data: Subject) => this.subjectService.addSubjectServer(data),
       addToStorage: (data: Subject) => this.subjectService.addSubjectStorage(data),
       removeFromStorage: () => this.subjectService.removeSubjectStorage(),
     };
 
-    return this.confirmSave.confirmNavigation(subject, config);
+    return confirmNavigation<Subject>(subject, config);
   }
 }
