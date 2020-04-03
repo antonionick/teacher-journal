@@ -8,18 +8,58 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { SubjectService } from '../../subjects/services';
 import * as SubjectsActions from './subjects.actions';
+import { Subject } from '../../common/models/subject';
 
 @Injectable()
 export class SubjectsEffects {
-  public subjects$: Observable<Action> = createEffect(() => (
+  public loadSubjects$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(SubjectsActions.loadSubjects),
       switchMap(() => (
         this.subjectService.fetchSubjectsServer().pipe(
           map((subjects) => SubjectsActions.loadSubjectsSuccess({ subjects })),
-          catchError((error) => of(SubjectsActions.loadSubjectsError(error))),
+          catchError((error) => of(SubjectsActions.loadSubjectsError({ error }))),
         )
       )),
+    )
+  ));
+
+  public addSubjectServer$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.addSubjectServer),
+      switchMap(({ subject }) => (
+        this.subjectService.addSubjectServer(subject).pipe(
+          map((addedSubject) => SubjectsActions.addSubjectServerSuccess(
+            { subject: addedSubject },
+          )),
+          catchError((error) => of(SubjectsActions.addSubjectServerError({ error }))),
+        )
+      )),
+    )
+  ));
+
+  public getDraftSubjectLocalStorage: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.getDraftSubjectLocalStorage),
+      map(() => {
+        const draftSubject: Subject = JSON.parse(localStorage.getItem('draftSubject'));
+        return SubjectsActions.updateDraftSubject({ draftSubject });
+      }),
+    )
+  ));
+
+  public updateDraftSubjectLocalStorage$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.updateDraftSubjectLocalStorage),
+      map(({ draftSubject }) => {
+        if (draftSubject === null) {
+          localStorage.removeItem('draftSubject');
+        } else {
+          localStorage.setItem('draftSubject', JSON.stringify(draftSubject));
+        }
+
+        return SubjectsActions.updateDraftSubject({ draftSubject });
+      }),
     )
   ));
 

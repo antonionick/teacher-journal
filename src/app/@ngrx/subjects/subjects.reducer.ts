@@ -1,31 +1,31 @@
 import { Action, createReducer, on } from '@ngrx/store';
-
-import * as Actions from './subjects.actions';
-import { Subject } from '../../common/models/subject';
 import { ActionReducer } from '@ngrx/store/src/models';
 
-const initialState: Array<Subject> = [];
+import * as Actions from './subjects.actions';
+import { initialState, ISubjectState } from './subjects.state';
 
-const _subjectsReducer: ActionReducer<Array<Subject>> = createReducer(
+const reducer: ActionReducer<ISubjectState> = createReducer(
   initialState,
+  on(Actions.loadSubjects, (state, action) => {
+    return { ...state, loading: true };
+  }),
   on(Actions.loadSubjectsSuccess, (state, { subjects }) => {
-    return [...state, ...subjects];
+    return { ...state, subjects, loading: false, loaded: true };
   }),
-  on(Actions.loadSubjectsError, (state, error) => {
-    console.log(error);
-    return [...state];
+  on(Actions.loadSubjectsError, (state, { error }) => {
+    return { ...state, error, loading: false, loaded: false };
   }),
-  on(Actions.addSubject, (state, subject) => {
-    return [...state, subject];
+  on(Actions.addSubjectServerSuccess, (state, { subject }) => {
+    return { ...state, subjects: [...state.subjects, subject] };
   }),
-  on(Actions.updateSubject, (state, subject) => {
-    return state.map((item) => item.id === subject.id ? subject : item);
+  on(Actions.addSubjectServerError, (state, { error }) => {
+    return { ...state, error };
   }),
-  on(Actions.deleteSubject, (state, subject) => {
-    return state.filter((item) => item.id !== subject.id);
+  on(Actions.updateDraftSubject, (state, { draftSubject }) => {
+    return { ...state, draftSubject };
   }),
 );
 
-export function subjectsReducer(state: Array<Subject> | undefined, action: Action): Array<Subject> {
-  return _subjectsReducer(state, action);
+export function subjectsReducer(state: ISubjectState | undefined, action: Action): ISubjectState {
+  return reducer(state, action);
 }

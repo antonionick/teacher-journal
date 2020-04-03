@@ -2,14 +2,21 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Observable, of } from 'rxjs';
+import { select, Store } from '@ngrx/store';
 
+import { Observable, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { BaseComponent } from '../../components';
 import { SubjectFormService, SubjectService } from '../services';
 import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
 import { confirmNavigation } from '../../common/helpers/confirm-navigation';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
+import { AppState, selectDraftSubject } from '../../@ngrx';
+import * as SubjectActions from '../../@ngrx/subjects/subjects.actions';
+import { TNullable } from '../../common/models/utils/tnullable';
 
 @Component({
   selector: 'app-subject-form',
@@ -17,42 +24,61 @@ import { IConfirmSave } from '../../common/models/utils/confirm-save';
   styleUrls: ['./subject-form.component.scss'],
   providers: [SubjectFormService],
 })
-export class SubjectFormComponent implements OnInit {
+export class SubjectFormComponent extends BaseComponent implements OnInit {
   private isSaving: boolean;
+  private initialSubject: TNullable<Subject>;
 
   @ViewChild('form')
-  public form: FormComponent;
+  public formComponent: FormComponent;
   public config: IFormConfig;
 
   constructor(
+    private store: Store<AppState>,
     private formService: SubjectFormService,
     private subjectService: SubjectService,
     private router: Router,
   ) {
+    super();
+    this.initialSubject = null;
     this.isSaving = false;
   }
 
   public ngOnInit(): void {
-    this.config = this.formService.config;
+    this.store.pipe(
+      select(selectDraftSubject),
+      takeUntil(this.unsubscribe$),
+    ).subscribe({
+      next: (draftSubject) => {
+        if (draftSubject === null && this.initialSubject === null) {
+          return this.store.dispatch(SubjectActions.getDraftSubjectLocalStorage());
+        }
 
+        this.initialSubject = draftSubject;
+      },
+    });
+
+    if (this.initialSubject === null) {
+      this.initialSubject = new Subject();
+    }
+    this.formService.updateFormData(this.initialSubject);
+    this.config = this.formService.config;
     // set clear function for form
     this.config.buttons[1].onClick = () => {
-      const { form } = this.form;
-
-      form.reset();
-      this.subjectService.removeSubjectStorage();
+      this.formComponent.form.reset();
+      this.formService.clearFormData();
     };
   }
 
-  public onSubmit(data: FormGroup): void {
+  public onSubmit(form: FormGroup): void {
+    if (this.isSaving) {
+      return;
+    }
     this.isSaving = true;
 
-    const subject: Subject = this.formService.getSubjectOfForm(data);
-    subject.name = subject.name.toLowerCase();
-    this.subjectService.addSubjectServer(subject)
-      .subscribe(() => {
-        this.router.navigate(['subjects']);
-      });
+    const subject: Subject = this.formService.getSubjectByForm(form);
+    this.store.dispatch(SubjectActions.updateDraftSubjectLocalStorage({ draftSubject: null }));
+    this.store.dispatch(SubjectActions.addSubjectServer({ subject }));
+    this.router.navigate(['subjects']);
   }
 
   public showSaveQuestion(): Observable<boolean> {
@@ -60,15 +86,21 @@ export class SubjectFormComponent implements OnInit {
       return of(true);
     }
 
-    const { form } = this.form;
-    const subject: Subject = this.formService.getSubjectOfForm(form);
+    const { form } = this.formComponent;
+    const subject: Subject = this.formService.getSubjectByForm(form);
     const config: IConfirmSave<Subject> = {
       disable: !form.valid,
       message: 'Do you want to save changes?',
-      isChanged: (data: Subject) => true,
-      addToServer: (data: Subject) => this.subjectService.addSubjectServer(data),
-      addToStorage: (data: Subject) => this.subjectService.addSubjectStorage(data),
-      removeFromStorage: () => this.subjectService.removeSubjectStorage(),
+      isChanged: (data: Subject) => this.subjectService.isChanged(this.initialSubject, data),
+      addToServer: (data: Subject) => this.store.dispatch(
+        SubjectActions.addSubjectServer({ subject: data }),
+      ),
+      addToStorage: (draftSubject: Subject) => this.store.dispatch(
+        SubjectActions.updateDraftSubjectLocalStorage({ draftSubject }),
+      ),
+      removeFromStorage: () => this.store.dispatch(
+        SubjectActions.updateDraftSubjectLocalStorage({ draftSubject: null }),
+      ),
     };
 
     return confirmNavigation<Subject>(subject, config);

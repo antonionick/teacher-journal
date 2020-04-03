@@ -69,7 +69,7 @@ export class StudentFormService {
     const student: Student = new Student();
 
     Object.keys(value).forEach((key) => {
-      student[key] = value[key] || '';
+      student[key] = value[key] || student[key];
     });
 
     return student;

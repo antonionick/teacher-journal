@@ -28,24 +28,24 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
       loaded: false,
     };
   }),
-  on(Actions.addStudentServerSuccess, ((state, { student }) => {
+  on(Actions.addStudentServerSuccess, (state, { student }) => {
     return {
       ...state,
       students: [...state.students, student],
     };
-  })),
-  on(Actions.addStudentServerError, ((state, { error }) => {
+  }),
+  on(Actions.addStudentServerError, (state, { error }) => {
     return {
       ...state,
       error,
     };
-  })),
-  on(Actions.updateDraftStudent, ((state, { draftStudent }) => {
+  }),
+  on(Actions.updateDraftStudent, (state, { draftStudent }) => {
     return {
       ...state,
       draftStudent,
     };
-  })),
+  }),
 );
 
 export function studentsReducer(

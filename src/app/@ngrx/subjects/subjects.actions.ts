@@ -2,18 +2,36 @@ import { createAction, props } from '@ngrx/store';
 
 import { Subject } from '../../common/models/subject';
 
-export const loadSubjects = createAction('[Subject Effects] Load Subjects');
+// tslint:disable:typedef
+export const loadSubjects = createAction('[Subject List] LOAD_SUBJECTS');
 export const loadSubjectsSuccess = createAction(
-  '[Subject Effects] Load Subjects Success',
+  '[Load Subjects Effect] LOAD_SUBJECTS_SUCCESS',
   props<{ subjects: Array<Subject> }>(),
 );
 export const loadSubjectsError = createAction(
-  '[Subject Effects] Load Subjects Error',
-  props<Error>(),
+  '[Load Subject Effect] LOAD_SUBJECTS_ERROR',
+  props<{ error: Error | string }>(),
 );
-export const addSubject = createAction('[Subject Form] Add Subject', props<Subject>());
-export const updateSubject = createAction(
-  '[Subject Form | Table] Update Subject',
-  props<Subject>(),
+export const addSubjectServer = createAction(
+  '[Subject Form] ADD_SUBJECT_SERVER',
+  props<{ subject: Subject }>(),
 );
-export const deleteSubject = createAction('[Subject] Delete Subject', props<Subject>());
+export const addSubjectServerSuccess = createAction(
+  '[Add Subject Effect] ADD_SUBJECT_SERVER_SUCCESS',
+  props<{ subject: Subject }>(),
+);
+export const addSubjectServerError = createAction(
+  '[Add Subject Effect] ADD_SUBJECT_SERVER_ERROR',
+  props<{ error: Error | string }>(),
+);
+export const getDraftSubjectLocalStorage = createAction(
+  '[Subject Form] GET_DRAFT_SUBJECT_LOCALSTORAGE',
+);
+export const updateDraftSubjectLocalStorage = createAction(
+  '[Subject Form] UPDATE_DRAFT_SUBJECT_LOCALSTORAGE',
+  props<{ draftSubject: Subject }>(),
+);
+export const updateDraftSubject = createAction(
+  '[LocalStorage Subject Effect] UPDATE_DRAFT_SUBJECT',
+  props<{ draftSubject: Subject }>(),
+);

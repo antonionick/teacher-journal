@@ -44,14 +44,12 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    let isFirstGet: boolean = true;
     this.store.pipe(
       select(selectDraftStudent),
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (student) => {
-        if (student == null && isFirstGet) {
-          isFirstGet = false;
+        if (student == null && this.initialStudent === null) {
           return this.store.dispatch(StudentsActions.getDraftStudentLocalStorage());
         }
 

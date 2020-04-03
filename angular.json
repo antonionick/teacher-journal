@@ -130,6 +130,7 @@
   },
   "defaultProject": "teacher-journal",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@ngrx/schematics"
   }
 }
