@@ -31,14 +31,14 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
     this.error = null;
   }
 
-  private isNeedLoad({ loading, loaded, error }: ISubjectState): boolean {
+  private isNeedLoad({ loadingSubjects, loadedSubjects, errorSubjects }: ISubjectState): boolean {
     this.isLoading = false;
 
-    if (loading) {
+    if (loadingSubjects) {
       this.isLoading = true;
-    } else if (error) {
-      this.error = error;
-    } else if (!loaded) {
+    } else if (errorSubjects) {
+      this.error = errorSubjects;
+    } else if (!loadedSubjects) {
       return true;
     }
 
@@ -52,11 +52,10 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
     ).subscribe({
       next: (subjectsState) => {
         if (!this.isNeedLoad(subjectsState)) {
-          this.subjects = subjectsState.subjects;
-          return;
+          return this.subjects = subjectsState.subjects;
         }
 
-        this.store.dispatch(SubjectsActions.loadSubjects());
+        this.store.dispatch(SubjectsActions.loadSubjects({ loaded: subjectsState.subjects }));
       },
     });
   }

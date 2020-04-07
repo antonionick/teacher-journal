@@ -12,7 +12,7 @@ import { SubjectFormService, SubjectService } from '../services';
 import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
-import { confirmNavigation } from '../../common/helpers/confirm-navigation';
+import { confirmNavigation } from '../../common/utils/confirm-navigation';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
 import { AppState, selectDraftSubject } from '../../@ngrx';
 import * as SubjectActions from '../../@ngrx/subjects/subjects.actions';

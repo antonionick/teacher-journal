@@ -12,7 +12,7 @@ import {
   getNumberInRange,
   validKeyCodesInteger as validKeyCodes,
   checkValidKeyCodes,
-} from '../helpers/validate-number-input';
+} from '../utils/validate-number-input';
 import { EditMark } from '../models/mark';
 import { TNullable } from '../models/utils/tnullable';
 import { IChangeField } from '../models/table';

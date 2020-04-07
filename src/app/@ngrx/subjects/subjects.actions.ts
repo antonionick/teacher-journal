@@ -3,7 +3,10 @@ import { createAction, props } from '@ngrx/store';
 import { Subject } from '../../common/models/subject';
 
 // tslint:disable:typedef
-export const loadSubjects = createAction('[Subject List] LOAD_SUBJECTS');
+export const loadSubjects = createAction(
+  '[(APP)] LOAD_SUBJECTS',
+  props<{ loaded: Array<Subject> }>(),
+);
 export const loadSubjectsSuccess = createAction(
   '[Load Subjects Effect] LOAD_SUBJECTS_SUCCESS',
   props<{ subjects: Array<Subject> }>(),
@@ -11,6 +14,18 @@ export const loadSubjectsSuccess = createAction(
 export const loadSubjectsError = createAction(
   '[Load Subject Effect] LOAD_SUBJECTS_ERROR',
   props<{ error: Error | string }>(),
+);
+export const loadOneSubject = createAction(
+  '[(APP)] LOAD_ONE_SUBJECT',
+  props<{ id: number }>(),
+);
+export const loadOneSubjectSuccess = createAction(
+  '[Load One Subject Effect] LOAD_ONE_SUBJECT_SUCCESS',
+  props<{ subject: Subject }>(),
+);
+export const loadOneSubjectError = createAction(
+  '[Load One Subject Effect] LOAD_ONE_SUBJECT_ERROR',
+  props<{ error: Error }>(),
 );
 export const addSubjectServer = createAction(
   '[Subject Form] ADD_SUBJECT_SERVER',

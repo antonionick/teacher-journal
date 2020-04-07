@@ -6,7 +6,7 @@ import {
   getClosestEmptyDate,
   getPrevDay,
   getNextDay,
-} from 'src/app/common/helpers/date';
+} from 'src/app/common/utils/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
 import { TNullable } from 'src/app/common/models/utils/tnullable';
 import { IMarksByDate } from 'src/app/common/models/mark';

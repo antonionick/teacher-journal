@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { IFormConfig, FormElement } from '../../common/models/form';
-import { Subject } from 'src/app/common/models/subject';
+import { Subject } from 'src/app/common/models/subject/subject';
 
 const formConfig: IFormConfig = {
   id: '',

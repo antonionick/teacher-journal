@@ -9,7 +9,7 @@ export interface IStudentsState {
   readonly error: TNullable<Error | string>;
 }
 
-export const initialStudentsState: IStudentsState = {
+export const initialState: IStudentsState = {
   students: [],
   draftStudent: null,
   loading: false,

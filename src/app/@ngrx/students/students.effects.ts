@@ -18,9 +18,9 @@ export class StudentsEffects {
       switchMap(() => (
         this.studentService.fetchStudentsServer().pipe(
           map((students) => studentActions.loadStudentsSuccess({ students })),
+          catchError((error) => of(studentActions.loadStudentsError({ error }))),
         )
       )),
-      catchError((error) => of(studentActions.loadStudentsError({ error }))),
     )
   ));
 

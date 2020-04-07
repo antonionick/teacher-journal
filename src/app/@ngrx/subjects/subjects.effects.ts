@@ -9,16 +9,31 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { SubjectService } from '../../subjects/services';
 import * as SubjectsActions from './subjects.actions';
 import { Subject } from '../../common/models/subject';
+import * as HttpUtils from '../../common/utils/http';
 
 @Injectable()
 export class SubjectsEffects {
   public loadSubjects$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(SubjectsActions.loadSubjects),
-      switchMap(() => (
-        this.subjectService.fetchSubjectsServer().pipe(
+      switchMap(({ loaded }) => (
+        this.subjectService.fetchSubjects(
+          HttpUtils.getParamsExcludesById<Subject>(loaded),
+        ).pipe(
           map((subjects) => SubjectsActions.loadSubjectsSuccess({ subjects })),
           catchError((error) => of(SubjectsActions.loadSubjectsError({ error }))),
+        )
+      )),
+    )
+  ));
+
+  public loadOneSubject$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.loadOneSubject),
+      switchMap(({ id }) => (
+        this.subjectService.fetchSubject(HttpUtils.getParamsWithId(id)).pipe(
+          map((subject) => SubjectsActions.loadOneSubjectSuccess({ subject })),
+          catchError((error) => of(SubjectsActions.loadOneSubjectError({ error }))),
         )
       )),
     )

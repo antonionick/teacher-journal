@@ -5,9 +5,7 @@ import { FunctionWithParametersType, TypedAction } from '@ngrx/store/src/models'
 import { TNullable } from '../../common/models/utils/tnullable';
 
 // tslint:disable:typedef
-export const loadStudents = createAction(
-  '[Student Table (APP)] LOAD_STUDENTS',
-);
+export const loadStudents = createAction('[(APP)] LOAD_STUDENTS');
 export const loadStudentsSuccess = createAction(
   '[Load Students Effect] LOAD_STUDENTS_SUCCESS',
   props<{ students: Array<Student> }>(),

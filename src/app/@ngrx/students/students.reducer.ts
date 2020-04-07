@@ -1,13 +1,14 @@
 import { createReducer, on, Action, ActionReducer } from '@ngrx/store';
 
-import { initialStudentsState, IStudentsState } from './students.state';
+import { initialState, IStudentsState } from './students.state';
 import * as Actions from './students.actions';
 
 const reducer: ActionReducer<IStudentsState> = createReducer(
-  initialStudentsState,
+  initialState,
   on(Actions.loadStudents, (state) => {
     return {
       ...state,
+      error: null,
       loading: true,
     };
   }),
@@ -17,7 +18,6 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
       students,
       loading: false,
       loaded: true,
-      error: null,
     };
   }),
   on(Actions.loadStudentsError, (state, { error }) => {

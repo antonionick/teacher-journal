@@ -1,9 +1,9 @@
 import { IStudentsState } from './students';
 import { ISubjectState } from './subjects/subjects.state';
-import { Mark } from '../common/models/mark';
+import { IMarksState } from './marks/marks.state';
 
 export interface AppState {
   students: IStudentsState;
   subjects: ISubjectState;
-  marks: Array<Mark>;
+  marks: IMarksState;
 }

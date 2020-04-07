@@ -6,6 +6,7 @@ import { HttpService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
 import { Options } from '../../common/models/utils/http-options';
+import { map } from 'rxjs/operators';
 
 const { subjects: subjectUrl } = urlProvider;
 
@@ -15,12 +16,14 @@ export class SubjectService {
     private http: HttpService<Subject>,
   ) { }
 
-  public fetchSubjectsServer(options: Options = new Options()): Observable<Array<Subject>> {
+  public fetchSubjects(options: Options = new Options()): Observable<Array<Subject>> {
     return this.http.getDataArray(subjectUrl, options);
   }
 
-  public fetchSubjectServer(options: Options = new Options()): Observable<Subject> {
-    return this.http.getData(subjectUrl, options);
+  public fetchSubject(options: Options = new Options()): Observable<Subject> {
+    return this.http.getData(subjectUrl, options).pipe(
+      map((subjects) => subjects[0]),
+    );
   }
 
   public addSubjectServer(subject: Subject): Observable<Subject> {

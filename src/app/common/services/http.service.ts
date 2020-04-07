@@ -21,8 +21,8 @@ export class HttpService<T> {
   public getData(
     url: string,
     options: Options = {} as Options,
-  ): Observable<T> {
-    return this.http.get<T>(url, options);
+  ): Observable<Array<T>> {
+    return this.http.get<Array<T>>(url, options);
   }
 
   public postData(url: string, data: T): Observable<T> {

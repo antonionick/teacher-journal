@@ -3,16 +3,24 @@ import { TNullable } from '../../common/models/utils/tnullable';
 
 export interface ISubjectState {
   subjects: Array<Subject>;
+  loadingSubjects: boolean;
+  loadedSubjects: boolean;
+  errorSubjects: TNullable<Error | string>;
   draftSubject: TNullable<Subject>;
-  loading: boolean;
-  loaded: boolean;
-  error: TNullable<Error | string>;
+  errorDraftSubject: TNullable<Error | string>;
+  loadingSubject: boolean;
+  loadedSubject: boolean;
+  errorSubject: TNullable<Error | string>;
 }
 
 export const initialState: ISubjectState = {
   subjects: [],
+  loadingSubjects: false,
+  loadedSubjects: false,
+  errorSubjects: null,
   draftSubject: null,
-  loading: false,
-  loaded: false,
-  error: null,
+  errorDraftSubject: null,
+  loadingSubject: false,
+  loadedSubject: false,
+  errorSubject: null,
 };

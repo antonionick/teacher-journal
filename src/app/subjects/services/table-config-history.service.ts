@@ -13,11 +13,7 @@ export class TableConfigHistoryService {
   private historyChanges: Array<TableConfigHistory> = [];
 
   private findItemByCurrent(current: number): TNullable<TableConfigHistory> {
-    return (
-      this.historyChanges.find((item) => {
-        return item.current === current;
-      }) || null
-    );
+    return this.historyChanges.find((item) => item.current === current) || null;
   }
 
   private findHistoryMark(item: TableConfigHistory, studentId: number): TNullable<MarkHistory> {
@@ -81,7 +77,6 @@ export class TableConfigHistoryService {
   }
 
   public getChanges(marks: IMarksByDate, subjectId: number): IDataChanges<Mark> {
-    const dateChanges: IDataChanges<Mark> = convert(this.historyChanges, marks, subjectId);
-    return dateChanges;
+    return convert(this.historyChanges, marks, subjectId);
   }
 }

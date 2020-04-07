@@ -12,10 +12,10 @@ import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectService } from './subject.service';
 import { SubjectTableConfigService } from './subject-table-config.service';
 import { Options } from 'src/app/common/models/utils/http-options';
-import { filterByIds } from 'src/app/common/helpers/utils';
+import { filterByIds } from 'src/app/common/utils/utils';
 import { MarkService } from 'src/app/common/services';
 import { IDataChanges } from 'src/app/common/models/utils/data-changes';
-import { getEmptyDate } from 'src/app/common/helpers/date';
+import { getEmptyDate } from 'src/app/common/utils/date';
 
 enum MarkActions {
   post = 'postMark',
@@ -82,44 +82,8 @@ export class SubjectTableService {
     this.marks = this.getMarksByDate(marks);
   }
 
-  public fetchSubject(value: string, key: string = 'name'): Observable<Subject> {
-    const options: Options = new Options({
-      params: new HttpParams().set(key, value),
-    });
-
-    return this.subjectService.fetchSubjectServer(options).pipe(
-      map((response) => response[0] || null),
-    );
-  }
-
-  public fetchSubjectStudents(studentsID: Array<number>): Observable<Array<Student>> {
-    return this.studentService.fetchStudentsServer().pipe(
-      map((students) => filterByIds(students, studentsID)),
-      catchError(() => {
-        return [];
-      }),
-    );
-  }
-
-  public fetchSubjectMarks(subjectId: number): Observable<Array<Mark>> {
-    const options: Options = new Options({
-      params: new HttpParams().set('subjectId', `${subjectId}`),
-    });
-
-    return this.markService.fetchMarks(options);
-  }
-
-  public fetchConfigData({ id, students: studentsId }: Subject): Observable<null> {
-    return this.fetchSubjectStudents(studentsId).pipe(
-      mergeMap((students = []) => {
-        this.students = students;
-        return this.fetchSubjectMarks(id);
-      }),
-      map((marks = []) => {
-        this.subjectMarks = marks;
-        return null;
-      }),
-    );
+  public getChanges(subjectId: number): IDataChanges<Mark> {
+    return this.configService.getChanges(this.marks, subjectId);
   }
 
   public saveChanges(subjectId: number): Observable<Array<Array<Mark>>> {

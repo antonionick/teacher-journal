@@ -20,7 +20,7 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'table/:subject',
+        path: 'table/:id',
         component: SubjectTableComponent,
         pathMatch: 'full',
       },
