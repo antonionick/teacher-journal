@@ -53,6 +53,7 @@ export class FormComponent implements OnInit, OnDestroy {
       : {
         disable: false,
       } as ButtonConfig;
+    this.submitButton.disable = !this.form.valid;
   }
 
   public onSubmit(event: Event): void {

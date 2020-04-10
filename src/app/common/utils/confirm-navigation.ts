@@ -19,7 +19,6 @@ export function confirmNavigation<T>(
     config.addToStorage(component);
   } else {
     config.addToServer(component);
-    config.removeFromStorage();
   }
 
   return of(true);

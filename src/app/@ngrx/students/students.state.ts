@@ -6,7 +6,7 @@ export interface IStudentsState {
   draftStudent: TNullable<Student>;
   readonly loading: boolean;
   readonly loaded: boolean;
-  readonly error: TNullable<Error | string>;
+  readonly error: TNullable<Error>;
 }
 
 export const initialState: IStudentsState = {

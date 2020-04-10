@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { BaseComponent } from '../../components';
 import { IFormConfig } from '../../common/models/form';
@@ -16,7 +16,6 @@ import { StudentFormService } from '../services/student-form.service';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
 import { AppState, selectDraftStudent } from '../../@ngrx';
 import * as StudentsActions from '../../@ngrx/students/students.actions';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-student-form',
@@ -34,7 +33,6 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
 
   constructor(
     private store: Store<AppState>,
-    private router: Router,
     private studentService: StudentService,
     private formService: StudentFormService,
   ) {
@@ -48,7 +46,7 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
       select(selectDraftStudent),
       takeUntil(this.unsubscribe$),
     ).subscribe({
-      next: (student) => {
+      next: (student ) => {
         if (student == null && this.initialStudent === null) {
           return this.store.dispatch(StudentsActions.getDraftStudentLocalStorage());
         }
@@ -75,9 +73,7 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
     this.isAdding = true;
 
     const student: Student = this.formService.getStudentByForm(form);
-    this.store.dispatch(StudentsActions.addStudentServer({ student }));
-    this.store.dispatch(StudentsActions.updateDraftStudentLocalStorage({ draftStudent: null }));
-    this.router.navigate(['students']);
+    this.store.dispatch(StudentsActions.addStudentServer({ student, move: true }));
   }
 
   public showSaveQuestion(): Observable<boolean> {
@@ -92,13 +88,10 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
       message: 'Do you want to save changes?',
       isChanged: (data: Student) => this.studentService.isChanged(this.initialStudent, data),
       addToServer: (data: Student) => this.store.dispatch(
-        StudentsActions.addStudentServer({ student: data }),
+        StudentsActions.addStudentServer({ student: data, move: false }),
       ),
       addToStorage: (data: Student) => this.store.dispatch(
         StudentsActions.updateDraftStudentLocalStorage({ draftStudent: data }),
-      ),
-      removeFromStorage: () => this.store.dispatch(
-        StudentsActions.updateDraftStudentLocalStorage({ draftStudent: null }),
       ),
     };
 

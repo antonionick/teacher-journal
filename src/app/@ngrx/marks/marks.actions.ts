@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Mark } from '../../common/models/mark';
 
@@ -13,7 +14,7 @@ export const loadMarksSuccess = createAction(
 );
 export const loadMarksError = createAction(
   '[Load Marks Effect] LOAD_MARKS_ERROR',
-  props<{ error: Error }>(),
+  props<{ id: number, error: HttpErrorResponse }>(),
 );
 export const addMarks = createAction(
   '[Subject Table] ADD_MARKS',
@@ -25,19 +26,19 @@ export const addMarksSuccess = createAction(
 );
 export const addMarksError = createAction(
   '[Add Marks Effect] ADD_MARKS_ERROR',
-  props<{ error: Error }>(),
+  props<{ id: number, error: HttpErrorResponse }>(),
 );
-export const updateMarks = createAction(
-  '[Subject Table] UPDATE_MARKS',
+export const updateMarksServer = createAction(
+  '[Subject Table] UPDATE_MARKS_SERVER',
   props<{ id: number, marks: Array<Mark> }>(),
 );
-export const updateMarksSuccess = createAction(
-  '[Update Marks Effect] UPDATE_MARKS_SUCCESS',
+export const updateMarksServerSuccess = createAction(
+  '[Update Marks Server Effect] UPDATE_MARKS_SERVER_SUCCESS',
   props<{ id: number, marks: Array<Mark> }>(),
 );
-export const updateMarksError = createAction(
-  '[Update Marks Effect] UPDATE_MARKS_ERROR',
-  props<{ error: Error }>(),
+export const updateMarksServerError = createAction(
+  '[Update Marks Server Effect] UPDATE_MARKS_SERVER_ERROR',
+  props<{ id: number, error: HttpErrorResponse }>(),
 );
 export const deleteMarks = createAction(
   '[Subject Table] DELETE_MARKS',
@@ -49,8 +50,5 @@ export const deleteMarksSuccess = createAction(
 );
 export const deleteMarksError = createAction(
   '[Delete Marks Effect] DELETE_MARKS_ERROR',
-  props<{ error: Error }>(),
+  props<{ id: number, error: HttpErrorResponse }>(),
 );
-// export const addMark = createAction('[Mark] Add mark', props<Mark>());
-// export const updateMark = createAction('[Mark] Update mark', props<Mark>());
-// export const deleteMark = createAction('[Mark] Delete mark', props<Mark>());

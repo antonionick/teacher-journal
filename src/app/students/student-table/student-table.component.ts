@@ -34,7 +34,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     this.students$ = store.pipe(select(selectStudents));
   }
 
-  private isLoad({ loading, loaded, error }: IStudentsState): boolean {
+  private isNeedLoad({ loading, loaded, error }: IStudentsState): boolean {
     this.isLoading = false;
 
     if (loading) {
@@ -54,7 +54,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (studentsState) => {
-        if (!this.isLoad(studentsState)) {
+        if (!this.isNeedLoad(studentsState)) {
           return;
         }
 

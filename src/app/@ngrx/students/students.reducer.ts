@@ -8,7 +8,6 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
   on(Actions.loadStudents, (state) => {
     return {
       ...state,
-      error: null,
       loading: true,
     };
   }),
@@ -16,6 +15,7 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
     return {
       ...state,
       students,
+      error: null,
       loading: false,
       loaded: true,
     };

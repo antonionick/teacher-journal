@@ -13,7 +13,7 @@ const selectMarksState: MemoizedSelector<AppState, IMarksState> = createFeatureS
 export const selectMarksBySubject:
   MemoizedSelectorWithProps<AppState, { id: number }, IMarksSelectStore> = createSelector(
   selectMarksState,
-  ({ marks, error, loading }, { id }) => {
-    return { error, loading, marks: marks[id] || [] };
+  ({ marks, error, loading, loaded }, { id }) => {
+    return { error, loading, loaded, marks: marks[id] || [] };
   },
 );

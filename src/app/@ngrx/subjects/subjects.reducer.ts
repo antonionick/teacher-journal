@@ -9,59 +9,56 @@ const reducer: ActionReducer<ISubjectState> = createReducer(
   on(Actions.loadSubjects, (state) => {
     return {
       ...state,
-      loadingSubjects: true,
-      errorSubjects: null,
+      loading: true,
     };
   }),
   on(Actions.loadSubjectsSuccess, (state, { subjects }) => {
     return {
       ...state,
+      error: null,
       subjects: [...state.subjects, ...subjects],
-      loadingSubjects: false,
-      loadedSubjects: true,
+      loading: false,
+      loaded: true,
     };
   }),
-  on(Actions.loadSubjectsError, (state, { error }) => {
-    return {
-      ...state,
-      errorSubjects: error,
-      loadingSubjects: false,
-      loadedSubjects: false,
-    };
-  }),
+  on(
+    Actions.loadSubjectsError,
+    Actions.loadOneSubjectError,
+    (state, { error }) => {
+      return {
+        ...state,
+        error,
+        loading: false,
+        loaded: false,
+      };
+    },
+  ),
   on(Actions.loadOneSubject, (state) => {
     return {
       ...state,
-      errorSubject: null,
-      loadingSubject: true,
+      loading: true,
     };
   }),
   on(Actions.loadOneSubjectSuccess, (state, { subject }) => {
     return {
       ...state,
+      error: null,
       subjects: [...state.subjects, subject],
-      loadingSubject: false,
-      loadedSubject: true,
-    };
-  }),
-  on(Actions.loadOneSubjectError, (state, { error }) => {
-    return {
-      ...state,
-      errorSubject: error,
-      loadingSubject: false,
-      loadedSubject: false,
+      loading: false,
+      loaded: true,
     };
   }),
   on(Actions.addSubjectServerSuccess, (state, { subject }) => {
     return {
       ...state,
+      error: null,
       subjects: [...state.subjects, subject],
     };
   }),
   on(Actions.addSubjectServerError, (state, { error }) => {
     return {
       ...state,
-      errorSubject: error,
+      error,
     };
   }),
   on(Actions.updateDraftSubject, (state, { draftSubject }) => {

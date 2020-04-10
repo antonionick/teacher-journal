@@ -1,7 +1,6 @@
-import { Action, ActionCreator, createAction, props } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 import { Student } from '../../common/models/Student';
-import { FunctionWithParametersType, TypedAction } from '@ngrx/store/src/models';
 import { TNullable } from '../../common/models/utils/tnullable';
 
 // tslint:disable:typedef
@@ -12,11 +11,11 @@ export const loadStudentsSuccess = createAction(
 );
 export const loadStudentsError = createAction(
   '[Load Students Effect] LOAD_STUDENTS_ERROR',
-  props<{ error: Error | string }>(),
+  props<{ error: Error }>(),
 );
 export const addStudentServer = createAction(
   '[Student Form] ADD_STUDENT_SERVER',
-  props<{ student: Student }>(),
+  props<{ student: Student, move: boolean }>(),
 );
 export const addStudentServerSuccess = createAction(
   '[Add Student Server Effect] ADD_STUDENT_SERVER_SUCCESS',
@@ -24,14 +23,17 @@ export const addStudentServerSuccess = createAction(
 );
 export const addStudentServerError = createAction(
   '[Add Student Server Effect] ADD_STUDENT_SERVER_ERROR',
-  props<{ error: Error }>(),
+  props<{ student: Student, error: Error }>(),
 );
 export const getDraftStudentLocalStorage = createAction(
   '[Student Form (APP)] GET_DRAFT_STUDENT_LOCALSTORAGE',
 );
 export const updateDraftStudentLocalStorage = createAction(
-  '[Student Form (APP)] UPDATE_DRAFT_STUDENT_LOCALSTORAGE',
+  '[Student Form] UPDATE_DRAFT_STUDENT_LOCALSTORAGE',
   props<{ draftStudent: TNullable<Student> }>(),
+);
+export const removeDraftStudentLocalStorage = createAction(
+  '[Student Form] REMOVE_DRAFT_STUDENT_LOCALSTORAGE',
 );
 export const updateDraftStudent = createAction(
   '[Update Draft Student LocalStorage Effect] UPDATE_DRAFT_STUDENT',

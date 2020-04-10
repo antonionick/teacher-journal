@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { HttpService } from '../../common/services';
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
 import { TableHeaderConfig } from '../../common/models/table';
@@ -37,17 +37,17 @@ export class StudentService {
   public displayedColumns: Array<TableHeaderConfig>;
 
   constructor(
-    private http: HttpService<Student>,
+    private http: HttpClient,
   ) {
     this.displayedColumns = displayedColumns;
   }
 
   public fetchStudentsServer(): Observable<Array<Student>> {
-    return this.http.getDataArray(studentUrl);
+    return this.http.get<Array<Student>>(studentUrl);
   }
 
   public addStudentServer(student: Student): Observable<Student> {
-    return this.http.postData(studentUrl, student);
+    return this.http.post<Student>(studentUrl, student);
   }
 
   public isChanged(sourceStudent: Student, student: Student): boolean {

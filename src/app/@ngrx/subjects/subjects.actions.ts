@@ -13,7 +13,7 @@ export const loadSubjectsSuccess = createAction(
 );
 export const loadSubjectsError = createAction(
   '[Load Subject Effect] LOAD_SUBJECTS_ERROR',
-  props<{ error: Error | string }>(),
+  props<{ error: Error }>(),
 );
 export const loadOneSubject = createAction(
   '[(APP)] LOAD_ONE_SUBJECT',
@@ -29,7 +29,7 @@ export const loadOneSubjectError = createAction(
 );
 export const addSubjectServer = createAction(
   '[Subject Form] ADD_SUBJECT_SERVER',
-  props<{ subject: Subject }>(),
+  props<{ subject: Subject, move: boolean }>(),
 );
 export const addSubjectServerSuccess = createAction(
   '[Add Subject Effect] ADD_SUBJECT_SERVER_SUCCESS',
@@ -37,7 +37,7 @@ export const addSubjectServerSuccess = createAction(
 );
 export const addSubjectServerError = createAction(
   '[Add Subject Effect] ADD_SUBJECT_SERVER_ERROR',
-  props<{ error: Error | string }>(),
+  props<{ subject: Subject, error: Error }>(),
 );
 export const getDraftSubjectLocalStorage = createAction(
   '[Subject Form] GET_DRAFT_SUBJECT_LOCALSTORAGE',
@@ -45,6 +45,9 @@ export const getDraftSubjectLocalStorage = createAction(
 export const updateDraftSubjectLocalStorage = createAction(
   '[Subject Form] UPDATE_DRAFT_SUBJECT_LOCALSTORAGE',
   props<{ draftSubject: Subject }>(),
+);
+export const removeDraftSubjectLocalStorage = createAction(
+  '[Subject Form] REMOVE_DRAFT_SUBJECT_LOCALSTORAGE',
 );
 export const updateDraftSubject = createAction(
   '[LocalStorage Subject Effect] UPDATE_DRAFT_SUBJECT',

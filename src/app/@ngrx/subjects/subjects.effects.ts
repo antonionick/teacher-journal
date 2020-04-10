@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Action } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -16,9 +17,9 @@ export class SubjectsEffects {
   public loadSubjects$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(SubjectsActions.loadSubjects),
-      switchMap(({ loaded }) => (
+      switchMap(({ loaded: loadedSubjects }) => (
         this.subjectService.fetchSubjects(
-          HttpUtils.getParamsExcludesById<Subject>(loaded),
+          HttpUtils.getParamsExcludesById<Subject>(loadedSubjects),
         ).pipe(
           map((subjects) => SubjectsActions.loadSubjectsSuccess({ subjects })),
           catchError((error) => of(SubjectsActions.loadSubjectsError({ error }))),
@@ -42,14 +43,33 @@ export class SubjectsEffects {
   public addSubjectServer$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(SubjectsActions.addSubjectServer),
-      switchMap(({ subject }) => (
+      switchMap(({ subject, move }) => (
         this.subjectService.addSubjectServer(subject).pipe(
-          map((addedSubject) => SubjectsActions.addSubjectServerSuccess(
-            { subject: addedSubject },
-          )),
-          catchError((error) => of(SubjectsActions.addSubjectServerError({ error }))),
+          map((addedSubject) => {
+            if (move) {
+              this.router.navigate(['subjects']);
+            }
+            return SubjectsActions.addSubjectServerSuccess({ subject: addedSubject });
+          }),
+          catchError((error) => of(SubjectsActions.addSubjectServerError({ subject, error }))),
         )
       )),
+    )
+  ));
+
+  public addSubjectServerSuccess$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.addSubjectServerSuccess),
+      map(() => SubjectsActions.removeDraftSubjectLocalStorage()),
+    )
+  ));
+
+  public addSubjectServerError$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.addSubjectServerError),
+      map(({ subject }) => SubjectsActions.updateDraftSubjectLocalStorage({
+        draftSubject: subject,
+      })),
     )
   ));
 
@@ -67,16 +87,25 @@ export class SubjectsEffects {
     this.actions.pipe(
       ofType(SubjectsActions.updateDraftSubjectLocalStorage),
       map(({ draftSubject }) => {
-        if (draftSubject === null) {
-          localStorage.removeItem('draftSubject');
-        } else {
-          localStorage.setItem('draftSubject', JSON.stringify(draftSubject));
-        }
-
+        localStorage.setItem('draftSubject', JSON.stringify(draftSubject));
         return SubjectsActions.updateDraftSubject({ draftSubject });
       }),
     )
   ));
 
-  constructor(private actions: Actions, private subjectService: SubjectService) {}
+  public removeDraftSubjectLocalStorage$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.removeDraftSubjectLocalStorage),
+      map(() => {
+        localStorage.removeItem('draftSubject');
+        return SubjectsActions.updateDraftSubject({ draftSubject: null });
+      }),
+    )
+  ));
+
+  constructor(
+    private router: Router,
+    private actions: Actions,
+    private subjectService: SubjectService,
+  ) {}
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { forkJoin, Observable } from 'rxjs';
 
-import { HttpService } from './http.service';
 import { Mark } from '../models/mark';
 import { urlProvider } from '../../url';
 import { Options } from '../models/utils/http-options';
@@ -16,15 +16,15 @@ const {
 })
 export class MarkService {
   constructor(
-    private http: HttpService<Mark>,
+    private http: HttpClient,
   ) { }
 
   public fetchMarks(options: Options = new Options()): Observable<Array<Mark>> {
-    return this.http.getDataArray(marksURL, options);
+    return this.http.get<Array<Mark>>(marksURL, options);
   }
 
   public postMark(mark: Mark): Observable<Mark> {
-    return this.http.postData(marksURL, mark);
+    return this.http.post<Mark>(marksURL, mark);
   }
 
   public postMarks(marks: Array<Mark>): Observable<Array<Mark>> {
@@ -36,7 +36,7 @@ export class MarkService {
   }
 
   public putMark(mark: Mark): Observable<Mark> {
-    return this.http.putData(`${marksURL}/${mark.id}`, mark);
+    return this.http.put<Mark>(`${ marksURL }/${ mark.id }`, mark);
   }
 
   public putMarks(marks: Array<Mark>): Observable<Array<Mark>> {
@@ -48,7 +48,7 @@ export class MarkService {
   }
 
   public deleteMark(mark: Mark): Observable<Mark> {
-    return this.http.deleteData(`${marksURL}/${mark.id}`);
+    return this.http.delete<Mark>(`${ marksURL }/${ mark.id }`);
   }
 
   public deleteMarks(marks: Array<Mark>): Observable<Array<Mark>> {

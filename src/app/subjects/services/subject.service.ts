@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { HttpService } from '../../common/services';
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
 import { Options } from '../../common/models/utils/http-options';
@@ -13,21 +13,21 @@ const { subjects: subjectUrl } = urlProvider;
 @Injectable()
 export class SubjectService {
   constructor(
-    private http: HttpService<Subject>,
+    private http: HttpClient,
   ) { }
 
   public fetchSubjects(options: Options = new Options()): Observable<Array<Subject>> {
-    return this.http.getDataArray(subjectUrl, options);
+    return this.http.get<Array<Subject>>(subjectUrl, options);
   }
 
   public fetchSubject(options: Options = new Options()): Observable<Subject> {
-    return this.http.getData(subjectUrl, options).pipe(
+    return this.http.get<Subject>(subjectUrl, options).pipe(
       map((subjects) => subjects[0]),
     );
   }
 
   public addSubjectServer(subject: Subject): Observable<Subject> {
-    return this.http.postData(subjectUrl, subject);
+    return this.http.post<Subject>(subjectUrl, subject);
   }
 
   public updateSubject(subject: Subject): Observable<Subject> {
@@ -36,7 +36,7 @@ export class SubjectService {
     // }
 
     const { id } = subject;
-    return this.http.putData(`${ subjectUrl }/${ id }`, subject);
+    return this.http.put<Subject>(`${ subjectUrl }/${ id }`, subject);
   }
 
   public isChanged(sourceSubject: Subject, subject: Subject): boolean {

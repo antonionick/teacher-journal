@@ -2,12 +2,16 @@ import { Action, ActionReducer, createReducer, on } from '@ngrx/store';
 
 import * as Actions from './marks.actions';
 import { IMarksState, initialState } from './marks.state';
-import { Mark } from '../../common/models/mark';
 
 const reducer: ActionReducer<IMarksState> = createReducer(
   initialState,
   on(Actions.loadMarks, (state) => {
-    return { ...state, loading: true, error: null };
+    return {
+      ...state,
+      loading: true,
+      loaded: false,
+      error: null,
+    };
   }),
   on(Actions.loadMarksSuccess, (state, { id, marks }) => {
     return {
@@ -17,58 +21,61 @@ const reducer: ActionReducer<IMarksState> = createReducer(
       loaded: true,
     };
   }),
-  on(Actions.loadMarksError, (state, { error }) => {
-    return { ...state, error, loading: false, loaded: false };
+  on(Actions.loadMarksError, (state, { id, error }) => {
+    return {
+      ...state,
+      error,
+      marks: { ...state.marks, [id]: [] },
+      loading: false,
+      loaded: false,
+    };
+  }),
+  on(Actions.addMarks, (state) => {
+    return {
+      ...state,
+      error: null,
+    };
   }),
   on(Actions.addMarksSuccess, (state, { id, marks }) => {
-    return {
-      ...state,
-      error: null,
-      marks: { ...state.marks, [id]: [...state.marks[id], ...marks] },
-    };
+    return { ...state };
   }),
-  on(Actions.addMarksError, (state, { error }) => {
+  on(Actions.addMarksError, (state, { id, error }) => {
     return {
       ...state,
       error,
+      marks: { ...state.marks, [id]: [] },
     };
   }),
-  on(Actions.updateMarksSuccess, (state, { id, marks }) => {
-    const marksById: { [key: string]: Mark } = {};
-    marks.forEach((item) => marksById[item.id] = item);
-
+  on(Actions.updateMarksServer, (state) => {
     return {
       ...state,
       error: null,
-      marks: {
-        ...state.marks,
-        [id]: state.marks[id].map((item) => marksById[item.id] || item),
-      },
     };
   }),
-  on(Actions.updateMarksError, (state, { error }) => {
-    return {
-      ...state,
-      error: error,
-    };
+  on(Actions.updateMarksServerSuccess, (state, { id, marks }) => {
+    return { ...state };
   }),
-  on(Actions.deleteMarksSuccess, (state, { id, marks }) => {
-    const deletedMarksById: { [key: string]: Mark } = {};
-    marks.forEach((item) => deletedMarksById[item.id] = item);
-
-    return {
-      ...state,
-      error: null,
-      marks: {
-        ...state.marks,
-        [id]: state.marks[id].filter((item) => deletedMarksById[item.id]),
-      },
-    };
-  }),
-  on(Actions.deleteMarksError, (state, { error }) => {
+  on(Actions.updateMarksServerError, (state, { id, error }) => {
     return {
       ...state,
       error,
+      marks: { ...state.marks, [id]: [] },
+    };
+  }),
+  on(Actions.deleteMarks, (state) => {
+    return {
+      ...state,
+      error: null,
+    };
+  }),
+  on(Actions.deleteMarksSuccess, (state) => {
+    return { ...state };
+  }),
+  on(Actions.deleteMarksError, (state, { id, error }) => {
+    return {
+      ...state,
+      error,
+      marks: { ...state.marks, [id]: [] },
     };
   }),
 );

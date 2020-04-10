@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
+import { createEffect, Actions, ofType } from '@ngrx/effects';
 
 import { Observable, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
@@ -27,12 +28,36 @@ export class StudentsEffects {
   public addStudentServer$: Observable<Action> = createEffect(() => (
     this.actions$.pipe(
       ofType(studentActions.addStudentServer),
-      switchMap(({ student: newStudent }) => (
+      switchMap(({ student: newStudent, move }) => (
         this.studentService.addStudentServer(newStudent).pipe(
-          map((student) => studentActions.addStudentServerSuccess({ student })),
-          catchError((error) => of(studentActions.addStudentServerError({ error }))),
+          map((student) => {
+            if (move) {
+              this.router.navigate(['students']);
+            }
+            return studentActions.addStudentServerSuccess({ student });
+          }),
+          catchError((error) => of(studentActions.addStudentServerError({
+            student: newStudent,
+            error,
+          }))),
         )
       )),
+    )
+  ));
+
+  public addStudentServerSuccess$: Observable<Action> = createEffect(() => (
+    this.actions$.pipe(
+      ofType(studentActions.addStudentServerSuccess),
+      map(() => studentActions.removeDraftStudentLocalStorage()),
+    )
+  ));
+
+  public addStudentServerError: Observable<Action> = createEffect(() => (
+    this.actions$.pipe(
+      ofType(studentActions.addStudentServerError),
+      map(({ student }) => studentActions.updateDraftStudentLocalStorage({
+        draftStudent: student,
+      })),
     )
   ));
 
@@ -50,18 +75,24 @@ export class StudentsEffects {
     this.actions$.pipe(
       ofType(studentActions.updateDraftStudentLocalStorage),
       map(({ draftStudent }) => {
-        if (draftStudent === null) {
-          localStorage.removeItem('draftStudent');
-        } else {
-          localStorage.setItem('draftStudent', JSON.stringify(draftStudent));
-        }
-
+        localStorage.setItem('draftStudent', JSON.stringify(draftStudent));
         return studentActions.updateDraftStudent({ draftStudent });
       }),
     )
   ));
 
+  public removeDraftStudentLocalStorage$: Observable<Action> = createEffect(() => (
+    this.actions$.pipe(
+      ofType(studentActions.removeDraftStudentLocalStorage),
+      map(() => {
+        localStorage.removeItem('draftStudent');
+        return studentActions.updateDraftStudent({ draftStudent: null });
+      }),
+    )
+  ));
+
   constructor(
+    private router: Router,
     private actions$: Actions,
     private studentService: StudentService,
   ) {}

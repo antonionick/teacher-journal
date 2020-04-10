@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
@@ -36,7 +35,6 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     private store: Store<AppState>,
     private formService: SubjectFormService,
     private subjectService: SubjectService,
-    private router: Router,
   ) {
     super();
     this.initialSubject = null;
@@ -76,9 +74,7 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     this.isSaving = true;
 
     const subject: Subject = this.formService.getSubjectByForm(form);
-    this.store.dispatch(SubjectActions.updateDraftSubjectLocalStorage({ draftSubject: null }));
-    this.store.dispatch(SubjectActions.addSubjectServer({ subject }));
-    this.router.navigate(['subjects']);
+    this.store.dispatch(SubjectActions.addSubjectServer({ subject, move: true }));
   }
 
   public showSaveQuestion(): Observable<boolean> {
@@ -93,13 +89,10 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
       message: 'Do you want to save changes?',
       isChanged: (data: Subject) => this.subjectService.isChanged(this.initialSubject, data),
       addToServer: (data: Subject) => this.store.dispatch(
-        SubjectActions.addSubjectServer({ subject: data }),
+        SubjectActions.addSubjectServer({ subject: data, move: false }),
       ),
       addToStorage: (draftSubject: Subject) => this.store.dispatch(
         SubjectActions.updateDraftSubjectLocalStorage({ draftSubject }),
-      ),
-      removeFromStorage: () => this.store.dispatch(
-        SubjectActions.updateDraftSubjectLocalStorage({ draftSubject: null }),
       ),
     };
 

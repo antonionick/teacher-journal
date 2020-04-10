@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
-import { Observable, pipe, Subscription, UnaryFunction } from 'rxjs';
-import { takeUntil, switchMap, tap, filter, mergeMap } from 'rxjs/operators';
+import { Observable, of, pipe, Subscription, throwError, UnaryFunction } from 'rxjs';
+import { takeUntil, switchMap, tap, filter } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as SubjectsSelectors from '../../@ngrx/subjects/subjects.selectors';
@@ -13,7 +13,6 @@ import * as StudentsActions from '../../@ngrx/students/students.actions';
 import * as MarksSelectors from '../../@ngrx/marks/marks.selectors';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
 import {
-  SubjectService,
   SubjectTableService,
   SubjectTableConfigService,
   SubjectTableBodyService,
@@ -53,15 +52,13 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private tableService: SubjectTableService,
-    private subjectService: SubjectService,
   ) {
     super();
     this.isLoading = false;
   }
 
   private loadProcess(
-    countCalls: { count: number },
-    err: TNullable<string | Error>,
+    err: TNullable<Error>,
     loading: boolean,
     action: () => void,
   ): void {
@@ -70,11 +67,9 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     } else if (!loading) {
       action();
     }
-
-    countCalls.count++;
   }
 
-  private loadProcessSubject(idObj: { id: number }, countCalls: { count: number }):
+  private loadProcessSubject(idObj: { id: number }):
     UnaryFunction<Observable<ISubjectSelectStore>, Observable<ISubjectSelectStore>> {
     return pipe(
       tap(({ subject, err, loading }) => {
@@ -82,7 +77,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           return this.setSubject(subject);
         }
 
-        this.loadProcess(countCalls, err, loading, () => {
+        this.loadProcess(err, loading, () => {
           this.store.dispatch(SubjectsActions.loadOneSubject({ id: idObj.id }));
         });
       }),
@@ -90,7 +85,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private loadProcessStudents(countCalls: { count: number }):
+  private loadProcessStudents():
     UnaryFunction<Observable<IStudentsState>, Observable<IStudentsState>> {
     return pipe(
       tap(({ students, loading, error }) => {
@@ -98,7 +93,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           return this.tableService.subjectStudents = students;
         }
 
-        this.loadProcess(countCalls, error, loading, () => {
+        this.loadProcess(error, loading, () => {
           this.store.dispatch(StudentsActions.loadStudents());
         });
       }),
@@ -106,22 +101,42 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private loadProcessMarks(idObj: { id: number }, countCalls: { count: number }):
+  private loadProcessMarks(idObj: { id: number }):
     UnaryFunction<Observable<IMarksSelectStore>, Observable<IMarksSelectStore>> {
     return pipe(
-      tap(({ marks, loading, error }) => {
-        if (marks.length > 0 || !loading && !error && countCalls.count > 0) {
+      tap(({ marks, loading, loaded, error }) => {
+        if (marks.length > 0 || !error && loaded) {
           return this.tableService.subjectMarks = marks;
         }
 
-        this.loadProcess(countCalls, error, loading, () => {
+        this.loadProcess(error, loading, () => {
           this.store.dispatch(MarksActions.loadMarks({ id: idObj.id }));
         });
       }),
-      filter(({ marks, loading, error }) => {
-        return marks.length > 0 || !loading && !error && countCalls.count > 1;
-      }),
+      filter(({ marks, loaded, error }) => marks.length > 0 || !error && loaded),
     );
+  }
+
+  private dispatchActionsOnSave(
+    id: number,
+    { created, updated, deleted }: IDataChanges<Mark>,
+  ): number {
+    let countCalls: number = 0;
+
+    if (created.length > 0) {
+      countCalls++;
+      this.store.dispatch(MarksActions.addMarks({ id, marks: created }));
+    }
+    if (updated.length > 0) {
+      countCalls++;
+      this.store.dispatch(MarksActions.updateMarksServer({ id, marks: updated }));
+    }
+    if (deleted.length > 0) {
+      countCalls++;
+      this.store.dispatch(MarksActions.deleteMarks({ id, marks: deleted }));
+    }
+
+    return countCalls;
   }
 
   private setSubject(subject: Subject): void {
@@ -131,7 +146,6 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
 
   public ngOnInit(): void {
     let idObj: { id: number } = { id: -1 };
-    let countCalls: { count: number } = { count: 0 };
 
     this.config = null;
     this.isLoading = true;
@@ -139,67 +153,87 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.teacherControl = new FormControl('');
     this.saveButtonConfig = new ButtonConfig();
 
-    this.route.paramMap.pipe(
+    let sub: Subscription = new Subscription();
+    sub = this.route.paramMap.pipe(
       switchMap((params) => {
         const id: number = idObj.id = +params.get('id');
         return this.store.pipe(select(SubjectsSelectors.selectSubjectById, { id }));
       }),
-      this.loadProcessSubject(idObj, countCalls),
+      this.loadProcessSubject(idObj),
       switchMap(() => {
-        countCalls.count = 0;
         return this.store.pipe(select('students'));
       }),
-      this.loadProcessStudents(countCalls),
+      this.loadProcessStudents(),
       switchMap(() => {
-        countCalls.count = 0;
         return this.store.pipe(select(MarksSelectors.selectMarksBySubject, { id: idObj.id }));
       }),
-      this.loadProcessMarks(idObj, countCalls),
+      this.loadProcessMarks(idObj),
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (): void => {
         this.config = this.tableService.createConfig();
+        sub.unsubscribe();
       },
     });
   }
 
-  public onUpdateHeaders(): void {
-    this.config = this.tableService.updateConfig();
-  }
-
   public onSave(): void {
-    // if (!this.subject) {
-    //   return;
-    // }
     this.saveButtonConfig.disable = true;
 
-    const changes: IDataChanges<Mark> = this.tableService.getChanges(this.subject.id);
+    const { id } = this.subject;
+    const changes: IDataChanges<Mark> = this.tableService.getChanges(id);
     const isChanged: boolean = this.teacherControl.value !== this.subject.teacher;
+    let countCall: number;
+
     if (isChanged) {
       this.subject.teacher = this.teacherControl.value;
     }
-    // const subscription: Subscription = this.tableService
-    //   .saveChanges(this.subject.id)
-    //   .pipe(
-    //     mergeMap(() => {
-    //       return this.tableService.fetchSubjectMarks(this.subject.id);
-    //     }),
-    //     tap((marks = []) => this.tableService.subjectMarks = marks),
-    //   )
-    //   .subscribe({
-    //     next: () => {
-    //       this.saveButtonConfig.disable = false;
-    //       this.config = this.tableService.createConfig();
-    //       subscription.unsubscribe();
-    //     },
-    //     error: () => {
-    //       console.error('bad internet connection!');
-    //     },
-    //   });
+
+    countCall = this.dispatchActionsOnSave(id, changes);
+
+    if (countCall === 0) {
+      this.saveButtonConfig.disable = false;
+      return;
+    }
+
+    let countLoads: number = 0;
+    let sub: Subscription = new Subscription();
+    sub = this.store.pipe(
+      select(MarksSelectors.selectMarksBySubject, { id }),
+      filter((state, index) => index >= countCall),
+      switchMap((state) => {
+        const { error, loaded } = state;
+        if (error !== null && error.status !== 404) {
+          return throwError(error);
+        }
+
+        if (loaded && countLoads === 0) {
+          countLoads = 1;
+          this.store.dispatch(MarksActions.loadMarks({ id }));
+        }
+        return of(state);
+      }),
+      filter(({ loaded }, index) => loaded && index > 0),
+    ).subscribe({
+      next: ({ marks }) => {
+        this.tableService.subjectMarks = marks;
+        this.config = this.tableService.createConfig();
+        this.saveButtonConfig.disable = false;
+        sub.unsubscribe();
+      },
+      error: (error) => {
+        alert(error.message);
+        this.router.navigate(['subjects']);
+      },
+    });
     //
     // const subscriptionSaveSubject: Subscription = this.subjectService
     //   .updateSubject(this.subject)
     //   .subscribe(() => subscriptionSaveSubject.unsubscribe());
+  }
+
+  public onUpdateHeaders(): void {
+    this.config = this.tableService.updateConfig();
   }
 
   public onAddDateHeader(): void {
