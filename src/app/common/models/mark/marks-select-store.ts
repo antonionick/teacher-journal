@@ -4,7 +4,7 @@ import { Mark } from './mark';
 import { TNullable } from '../utils/tnullable';
 
 export interface IMarksSelectStore {
-  marks: Array<Mark>;
+  marks: TNullable<Array<Mark>>;
   error: TNullable<HttpErrorResponse>;
   loading: boolean;
   loaded: boolean;

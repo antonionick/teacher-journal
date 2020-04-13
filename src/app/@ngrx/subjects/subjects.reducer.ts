@@ -3,6 +3,7 @@ import { ActionReducer } from '@ngrx/store/src/models';
 
 import * as Actions from './subjects.actions';
 import { initialState, ISubjectState } from './subjects.state';
+import { Subject } from 'src/app/common/models/subject';
 
 const reducer: ActionReducer<ISubjectState> = createReducer(
   initialState,
@@ -12,13 +13,15 @@ const reducer: ActionReducer<ISubjectState> = createReducer(
       loading: true,
     };
   }),
-  on(Actions.loadSubjectsSuccess, (state, { subjects }) => {
+  on(Actions.loadSubjectsSuccess, (state, { subjects: data }) => {
+    const subjects: Array<Subject> = [...state.subjects, ...data];
     return {
       ...state,
+      subjects,
       error: null,
-      subjects: [...state.subjects, ...subjects],
       loading: false,
       loaded: true,
+      loadedOne: false,
     };
   }),
   on(
@@ -30,6 +33,7 @@ const reducer: ActionReducer<ISubjectState> = createReducer(
         error,
         loading: false,
         loaded: false,
+        loadedOne: false,
       };
     },
   ),
@@ -45,20 +49,40 @@ const reducer: ActionReducer<ISubjectState> = createReducer(
       error: null,
       subjects: [...state.subjects, subject],
       loading: false,
-      loaded: true,
+      loadedOne: true,
     };
   }),
-  on(Actions.addSubjectServerSuccess, (state, { subject }) => {
+  on(Actions.addSubjectSuccess, (state, { subject }) => {
     return {
       ...state,
       error: null,
       subjects: [...state.subjects, subject],
     };
   }),
-  on(Actions.addSubjectServerError, (state, { error }) => {
+  on(Actions.addSubjectError, (state, { error }) => {
     return {
       ...state,
       error,
+    };
+  }),
+  on(Actions.updateSubject, (state) => {
+    return {
+      ...state,
+      updating: true,
+    };
+  }),
+  on(Actions.updateSubjectSuccess, (state, { subject }) => {
+    return {
+      ...state,
+      subjects: state.subjects.map((item) => item.id === subject.id ? subject : item),
+      updating: false,
+    };
+  }),
+  on(Actions.updateSubjectError, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      updating: false,
     };
   }),
   on(Actions.updateDraftSubject, (state, { draftSubject }) => {

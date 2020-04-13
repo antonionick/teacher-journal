@@ -27,17 +27,29 @@ export const loadOneSubjectError = createAction(
   '[Load One Subject Effect] LOAD_ONE_SUBJECT_ERROR',
   props<{ error: Error }>(),
 );
-export const addSubjectServer = createAction(
-  '[Subject Form] ADD_SUBJECT_SERVER',
+export const addSubject = createAction(
+  '[Subject Form] ADD_SUBJECT',
   props<{ subject: Subject, move: boolean }>(),
 );
-export const addSubjectServerSuccess = createAction(
-  '[Add Subject Effect] ADD_SUBJECT_SERVER_SUCCESS',
+export const addSubjectSuccess = createAction(
+  '[Add Subject Effect] ADD_SUBJECT_SUCCESS',
   props<{ subject: Subject }>(),
 );
-export const addSubjectServerError = createAction(
-  '[Add Subject Effect] ADD_SUBJECT_SERVER_ERROR',
+export const addSubjectError = createAction(
+  '[Add Subject Effect] ADD_SUBJECT_ERROR',
   props<{ subject: Subject, error: Error }>(),
+);
+export const updateSubject = createAction(
+  '[Subject Table] UPDATE_SUBJECT',
+  props<{ subject: Subject }>(),
+);
+export const updateSubjectSuccess = createAction(
+  '[Update Subject Effect] UPDATE_SUBJECT_SUCCESS',
+  props<{ subject: Subject }>(),
+);
+export const updateSubjectError = createAction(
+  '[Update Subject Effect] UPDATE_SUBJECT_ERROR',
+  props<{ error: Error }>(),
 );
 export const getDraftSubjectLocalStorage = createAction(
   '[Subject Form] GET_DRAFT_SUBJECT_LOCALSTORAGE',

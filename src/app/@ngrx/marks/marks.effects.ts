@@ -28,10 +28,10 @@ export class MarksEffects {
   public addMarks$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(MarksActions.addMarks),
-      switchMap(({ id, marks }) => (
+      switchMap(({ marks }) => (
         this.marksService.postMarks(marks).pipe(
-          map((response) => MarksActions.addMarksSuccess({ id, marks: response })),
-          catchError((error) => of(MarksActions.addMarksError({ id, error }))),
+          map(() => MarksActions.addMarksSuccess()),
+          catchError((error) => of(MarksActions.addMarksError({ error }))),
         )
       )),
     )
@@ -39,11 +39,11 @@ export class MarksEffects {
 
   public updateMarks$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
-      ofType(MarksActions.updateMarksServer),
-      switchMap(({ id, marks }) => (
+      ofType(MarksActions.updateMarks),
+      switchMap(({ marks }) => (
         this.marksService.putMarks(marks).pipe(
-          map((response) => MarksActions.updateMarksServerSuccess({ id, marks: response })),
-          catchError((error) => of(MarksActions.updateMarksServerError({ id, error }))),
+          map(() => MarksActions.updateMarksSuccess()),
+          catchError((error) => of(MarksActions.updateMarksError({ error }))),
         )
       )),
     )
@@ -52,16 +52,14 @@ export class MarksEffects {
   public deleteMarks$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
       ofType(MarksActions.deleteMarks),
-      switchMap(({ id, marks }) => (
+      switchMap(({ marks }) => (
         this.marksService.deleteMarks(marks).pipe(
-          map(() => MarksActions.deleteMarksSuccess({ id, marks })),
-          catchError((error) => {
-            return of(MarksActions.deleteMarksError({ id, error }));
-          }),
+          map(() => MarksActions.deleteMarksSuccess()),
+          catchError((error) => of(MarksActions.deleteMarksError({ error }))),
         )
       )),
     )
   ));
 
-  constructor(private actions: Actions, private marksService: MarkService) {}
+  constructor(private actions: Actions, private marksService: MarkService) { }
 }

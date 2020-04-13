@@ -5,6 +5,8 @@ export interface ISubjectState {
   subjects: Array<Subject>;
   loading: boolean;
   loaded: boolean;
+  loadedOne: boolean;
+  updating: boolean;
   error: TNullable<Error | string>;
   draftSubject: TNullable<Subject>;
 }
@@ -13,6 +15,8 @@ export const initialState: ISubjectState = {
   subjects: [],
   loading: false,
   loaded: false,
+  loadedOne: false,
+  updating: false,
   error: null,
   draftSubject: null,
 };

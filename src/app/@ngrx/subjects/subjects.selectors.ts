@@ -4,8 +4,10 @@ import {
   MemoizedSelector,
   MemoizedSelectorWithProps,
 } from '@ngrx/store';
+
 import { AppState } from '../app.state';
 import { ISubjectState } from './subjects.state';
+import { selectQueryParams, selectRouter } from '../router';
 
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
 import { TNullable } from '../../common/models/utils/tnullable';
@@ -21,7 +23,8 @@ export const selectDraftSubject: MemoizedSelector<AppState, Subject> = createSel
 export const selectSubjectById: MemoizedSelectorWithProps<AppState, { id: number },
   ISubjectSelectStore> = createSelector(
   selectState,
-  ({ subjects, error, loading }, props) => {
+  selectRouter,
+  ({ subjects, error, loading }, router, props) => {
     const subject: TNullable<Subject> = subjects.find(
       ({ id }) => id === props.id,
     ) || null;

@@ -8,12 +8,13 @@ import { IMarksState } from './marks.state';
 import { AppState } from '../app.state';
 import { IMarksSelectStore } from '../../common/models/mark';
 
-const selectMarksState: MemoizedSelector<AppState, IMarksState> = createFeatureSelector('marks');
+export const selectMarksState: MemoizedSelector<AppState, IMarksState> =
+  createFeatureSelector('marks');
 
 export const selectMarksBySubject:
   MemoizedSelectorWithProps<AppState, { id: number }, IMarksSelectStore> = createSelector(
-  selectMarksState,
-  ({ marks, error, loading, loaded }, { id }) => {
-    return { error, loading, loaded, marks: marks[id] || [] };
-  },
-);
+    selectMarksState,
+    ({ marks, error, loading, loaded }, { id }) => {
+      return { error, loading, loaded, marks: marks[id] || null };
+    },
+  );

@@ -31,15 +31,15 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
     this.error = null;
   }
 
-  private isNeedLoad({ loading, loaded, error }: ISubjectState): boolean {
+  private isNeedLoad({ loading, loaded, loadedOne, error }: ISubjectState): boolean {
     this.isLoading = false;
 
     if (loading) {
       this.isLoading = true;
+    } else if ((loadedOne || !loaded) && error === null) {
+      return true;
     } else if (error) {
       this.error = error;
-    } else if (!loaded) {
-      return true;
     }
 
     return false;
@@ -50,12 +50,12 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
       select('subjects'),
       takeUntil(this.unsubscribe$),
     ).subscribe({
-      next: (subjectsState) => {
-        if (!this.isNeedLoad(subjectsState)) {
-          return this.subjects = subjectsState.subjects;
+      next: (state) => {
+        if (!this.isNeedLoad(state)) {
+          return this.subjects = state.subjects;
         }
 
-        this.store.dispatch(SubjectsActions.loadSubjects({ loaded: subjectsState.subjects }));
+        this.store.dispatch(SubjectsActions.loadSubjects({ loaded: state.subjects }));
       },
     });
   }

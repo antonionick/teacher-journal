@@ -40,36 +40,48 @@ export class SubjectsEffects {
     )
   ));
 
-  public addSubjectServer$: Observable<Action> = createEffect(() => (
+  public addSubject$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
-      ofType(SubjectsActions.addSubjectServer),
+      ofType(SubjectsActions.addSubject),
       switchMap(({ subject, move }) => (
         this.subjectService.addSubjectServer(subject).pipe(
           map((addedSubject) => {
             if (move) {
               this.router.navigate(['subjects']);
             }
-            return SubjectsActions.addSubjectServerSuccess({ subject: addedSubject });
+            return SubjectsActions.addSubjectSuccess({ subject: addedSubject });
           }),
-          catchError((error) => of(SubjectsActions.addSubjectServerError({ subject, error }))),
+          catchError((error) => of(SubjectsActions.addSubjectError({ subject, error }))),
         )
       )),
     )
   ));
 
-  public addSubjectServerSuccess$: Observable<Action> = createEffect(() => (
+  public addSubjectSuccess$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
-      ofType(SubjectsActions.addSubjectServerSuccess),
+      ofType(SubjectsActions.addSubjectSuccess),
       map(() => SubjectsActions.removeDraftSubjectLocalStorage()),
     )
   ));
 
-  public addSubjectServerError$: Observable<Action> = createEffect(() => (
+  public addSubjectError$: Observable<Action> = createEffect(() => (
     this.actions.pipe(
-      ofType(SubjectsActions.addSubjectServerError),
+      ofType(SubjectsActions.addSubjectError),
       map(({ subject }) => SubjectsActions.updateDraftSubjectLocalStorage({
         draftSubject: subject,
       })),
+    )
+  ));
+
+  public updateSubject$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.updateSubject),
+      switchMap(({ subject }) => (
+        this.subjectService.updateSubject(subject).pipe(
+          map(() => SubjectsActions.updateSubjectSuccess({ subject })),
+          catchError((error) => of(SubjectsActions.updateSubjectError({ error }))),
+        )
+      )),
     )
   ));
 
@@ -107,5 +119,5 @@ export class SubjectsEffects {
     private router: Router,
     private actions: Actions,
     private subjectService: SubjectService,
-  ) {}
+  ) { }
 }

@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
-import { Observable, of, pipe, Subscription, throwError, UnaryFunction } from 'rxjs';
-import { takeUntil, switchMap, tap, filter } from 'rxjs/operators';
+import { Observable, pipe, Subscription, UnaryFunction, of, zip } from 'rxjs';
+import { takeUntil, switchMap, tap, filter, take, map, delay } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as SubjectsSelectors from '../../@ngrx/subjects/subjects.selectors';
@@ -19,7 +19,7 @@ import {
   SubjectTableHeaderService,
   TableConfigHistoryService,
 } from '../services';
-import { IMarksSelectStore, Mark } from '../../common/models/mark';
+import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
 import { AppState, IStudentsState } from '../../@ngrx';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
 import { TNullable } from '../../common/models/utils/tnullable';
@@ -105,7 +105,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     UnaryFunction<Observable<IMarksSelectStore>, Observable<IMarksSelectStore>> {
     return pipe(
       tap(({ marks, loading, loaded, error }) => {
-        if (marks.length > 0 || !error && loaded) {
+        if (marks !== null || !error && loaded) {
           return this.tableService.subjectMarks = marks;
         }
 
@@ -113,34 +113,89 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           this.store.dispatch(MarksActions.loadMarks({ id: idObj.id }));
         });
       }),
-      filter(({ marks, loaded, error }) => marks.length > 0 || !error && loaded),
+      filter(({ marks, loaded, error }) => marks !== null || !error && loaded),
     );
   }
 
   private dispatchActionsOnSave(
-    id: number,
     { created, updated, deleted }: IDataChanges<Mark>,
-  ): number {
-    let countCalls: number = 0;
+  ): StatusSaveMarks {
+    const status: StatusSaveMarks = new StatusSaveMarks();
 
     if (created.length > 0) {
-      countCalls++;
-      this.store.dispatch(MarksActions.addMarks({ id, marks: created }));
+      status.created = true;
+      this.store.dispatch(MarksActions.addMarks({ marks: created }));
     }
     if (updated.length > 0) {
-      countCalls++;
-      this.store.dispatch(MarksActions.updateMarksServer({ id, marks: updated }));
+      status.updated = true;
+      this.store.dispatch(MarksActions.updateMarks({ marks: updated }));
     }
     if (deleted.length > 0) {
-      countCalls++;
-      this.store.dispatch(MarksActions.deleteMarks({ id, marks: deleted }));
+      status.deleted = true;
+      this.store.dispatch(MarksActions.deleteMarks({ marks: deleted }));
     }
 
-    return countCalls;
+    return status;
+  }
+
+  private saveMarks(id: number): Observable<Array<Mark>> {
+    const changes: IDataChanges<Mark> = this.tableService.getChanges(id);
+    const status: StatusSaveMarks = this.dispatchActionsOnSave(changes);
+
+    if (!status.created && !status.updated && !status.deleted) {
+      return this.store.select(MarksSelectors.selectMarksBySubject, { id }).pipe(
+        map(({ marks }) => marks),
+      );
+    }
+
+    return this.store.pipe(
+      select(MarksSelectors.selectMarksState),
+      filter(({ adding, updating, deleting }) => !adding && !updating && !deleting),
+      take(1),
+      tap(({ error }) => {
+        if (error && error.status !== 404) {
+          alert(`Marks: ${error.message}`);
+        }
+
+        this.store.dispatch(MarksActions.loadMarks({ id }));
+      }),
+      switchMap(() => this.store.select(MarksSelectors.selectMarksBySubject, { id })),
+      filter(({ loaded }, index) => loaded && index > 0),
+      take(1),
+      map(({ marks }) => marks === null ? [] : marks),
+    );
+  }
+
+  private saveSubject(): Observable<Subject> {
+    const isChanged: boolean = this.teacherControl.value !== this.subject.teacher;
+
+    if (!isChanged) {
+      return of(this.subject);
+    }
+    this.subject.teacher = this.teacherControl.value;
+    this.store.dispatch(SubjectsActions.updateSubject({ subject: this.subject }));
+
+    return this.store.pipe(
+      select('subjects'),
+    ).pipe(
+      filter(({ updating }) => !updating),
+      take(1),
+      switchMap(() => (
+        this.store.pipe(
+          select(SubjectsSelectors.selectSubjectById, { id: this.subject.id }),
+        )
+      )),
+      tap(({ err }) => {
+        if (err) {
+          alert(`Subject: ${err.message}`);
+        }
+      }),
+      map(({ subject }) => subject),
+    );
   }
 
   private setSubject(subject: Subject): void {
-    this.subject = subject;
+    this.subject = { ...subject };
     this.teacherControl.setValue(subject.teacher);
   }
 
@@ -178,58 +233,22 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   public onSave(): void {
+    const { id } = this.subject;
     this.saveButtonConfig.disable = true;
 
-    const { id } = this.subject;
-    const changes: IDataChanges<Mark> = this.tableService.getChanges(id);
-    const isChanged: boolean = this.teacherControl.value !== this.subject.teacher;
-    let countCall: number;
-
-    if (isChanged) {
-      this.subject.teacher = this.teacherControl.value;
-    }
-
-    countCall = this.dispatchActionsOnSave(id, changes);
-
-    if (countCall === 0) {
-      this.saveButtonConfig.disable = false;
-      return;
-    }
-
-    let countLoads: number = 0;
-    let sub: Subscription = new Subscription();
-    sub = this.store.pipe(
-      select(MarksSelectors.selectMarksBySubject, { id }),
-      filter((state, index) => index >= countCall),
-      switchMap((state) => {
-        const { error, loaded } = state;
-        if (error !== null && error.status !== 404) {
-          return throwError(error);
-        }
-
-        if (loaded && countLoads === 0) {
-          countLoads = 1;
-          this.store.dispatch(MarksActions.loadMarks({ id }));
-        }
-        return of(state);
-      }),
-      filter(({ loaded }, index) => loaded && index > 0),
+    zip(
+      this.saveMarks(id),
+      this.saveSubject(),
+    ).pipe(
+      take(1),
     ).subscribe({
-      next: ({ marks }) => {
+      next: ([marks, subject]) => {
+        this.setSubject(subject);
         this.tableService.subjectMarks = marks;
         this.config = this.tableService.createConfig();
         this.saveButtonConfig.disable = false;
-        sub.unsubscribe();
-      },
-      error: (error) => {
-        alert(error.message);
-        this.router.navigate(['subjects']);
       },
     });
-    //
-    // const subscriptionSaveSubject: Subscription = this.subjectService
-    //   .updateSubject(this.subject)
-    //   .subscribe(() => subscriptionSaveSubject.unsubscribe());
   }
 
   public onUpdateHeaders(): void {

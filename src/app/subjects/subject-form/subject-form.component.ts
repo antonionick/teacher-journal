@@ -74,7 +74,7 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     this.isSaving = true;
 
     const subject: Subject = this.formService.getSubjectByForm(form);
-    this.store.dispatch(SubjectActions.addSubjectServer({ subject, move: true }));
+    this.store.dispatch(SubjectActions.addSubject({ subject, move: true }));
   }
 
   public showSaveQuestion(): Observable<boolean> {
@@ -89,7 +89,7 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
       message: 'Do you want to save changes?',
       isChanged: (data: Subject) => this.subjectService.isChanged(this.initialSubject, data),
       addToServer: (data: Subject) => this.store.dispatch(
-        SubjectActions.addSubjectServer({ subject: data, move: false }),
+        SubjectActions.addSubject({ subject: data, move: false }),
       ),
       addToStorage: (draftSubject: Subject) => this.store.dispatch(
         SubjectActions.updateDraftSubjectLocalStorage({ draftSubject }),

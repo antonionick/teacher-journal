@@ -8,9 +8,9 @@ const reducer: ActionReducer<IMarksState> = createReducer(
   on(Actions.loadMarks, (state) => {
     return {
       ...state,
+      error: null,
       loading: true,
       loaded: false,
-      error: null,
     };
   }),
   on(Actions.loadMarksSuccess, (state, { id, marks }) => {
@@ -34,48 +34,60 @@ const reducer: ActionReducer<IMarksState> = createReducer(
     return {
       ...state,
       error: null,
+      adding: true,
     };
   }),
-  on(Actions.addMarksSuccess, (state, { id, marks }) => {
-    return { ...state };
+  on(Actions.addMarksSuccess, (state) => {
+    return {
+      ...state,
+      adding: false,
+    };
   }),
-  on(Actions.addMarksError, (state, { id, error }) => {
+  on(Actions.addMarksError, (state, { error }) => {
     return {
       ...state,
       error,
-      marks: { ...state.marks, [id]: [] },
+      adding: false,
     };
   }),
-  on(Actions.updateMarksServer, (state) => {
+  on(Actions.updateMarks, (state) => {
     return {
       ...state,
       error: null,
+      updating: true,
     };
   }),
-  on(Actions.updateMarksServerSuccess, (state, { id, marks }) => {
-    return { ...state };
+  on(Actions.updateMarksSuccess, (state) => {
+    return {
+      ...state,
+      updating: false,
+    };
   }),
-  on(Actions.updateMarksServerError, (state, { id, error }) => {
+  on(Actions.updateMarksError, (state, { error }) => {
     return {
       ...state,
       error,
-      marks: { ...state.marks, [id]: [] },
+      updating: false,
     };
   }),
   on(Actions.deleteMarks, (state) => {
     return {
       ...state,
       error: null,
+      deleting: true,
     };
   }),
   on(Actions.deleteMarksSuccess, (state) => {
-    return { ...state };
+    return {
+      ...state,
+      deleting: false,
+    };
   }),
-  on(Actions.deleteMarksError, (state, { id, error }) => {
+  on(Actions.deleteMarksError, (state, { error }) => {
     return {
       ...state,
       error,
-      marks: { ...state.marks, [id]: [] },
+      deleting: false,
     };
   }),
 );
