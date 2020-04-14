@@ -7,8 +7,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, pluck, switchMap } from 'rxjs/operators';
 
 import * as MarksActions from './marks.actions';
-import { MarkService } from '../../common/services';
 import * as HttpUtils from '../../common/utils/http';
+import { MarkService } from '../../common/services';
 
 @Injectable()
 export class MarksEffects {

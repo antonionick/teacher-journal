@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
-import { Observable, pipe, Subscription, UnaryFunction, of, zip } from 'rxjs';
-import { takeUntil, switchMap, tap, filter, take, map, delay } from 'rxjs/operators';
+import { Observable, pipe, UnaryFunction, of, zip } from 'rxjs';
+import { takeUntil, switchMap, tap, filter, take, map } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as SubjectsSelectors from '../../@ngrx/subjects/subjects.selectors';
@@ -69,16 +69,16 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     }
   }
 
-  private loadProcessSubject(idObj: { id: number }):
+  private loadProcessSubject():
     UnaryFunction<Observable<ISubjectSelectStore>, Observable<ISubjectSelectStore>> {
     return pipe(
-      tap(({ subject, err, loading }) => {
+      tap(({ id, subject, err, loading }) => {
         if (subject !== null) {
           return this.setSubject(subject);
         }
 
         this.loadProcess(err, loading, () => {
-          this.store.dispatch(SubjectsActions.loadOneSubject({ id: idObj.id }));
+          this.store.dispatch(SubjectsActions.loadOneSubject({ id }));
         });
       }),
       filter(({ subject }) => subject !== null),
@@ -101,19 +101,19 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private loadProcessMarks(idObj: { id: number }):
+  private loadProcessMarks():
     UnaryFunction<Observable<IMarksSelectStore>, Observable<IMarksSelectStore>> {
     return pipe(
-      tap(({ marks, loading, loaded, error }) => {
-        if (marks !== null || !error && loaded) {
+      tap(({ id, marks, loading, loaded, error }) => {
+        if (marks !== null) {
           return this.tableService.subjectMarks = marks;
         }
 
         this.loadProcess(error, loading, () => {
-          this.store.dispatch(MarksActions.loadMarks({ id: idObj.id }));
+          this.store.dispatch(MarksActions.loadMarks({ id }));
         });
       }),
-      filter(({ marks, loaded, error }) => marks !== null || !error && loaded),
+      filter(({ marks, loaded, error }) => marks !== null),
     );
   }
 
@@ -154,7 +154,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       take(1),
       tap(({ error }) => {
         if (error && error.status !== 404) {
-          alert(`Marks: ${error.message}`);
+          alert(`Marks: ${ error.message }`);
         }
 
         this.store.dispatch(MarksActions.loadMarks({ id }));
@@ -187,7 +187,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       )),
       tap(({ err }) => {
         if (err) {
-          alert(`Subject: ${err.message}`);
+          alert(`Subject: ${ err.message }`);
         }
       }),
       map(({ subject }) => subject),
@@ -200,34 +200,28 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    let idObj: { id: number } = { id: -1 };
-
     this.config = null;
     this.isLoading = true;
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
     this.saveButtonConfig = new ButtonConfig();
 
-    let sub: Subscription = new Subscription();
-    sub = this.route.paramMap.pipe(
-      switchMap((params) => {
-        const id: number = idObj.id = +params.get('id');
-        return this.store.pipe(select(SubjectsSelectors.selectSubjectById, { id }));
-      }),
-      this.loadProcessSubject(idObj),
+    this.store.pipe(
+      select(SubjectsSelectors.selectSubjectByUrl),
+      this.loadProcessSubject(),
       switchMap(() => {
         return this.store.pipe(select('students'));
       }),
       this.loadProcessStudents(),
       switchMap(() => {
-        return this.store.pipe(select(MarksSelectors.selectMarksBySubject, { id: idObj.id }));
+        return this.store.pipe(select(MarksSelectors.selectMarksByUrl));
       }),
-      this.loadProcessMarks(idObj),
+      this.loadProcessMarks(),
+      take(1),
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (): void => {
         this.config = this.tableService.createConfig();
-        sub.unsubscribe();
       },
     });
   }

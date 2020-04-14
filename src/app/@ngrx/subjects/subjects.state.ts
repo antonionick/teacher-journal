@@ -7,7 +7,7 @@ export interface ISubjectState {
   loaded: boolean;
   loadedOne: boolean;
   updating: boolean;
-  error: TNullable<Error | string>;
+  error: TNullable<Error>;
   draftSubject: TNullable<Subject>;
 }
 

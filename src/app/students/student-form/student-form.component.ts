@@ -6,6 +6,8 @@ import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import * as StudentsActions from '../../@ngrx/students/students.actions';
+import { AppState, selectDraftStudent } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { IFormConfig } from '../../common/models/form';
 import { Student } from '../../common/models/student';
@@ -14,8 +16,6 @@ import { FormComponent } from '../../shared/components';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
 import { StudentFormService } from '../services/student-form.service';
 import { IConfirmSave } from '../../common/models/utils/confirm-save';
-import { AppState, selectDraftStudent } from '../../@ngrx';
-import * as StudentsActions from '../../@ngrx/students/students.actions';
 
 @Component({
   selector: 'app-student-form',

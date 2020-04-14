@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { Mark } from '../../common/models/mark';
 import { TNullable } from '../../common/models/utils/tnullable';
-import { HttpErrorResponse } from '@angular/common/http';
 
 interface IMarks {
   [idSubject: string]: Array<Mark>;
