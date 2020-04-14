@@ -12,21 +12,23 @@ import { SubjectsModule } from './subjects/subjects.module';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
 import { PanelComponent, BaseComponent } from './components';
+import { RootStoreModule } from './@ngrx/root-store.module';
 
 @NgModule({
   declarations: [AppComponent, PanelComponent, BaseComponent, AppRoutingModule.components],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FontAwesomeModule,
     HttpClientModule,
     MatTabsModule,
     SharedModule,
-    FontAwesomeModule,
     StudentsModule,
     SubjectsModule,
+    RootStoreModule,
     AppRoutingModule,
   ],
   providers: [FormBuilder],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

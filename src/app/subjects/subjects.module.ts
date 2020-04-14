@@ -4,7 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { SubjectsRoutingModule } from './subjects-routing.module';
 import { SharedModule } from '../shared/shared.module';
-import { SubjectService } from './services/subject.service';
+import { SubjectService } from './services';
 
 @NgModule({
   declarations: [SubjectsRoutingModule.components],

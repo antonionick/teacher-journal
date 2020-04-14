@@ -46,7 +46,7 @@ function updateMark(
   { studentId, value }: MarkHistory,
   marks: IMarksByDate,
 ): void {
-  const mark: Mark = marks[source][studentId];
+  const mark: Mark = new Mark(marks[source][studentId]);
   mark.date = current;
   mark.value = value;
   updated.push(mark);

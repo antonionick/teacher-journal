@@ -1,15 +1,5 @@
-import { TNullable } from '../models/utils/tnullable';
-
 interface IdContains {
   id: number | string;
-}
-
-function findById<T extends IdContains>(array: Array<T>, id: number): TNullable<T> {
-  return (
-    array.find((item) => {
-      return +item.id === id;
-    }) || null
-  );
 }
 
 function filterByIds<T extends IdContains>(array: Array<T>, filterIds: Array<number>): Array<T> {
@@ -23,4 +13,4 @@ function filterByIds<T extends IdContains>(array: Array<T>, filterIds: Array<num
   });
 }
 
-export { findById, filterByIds };
+export { filterByIds };

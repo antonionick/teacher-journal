@@ -1,63 +1,58 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { HttpService, LocalStorageService } from '../../common/services';
-import { StudentFormService } from './student-form.service';
-import { IFormConfig } from '../../common/models/Form';
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TableHeaderConfig } from '../../common/models/table';
 
 const { students: studentUrl } = urlProvider;
 
+const displayedColumns: Array<TableHeaderConfig> = [
+  new TableHeaderConfig({
+    value: 'id',
+    sort: true,
+  }),
+  new TableHeaderConfig({
+    value: 'name',
+    sort: true,
+  }),
+  new TableHeaderConfig({
+    value: 'lastName',
+    sort: true,
+  }),
+  new TableHeaderConfig({
+    value: 'address',
+    sort: true,
+  }),
+  new TableHeaderConfig({
+    value: 'description',
+    sort: true,
+  }),
+];
+
 @Injectable()
 export class StudentService {
+  public displayedColumns: Array<TableHeaderConfig>;
+
   constructor(
-    private http: HttpService<Student>,
-    private storage: LocalStorageService,
-    private form: StudentFormService,
-  ) { }
-
-  private getStorageStudent(): TNullable<Student> {
-    const data: TNullable<string> = this.storage.getItem('student');
-    return JSON.parse(data);
-  }
-
-  public addStorageStudent(student: Student): void {
-    this.storage.addItem('student', JSON.stringify(student));
+    private http: HttpClient,
+  ) {
+    this.displayedColumns = displayedColumns;
   }
 
   public fetchStudentsServer(): Observable<Array<Student>> {
-    return this.http.getDataArray(studentUrl);
+    return this.http.get<Array<Student>>(studentUrl);
   }
 
   public addStudentServer(student: Student): Observable<Student> {
-    return this.http.postData(studentUrl, student);
+    return this.http.post<Student>(studentUrl, student);
   }
 
-  public getFormConfig(): IFormConfig {
-    const student: Student = this.getStorageStudent();
-    if (student === null) {
-      return this.form.config;
-    }
-
-    this.form.updateConfigData(student);
-    return this.form.config;
-  }
-
-  public clearConfigData(): void {
-    this.form.clearData();
-    this.storage.removeItem('student');
-  }
-
-  public checkEmpty(student: Student): boolean {
-    const emptyStudent: Student = new Student();
-
-    return Object.keys(student).every((key: string) => {
-      if (emptyStudent[key] === student[key] || student[key] === null) {
-        return true;
-      }
+  public isChanged(sourceStudent: Student, student: Student): boolean {
+    return !Object.keys(student).every((key: string) => {
+      return sourceStudent[key] === student[key] || student[key] === null;
     });
   }
 }

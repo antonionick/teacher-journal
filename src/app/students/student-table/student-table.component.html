@@ -1,4 +1,4 @@
-<div class="student">
+<div class="student" *ngIf="config">
   <app-table [config]="config" class="student__table"> </app-table>
 
   <app-button [routerLink]="['add']" class="student__button">

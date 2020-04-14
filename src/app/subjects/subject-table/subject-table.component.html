@@ -1,4 +1,4 @@
-<article class="subject">
+<article class="subject" *ngIf="config">
   <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
   <section class="subject__content subject__content_table">
     <app-table

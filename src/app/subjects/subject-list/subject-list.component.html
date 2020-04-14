@@ -1,8 +1,8 @@
 <div class="subject">
   <ul class="subject__list">
     <li class="subject__item" *ngFor="let subject of subjects">
-      <app-button class="subject__link" [routerLink]="['table', subject | lowercase]">
-        {{ subject }}
+      <app-button class="subject__link" [routerLink]="['table', subject.id]">
+        {{ subject.name }}
       </app-button>
     </li>
   </ul>

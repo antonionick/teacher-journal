@@ -1,10 +1,7 @@
-import { Observable } from 'rxjs';
-
 export interface IConfirmSave<T> {
   disable: boolean;
   message: string;
-  checkEmpty: (data: T) => boolean;
-  removeFromStorage(): void;
+  isChanged: (data: T) => boolean;
   addToStorage(data: T): void;
-  addToServer(data: T): Observable<T>;
+  addToServer(data: T): void;
 }

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { SubjectService } from './subject.service';
-import { IFormConfig, FormElement } from '../../common/models/Form';
-import { Subject } from 'src/app/common/models/subject';
+import { IFormConfig, FormElement } from '../../common/models/form';
+import { Subject } from 'src/app/common/models/subject/subject';
 
 const formConfig: IFormConfig = {
   id: '',
@@ -67,14 +66,18 @@ export class SubjectFormService {
     return this.formConfig;
   }
 
-  constructor(
-    private subjectService: SubjectService,
-  ) {
+  constructor() {
     this.formConfig = formConfig;
-    this.clearFormData();
+  }
 
-    const subject: Subject = this.subjectService.getSubjectStorage();
-    this.updateFormData(subject);
+  public getSubjectByForm(form: FormGroup): Subject {
+    const subject: Subject = new Subject();
+
+    Object.keys(form.value).forEach((key) => {
+      subject[key] = form.value[key] || subject[key];
+    });
+
+    return subject;
   }
 
   public updateFormData(subject: Subject): void {
@@ -90,9 +93,5 @@ export class SubjectFormService {
 
   public clearFormData(): void {
     this.updateFormData({} as Subject);
-  }
-
-  public getSubjectOfForm(data: FormGroup): Subject {
-    return { id: null, ...data.value };
   }
 }

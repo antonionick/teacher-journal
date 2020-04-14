@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 import { IFormConfig } from '../../common/models/form';
-import { FormElement } from '../../common/models/Form';
+import { FormElement } from '../../common/models/form';
 import { Student } from '../../common/models/student';
 
 const config: IFormConfig = {
@@ -64,13 +65,28 @@ export class StudentFormService {
     this.config = config;
   }
 
+  public getStudentByForm({ value }: FormGroup): Student {
+    const student: Student = new Student();
+
+    Object.keys(value).forEach((key) => {
+      student[key] = value[key] || student[key];
+    });
+
+    return student;
+  }
+
   public updateConfigData(student: Student): void {
     this.config.elements.forEach((item) => {
       item.value = student[item.key] || '';
     });
   }
 
-  public clearData(): void {
+  public getFormConfig(student: Student): IFormConfig {
+    this.updateConfigData(student);
+    return this.config;
+  }
+
+  public clearFormConfig(): void {
     const student: Student = new Student();
     this.updateConfigData(student);
   }

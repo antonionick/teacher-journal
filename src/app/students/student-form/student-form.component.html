@@ -1,1 +1,7 @@
-<app-form [config]="config" (submit)="onSubmit($event)"></app-form>
+<div class="student" *ngIf="config">
+  <app-form
+    class="student__form"
+    [config]="config"
+    (submit)="onSubmit($event)"
+  ></app-form>
+</div>
