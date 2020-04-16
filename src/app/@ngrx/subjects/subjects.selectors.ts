@@ -9,7 +9,7 @@ import { AppState } from '../app.state';
 import { ISubjectState } from './subjects.state';
 import { selectRouter } from '../router';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 const selectState: MemoizedSelector<AppState, ISubjectState> =
   createFeatureSelector<AppState, ISubjectState>('subjects');

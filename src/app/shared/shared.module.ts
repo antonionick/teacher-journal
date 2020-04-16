@@ -12,8 +12,14 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableComponent, ButtonComponent, FormComponent } from './components';
 import { EditMarkDirective } from 'src/app/common/directives/edit-mark.directive';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-const publicComponents = [TableComponent, ButtonComponent, FormComponent, EditMarkDirective];
+const publicComponents = [
+  TableComponent,
+  ButtonComponent,
+  FormComponent,
+  EditMarkDirective,
+];
 const publicModules = [
   MatTableModule,
   MatButtonModule,
@@ -28,7 +34,7 @@ const publicModules = [
 
 @NgModule({
   declarations: [publicComponents],
-  imports: [CommonModule, publicModules],
+  imports: [CommonModule, publicModules, FontAwesomeModule],
   exports: [publicModules, publicComponents],
 })
 export class SharedModule { }

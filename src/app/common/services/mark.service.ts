@@ -5,7 +5,7 @@ import { forkJoin, Observable } from 'rxjs';
 
 import { Mark } from '../models/mark';
 import { urlProvider } from '../../url';
-import { Options } from '../models/utils/http-options';
+import { Options } from '../models/utils';
 
 const {
   marks: marksURL,

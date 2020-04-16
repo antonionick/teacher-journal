@@ -13,4 +13,18 @@ function filterByIds<T extends IdContains>(array: Array<T>, filterIds: Array<num
   });
 }
 
-export { filterByIds };
+function isAppropriatePath(url: string, path: string): boolean {
+  if (path.length > url.length) {
+    return false;
+  }
+
+  for (let i: number = 0; i < path.length; i++) {
+    if (url[i] !== path[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export { filterByIds, isAppropriatePath };

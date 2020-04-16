@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
-import { Options } from '../../common/models/utils/http-options';
+import { Options } from '../../common/models/utils';
 import { map } from 'rxjs/operators';
 
 const { subjects: subjectUrl } = urlProvider;

@@ -11,7 +11,7 @@ import { AppState, IStudentsState, selectStudents } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentService } from '../services/student.service';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 import { ITableConfig } from 'src/app/common/models/table';
 
 @Component({

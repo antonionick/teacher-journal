@@ -1,6 +1,6 @@
 <article class="subject" *ngIf="config">
   <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
-  <section class="subject__content subject__content_table">
+  <section class="subject__table-wrapper">
     <app-table
       class="subject__table"
       [config]="config"
@@ -19,7 +19,7 @@
     </div>
   </section>
 
-  <section class="subject__content subject__content_form">
+  <section class="subject__update-form-wrapper">
     <label class="subject__label">
       <span class="subject__label-title">Teacher:</span>
       <input class="subject__label-item" matInput type="text" [formControl]="teacherControl" />

@@ -1,6 +1,6 @@
 import { TableHeaderConfig, Paginator } from './index';
 import { EditMark } from '../mark';
-import { TNullable } from '../utils/tnullable';
+import { TNullable } from '../utils';
 
 export interface ITableConfig<T> {
   headers: Array<TableHeaderConfig>;

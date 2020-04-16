@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { convert } from '../utils/convert-history-change';
-import { DateChanges } from '../../common/models/utils/date-changes';
+import { DateChanges, IDataChanges } from '../../common/models/utils';
 import { TableConfigHistory } from '../../common/models/table/table-config-history';
 import { Mark, MarkHistory, IMarksByDate } from '../../common/models/mark';
 import { IChangeField } from '../../common/models/table';
-import { IDataChanges } from '../../common/models/utils/data-changes';
 import { TNullable } from 'src/app/common/models/utils/tnullable';
 
 @Injectable()

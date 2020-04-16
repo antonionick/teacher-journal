@@ -1,0 +1,8 @@
+@import "src/styles/variables";
+
+.subject {
+  box-sizing: border-box;
+  max-width: $project-width;
+  margin: 0 auto;
+  padding: 0 10px;
+}

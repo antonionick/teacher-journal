@@ -1,0 +1,19 @@
+<section class="breadcrumbs">
+  <ul class="breadcrumbs__list" *ngIf="config">
+    <li class="breadcrumbs__item" *ngFor="let item of config; let i = index">
+      <a
+        class="breadcrumbs__link"
+        [ngClass]="i + 1 === config.length ? 'breadcrumbs__link_current' : ''"
+        [routerLink]="item.path"
+      >
+        {{ item.name | titlecase }}
+      </a>
+      <fa-icon
+        class="breadcrumbs__icon"
+        *ngIf="config.length !== i + 1"
+        [icon]="icon"
+      >
+      </fa-icon>
+    </li>
+  </ul>
+</section>

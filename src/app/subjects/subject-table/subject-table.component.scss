@@ -5,26 +5,12 @@
     text-align: center;
   }
 
-  &__content {
-    &_table {
-      position: relative;
-      max-width: $max-table-width;
-      margin: 0 auto;
-    }
-
-    &_form {
-      display: flex;
-      justify-content: center;
-      max-width: 600px;
-      margin: 60px auto 0;
-    }
+  &__table-wrapper {
+    position: relative;
+    margin: 0 auto;
   }
 
   &__table {
-    &::ng-deep .table {
-      width: 100%;
-    }
-
     &::ng-deep .table__cell_header{
       padding-top: 20px;
     }
@@ -48,6 +34,13 @@
       border-radius: 4px;
       background-color: white;
     }
+  }
+
+  &__update-form-wrapper {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 60px auto 0;
   }
 
   &__label {

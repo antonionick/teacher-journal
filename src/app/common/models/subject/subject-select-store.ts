@@ -1,5 +1,5 @@
 import { Subject } from './subject';
-import { TNullable } from '../utils/tnullable';
+import { TNullable } from '../utils';
 
 export interface ISubjectSelectStore {
   id: number;

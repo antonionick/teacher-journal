@@ -1,10 +1,10 @@
 import { Action, ActionReducer, createReducer, on } from '@ngrx/store';
 
 import * as Actions from './marks.actions';
-import { IMarksState, initialState } from './marks.state';
+import { IMarksState, initialStateMarks } from './marks.state';
 
 const reducer: ActionReducer<IMarksState> = createReducer(
-  initialState,
+  initialStateMarks,
   on(Actions.loadMarks, (state) => {
     return {
       ...state,

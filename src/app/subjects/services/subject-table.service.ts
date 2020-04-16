@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { ITableConfig, ICell, IChangeField } from '../../common/models/table';
-import { Student } from 'src/app/common/models/student';
+import { Student } from 'src/app/common/models/student/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectTableConfigService } from './subject-table-config.service';
 import { IDataChanges } from 'src/app/common/models/utils/data-changes';

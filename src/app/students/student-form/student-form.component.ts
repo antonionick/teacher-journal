@@ -15,7 +15,7 @@ import { StudentService } from '../services/student.service';
 import { FormComponent } from '../../shared/components';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
 import { StudentFormService } from '../services/student-form.service';
-import { IConfirmSave } from '../../common/models/utils/confirm-save';
+import { IConfirmSave } from '../../common/models/utils';
 
 @Component({
   selector: 'app-student-form',

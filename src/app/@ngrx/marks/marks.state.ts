@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Mark } from '../../common/models/mark';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 interface IMarks {
   [idSubject: string]: Array<Mark>;
@@ -17,7 +17,7 @@ export interface IMarksState {
   readonly error: TNullable<HttpErrorResponse>;
 }
 
-export const initialState: IMarksState = {
+export const initialStateMarks: IMarksState = {
   marks: {},
   loading: false,
   loaded: false,

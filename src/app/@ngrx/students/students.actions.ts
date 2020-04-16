@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Student } from '../../common/models/Student';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { Student } from '../../common/models/student';
+import { TNullable } from '../../common/models/utils';
 
 // tslint:disable:typedef
 export const loadStudents = createAction('[(APP)] LOAD_STUDENTS');

@@ -1,5 +1,5 @@
 import { Subject } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 export interface ISubjectState {
   subjects: Array<Subject>;

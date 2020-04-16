@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { PageNotFoundComponent } from './components';
+import { PageNotFoundComponent, BreadcrumbsComponent } from './components';
 
 const routes: Routes = [
   { path: '', redirectTo: '/students', pathMatch: 'full' },
@@ -13,5 +13,5 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {
-  public static components = [PageNotFoundComponent];
+  public static components = [PageNotFoundComponent, BreadcrumbsComponent];
 }

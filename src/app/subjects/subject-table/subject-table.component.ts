@@ -22,11 +22,11 @@ import {
 import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
 import { AppState, IStudentsState } from '../../@ngrx';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
-import { IDataChanges } from '../../common/models/utils/data-changes';
+import { IDataChanges } from '../../common/models/utils';
 
 @Component({
   selector: 'app-subject-table',
