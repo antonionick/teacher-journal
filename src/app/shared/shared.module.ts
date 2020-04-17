@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,13 +13,14 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableComponent, ButtonComponent, FormComponent } from './components';
 import { EditMarkDirective } from 'src/app/common/directives/edit-mark.directive';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MainPipe } from '../common/pipes/main.pipe';
 
 const publicComponents = [
   TableComponent,
   ButtonComponent,
   FormComponent,
   EditMarkDirective,
+  MainPipe,
 ];
 const publicModules = [
   MatTableModule,

@@ -1,10 +1,8 @@
-import { TableHeaderConfig, Paginator } from './index';
-import { EditMark } from '../mark';
+import { TableHeaderConfig, Paginator, TableBodyConfig } from './index';
 import { TNullable } from '../utils';
 
-export interface ITableConfig<T> {
+export interface ITableConfig {
   headers: Array<TableHeaderConfig>;
-  body: Array<T>;
+  body: Array<TableBodyConfig>;
   paginator?: TNullable<Paginator>;
-  editCell?: TNullable<EditMark | undefined>;
 }

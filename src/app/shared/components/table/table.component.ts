@@ -5,7 +5,7 @@ import {
   Input,
   OnChanges,
   Output,
-  EventEmitter,
+  EventEmitter, ContentChild, TemplateRef,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -23,7 +23,7 @@ export class TableComponent<T> implements OnChanges {
   private sort: MatSort;
 
   @Input()
-  public config: ITableConfig<T>;
+  public config: ITableConfig;
   public columnHeaders: Array<string>;
   public dataSource: MatTableDataSource<T>;
 
@@ -31,6 +31,9 @@ export class TableComponent<T> implements OnChanges {
   public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
   @Output()
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
+
+  @ContentChild('external')
+  public external: TemplateRef<HTMLElement>;
 
   public ngOnChanges(change: SimpleChanges): void {
     let {

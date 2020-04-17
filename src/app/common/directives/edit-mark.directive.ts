@@ -21,7 +21,7 @@ import { IChangeField } from '../models/table';
   selector: '[appEditMark]',
 })
 export class EditMarkDirective {
-  private config: EditMark;
+  private config: TNullable<EditMark>;
   private input: HTMLInputElement;
   private child: HTMLElement;
   private sourceChildDisplay: string;

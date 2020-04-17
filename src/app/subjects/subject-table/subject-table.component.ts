@@ -23,7 +23,7 @@ import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/ma
 import { AppState, IStudentsState } from '../../@ngrx';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
 import { TNullable } from '../../common/models/utils';
-import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
+import { ITableConfig, IChangeField } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
 import { IDataChanges } from '../../common/models/utils';
@@ -43,7 +43,7 @@ import { IDataChanges } from '../../common/models/utils';
 export class SubjectTableComponent extends BaseComponent implements OnInit {
   public isLoading: boolean;
   public subject: Subject;
-  public config: ITableConfig<ICell<string>>;
+  public config: ITableConfig;
   public teacherControl: FormControl;
   public saveButtonConfig: ButtonConfig;
 

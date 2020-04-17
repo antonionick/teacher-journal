@@ -1,24 +1,24 @@
 <div class="content">
   <table class="table" mat-table [dataSource]="dataSource" matSort>
-    <ng-container *ngFor="let item of config.headers">
-      <ng-container [matColumnDef]="item.value" [sticky]="item.sticky ? '' : null" >
+    <ng-container *ngFor="let header of config.headers">
+      <ng-container matColumnDef="{{header.value}}" [sticky]="header.sticky ? true : null">
         <th
           class="table__cell table__cell_header"
-          [class.table__cell_header-picker]="item.datePicker"
+          [class.table__cell_header-picker]="header.datePicker"
           mat-header-cell
           mat-sort-header
-          [start]="item.isAscSortStart ? 'asc': 'desc'"
-          [disabled]="item.sort ? null : ''"
+          [start]="header.isAscSortStart ? 'asc': 'desc'"
+          [disabled]="header.sort ? null : false"
           *matHeaderCellDef
         >
-          <ng-container *ngIf="item.datePicker; else value">
+          <ng-container *ngIf="header.datePicker; else value">
             <input
               class="table__item table__item_input-date-picker"
               matInput
-              [formControl]="item.inputControl"
+              [formControl]="header.inputControl"
               [matDatepicker]="datePicker"
-              [min]="item.min"
-              [max]="item.max"
+              [min]="header.min"
+              [max]="header.max"
               (dateChange)="onDateChange($event)"
             />
             <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
@@ -26,22 +26,28 @@
           </ng-container>
 
           <ng-template #value>
-            <span>{{ item.value | titlecase }}</span>
+            <span>{{ header.isVisible ? header.value : '' | titlecase }}</span>
           </ng-template>
         </th>
 
         <td
+          *matCellDef="let cell"
           mat-cell
           class="table__cell"
-          *matCellDef="let cell"
-          [class.table__row_mark]="item.datePicker"
+          [class.table__row_mark]="cell[header.value].editCell"
           appEditMark
-          [editMarkConfig]="item.datePicker ? config.editCell : null"
-          [column]="item.datePicker ? item.value : null"
-          [row]="item.datePicker ? cell.id : null"
+          [editMarkConfig]="cell[header.value].editCell"
+          [column]="header.value"
+          [row]="cell.id.value"
           (changeMark)="onChangeMark($event)"
         >
-          <span> {{ cell[item.value] }} </span>
+          <ng-container *ngIf="cell[header.value].isExternal; else valueContent">
+            <ng-container *ngTemplateOutlet="external"></ng-container>
+          </ng-container>
+
+          <ng-template #valueContent>
+            <span> {{ cell[header.value].value | main : cell[header.value].pipe : cell[header.value].pipeArgs }} </span>
+          </ng-template>
         </td>
       </ng-container>
     </ng-container>
@@ -49,5 +55,4 @@
     <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
     <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
   </table>
-
 </div>

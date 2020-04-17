@@ -21,7 +21,7 @@ import { ITableConfig } from 'src/app/common/models/table';
 })
 export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
-  public config: TNullable<ITableConfig<Student>>;
+  public config: TNullable<ITableConfig>;
   public plusIcon: IconDefinition;
   public error: Error | string;
   public isLoading: boolean;
@@ -68,7 +68,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       next: (students) => {
         this.config = {
           headers: this.studentService.displayedColumns,
-          body: students,
+          body: this.studentService.getTableBodyConfig(students),
         };
       },
     });

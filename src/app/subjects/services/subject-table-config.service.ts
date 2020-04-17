@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { ICell, TableHeaderConfig, ITableConfig, IChangeField } from '../../common/models/table';
+import {
+  TableHeaderConfig,
+  ITableConfig,
+  IChangeField,
+  TableBodyConfig,
+} from '../../common/models/table';
 import { Mark, EditMark, IMarksByDate } from '../../common/models/mark';
 import { Student } from '../../common/models/student';
 import { SubjectTableHeaderService } from './subject-table-header.service';
@@ -30,7 +35,7 @@ export class SubjectTableConfigService {
   private headerConfig: Array<TableHeaderConfig>;
   private dateChanges: DateChanges;
 
-  public config: ITableConfig<ICell<string>>;
+  public config: ITableConfig;
 
   constructor(
     private headerService: SubjectTableHeaderService,
@@ -42,15 +47,13 @@ export class SubjectTableConfigService {
     this.config = {
       headers: [],
       body: [],
-      editCell: this.editConfig,
     };
   }
 
-  private resetRefConfig(): ITableConfig<ICell<string>> {
+  private resetRefConfig(): ITableConfig {
     return {
       headers: [...this.config.headers],
       body: [...this.config.body],
-      editCell: this.editConfig,
     };
   }
 
@@ -68,8 +71,11 @@ export class SubjectTableConfigService {
     return [...this.headerConfig, ...dateHeaders];
   }
 
-  private createBody(marks: IMarksByDate, students: Array<Student>): Array<ICell<string>> {
-    let body: Array<ICell<string>> = this.bodyService.createBody(marks, students);
+  private createBody(
+    marks: IMarksByDate,
+    students: Array<Student>,
+  ): Array<TableBodyConfig> {
+    let body: Array<TableBodyConfig> = this.bodyService.createBody(marks, students);
     body = this.bodyService.sortBody(body);
     return body;
   }
@@ -77,14 +83,14 @@ export class SubjectTableConfigService {
   public createConfig(
     students: Array<Student>,
     marks: IMarksByDate,
-  ): ITableConfig<ICell<string>> {
+  ): ITableConfig {
     this.headerConfig = headerConfig;
     this.config.headers = this.createHeaders(marks);
     this.config.body = this.createBody(marks, students);
     return this.config;
   }
 
-  public updateConfigByDateChange(): ITableConfig<ICell<string>> {
+  public updateConfigByDateChange(): ITableConfig {
     this.config.headers = this.updateHeaders();
     this.config.body = this.bodyService.updateBodyByDateChanges(
       this.config.body,
@@ -94,24 +100,28 @@ export class SubjectTableConfigService {
     return this.resetRefConfig();
   }
 
-  public addHeader(): ITableConfig<ICell<string>> {
+  public addHeader(): ITableConfig {
     let dateHeaders: Array<TableHeaderConfig> = this.config.headers.slice(this.headerConfig.length);
-    dateHeaders = this.headerService.addDateHeader(dateHeaders);
+    const newDateHeader: TableHeaderConfig = this.headerService.addDateHeader(dateHeaders);
+    dateHeaders.push(newDateHeader);
     dateHeaders = this.headerService.sortDateHeaders(dateHeaders);
     dateHeaders = this.headerService.setRangeDateHeaders(dateHeaders);
     this.config.headers = [...this.headerConfig, ...dateHeaders];
+    this.config.body = this.bodyService.updateBodyByAddDates(this.config.body, newDateHeader);
     return this.resetRefConfig();
   }
 
-  public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
-    const milliseconds: number = (new Date(input.value)).getTime();
+  public deleteHeader(input: HTMLInputElement): ITableConfig {
+    const milliseconds: number = (
+      new Date(input.value)
+    ).getTime();
     this.config.headers = this.headerService.deleteDateHeader(milliseconds, this.config.headers);
     this.config.body = this.bodyService.deleteMarkByDate(milliseconds, this.config.body);
     this.configHistory.deleteDate(milliseconds);
     return this.resetRefConfig();
   }
 
-  public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
+  public updateMark(change: IChangeField<number>): ITableConfig {
     this.config.body = this.bodyService.updateMark(this.config.body, change);
     this.configHistory.updateMark(change);
     return this.resetRefConfig();

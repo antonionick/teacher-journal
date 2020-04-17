@@ -36,9 +36,9 @@ export const selectSubjectByUrl: MemoizedSelector<AppState, ISubjectSelectStore>
   selectRouter,
   ({ subjects, error, loading }, router) => {
     const routerId: number = +router.state.params.id;
-    const subject: TNullable<Subject> = subjects.find(({ id }) => {
-      return id === routerId;
-    }) || null;
+    const subject: TNullable<Subject> = subjects.find(({ id }) => (
+      id === routerId
+    )) || null;
 
     return { id: routerId, subject, loading, err: error };
   },
