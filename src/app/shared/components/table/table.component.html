@@ -1,4 +1,4 @@
-<div class="content">
+<div class="table-wrapper">
   <table class="table" mat-table [dataSource]="dataSource" matSort>
     <ng-container *ngFor="let header of config.headers">
       <ng-container matColumnDef="{{header.value}}" [sticky]="header.sticky ? true : null">
@@ -34,25 +34,62 @@
           *matCellDef="let cell"
           mat-cell
           class="table__cell"
-          [class.table__row_mark]="cell[header.value].editCell"
+          [class.table__cell_mark]="cell[header.value].editCell"
           appEditMark
           [editMarkConfig]="cell[header.value].editCell"
           [column]="header.value"
           [row]="cell.id.value"
           (changeMark)="onChangeMark($event)"
         >
-          <ng-container *ngIf="cell[header.value].isExternal; else valueContent">
-            <ng-container *ngTemplateOutlet="external"></ng-container>
+          <ng-container [ngSwitch]=true>
+            <ng-container *ngSwitchCase="cell[header.value].isExternal">
+              <ng-container *ngTemplateOutlet="isExternal"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="cell[header.value].highlight !== null">
+              <ng-container *ngTemplateOutlet="isHighlightMark; context: {
+                config: cell[header.value].highlight,
+                value: cell[header.value].value,
+                pipe: cell[header.value].pipe,
+                args: cell[header.value].pipeArgs }"
+              ></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <ng-container *ngTemplateOutlet="base; context: {
+                value: cell[header.value].value,
+                pipe: cell[header.value].pipe,
+                args: cell[header.value].pipeArgs }"
+              ></ng-container>
+            </ng-container>
           </ng-container>
-
-          <ng-template #valueContent>
-            <span> {{ cell[header.value].value | main : cell[header.value].pipe : cell[header.value].pipeArgs }} </span>
-          </ng-template>
         </td>
       </ng-container>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
+    <tr class="table__row" mat-header-row *matHeaderRowDef="columnHeaders"></tr>
+    <tr class="table__row" mat-row *matRowDef="let row; columns: columnHeaders"></tr>
   </table>
 </div>
+
+<ng-template #base let-value="value" let-pipe="pipe" let-args="args">
+  <span class="table__cell-item">{{ value | main: pipe : args }}</span>
+</ng-template>
+
+<ng-template #isExternal>
+  <ng-container *ngIf="external else baseCall">
+    <ng-container *ngTemplateOutlet="external"></ng-container>
+  </ng-container>
+  <ng-template #baseCall>
+    <ng-container *ngTemplateOutlet="base; context: { value: '' }"></ng-container>
+  </ng-template>
+</ng-template>
+
+<ng-template #isHighlightMark let-config="config" let-value="value" let-pipe="pipe" let-args="args">
+  <span
+    class="table__cell-item table__cell-item_text_center"
+    appHighlightMark
+    [config]="config"
+    [value]="value"
+  >
+    {{ value | main: pipe : args }}
+  </span>
+</ng-template>

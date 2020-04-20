@@ -7,7 +7,7 @@ import {
   TableBodyConfig, TableHeaderConfig,
 } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student/student';
-import { IMarksByDate, Mark, EditMark } from 'src/app/common/models/mark';
+import { IMarksByDate, Mark, EditMark, HighlightMark } from 'src/app/common/models/mark';
 import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
@@ -30,6 +30,7 @@ export class SubjectTableBodyService {
       'average mark': new TableCellConfig({
         pipe: new DecimalPipe('en-US'),
         pipeArgs: '1.0-1',
+        highlight: new HighlightMark(),
       }),
     };
   }

@@ -8,9 +8,9 @@ interface ITableHeaderConfig {
   isAscSortStart: boolean;
   sticky: boolean;
   datePicker: boolean;
-  inputControl: TNullable<FormControl | null>;
-  min: TNullable<Date | null>;
-  max: TNullable<Date | null>;
+  inputControl: TNullable<FormControl>;
+  min: TNullable<Date>;
+  max: TNullable<Date>;
   isVisible: boolean;
 }
 

@@ -1,7 +1,7 @@
 import { PipeTransform } from '@angular/core';
 
 import { TNullable } from '../utils';
-import { EditMark } from '../mark';
+import { EditMark, HighlightMark } from '../mark';
 
 interface ITableCellConfig {
   value: string;
@@ -9,6 +9,7 @@ interface ITableCellConfig {
   pipe: TNullable<PipeTransform>;
   pipeArgs: string;
   isExternal: boolean;
+  highlight: TNullable<HighlightMark>;
 }
 
 export class TableCellConfig implements ITableCellConfig {
@@ -17,6 +18,7 @@ export class TableCellConfig implements ITableCellConfig {
   public pipe: TNullable<PipeTransform>;
   public pipeArgs: string;
   public isExternal: boolean;
+  public highlight: TNullable<HighlightMark>;
 
   constructor({
     value = '',
@@ -24,11 +26,13 @@ export class TableCellConfig implements ITableCellConfig {
     pipe = null,
     pipeArgs = '',
     isExternal= false,
+    highlight = null,
   }: Partial<ITableCellConfig> = {}) {
     this.value = value;
     this.editCell = editCell;
     this.pipe = pipe;
     this.pipeArgs = pipeArgs;
     this.isExternal = isExternal;
+    this.highlight = highlight;
   }
 }

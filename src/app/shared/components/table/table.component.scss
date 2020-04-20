@@ -1,6 +1,6 @@
 @import '../../../../styles/variables.scss';
 
-.content {
+.table-wrapper {
   box-sizing: border-box;
   overflow: auto;
   border-radius: 5px;
@@ -10,7 +10,7 @@
   width: 100%;
 
   &__cell {
-    padding: 17px 10px;
+    padding: 15px 10px;
 
     &_header-picker {
       box-sizing: border-box;
@@ -18,10 +18,16 @@
       width: 160px;
       padding: 0 5px;
     }
+
+    &_mark {
+      text-align: center;
+    }
   }
 
-  &__row {
-    &_mark {
+  &__cell-item {
+    display: block;
+
+    &_text_center {
       text-align: center;
     }
   }

@@ -12,7 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableComponent, ButtonComponent, FormComponent } from './components';
-import { EditMarkDirective } from 'src/app/common/directives/edit-mark.directive';
+import { EditMarkDirective, HighlightMarkDirective } from 'src/app/common/directives';
 import { MainPipe } from '../common/pipes/main.pipe';
 
 const publicComponents = [
@@ -21,6 +21,7 @@ const publicComponents = [
   FormComponent,
   EditMarkDirective,
   MainPipe,
+  HighlightMarkDirective,
 ];
 const publicModules = [
   MatTableModule,
