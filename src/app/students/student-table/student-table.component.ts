@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { Store, select } from '@ngrx/store';
 
@@ -23,6 +23,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
   public config: TNullable<ITableConfig>;
   public plusIcon: IconDefinition;
+  public trashIcon: IconDefinition;
   public error: Error | string;
   public isLoading: boolean;
 
@@ -31,6 +32,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     this.config = null;
     this.isLoading = false;
     this.plusIcon = faPlus;
+    this.trashIcon = faTrash;
     this.students$ = store.pipe(select(selectStudents));
   }
 

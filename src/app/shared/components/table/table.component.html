@@ -8,7 +8,7 @@
           mat-header-cell
           mat-sort-header
           [start]="header.isAscSortStart ? 'asc': 'desc'"
-          [disabled]="header.sort ? null : false"
+          [disabled]="header.sort ? null : true"
           *matHeaderCellDef
         >
           <ng-container *ngIf="header.datePicker; else value">
@@ -79,7 +79,7 @@
     <ng-container *ngTemplateOutlet="external"></ng-container>
   </ng-container>
   <ng-template #baseCall>
-    <ng-container *ngTemplateOutlet="base; context: { value: '' }"></ng-container>
+    <ng-container *ngTemplateOutlet="base; context: { value: '', pipe: null }"></ng-container>
   </ng-template>
 </ng-template>
 

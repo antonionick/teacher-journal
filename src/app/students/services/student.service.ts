@@ -15,6 +15,10 @@ const displayedColumns: Array<TableHeaderConfig> = [
     sort: true,
   }),
   new TableHeaderConfig({
+    value: 'delete',
+    isVisible: false,
+  }),
+  new TableHeaderConfig({
     value: 'name',
     sort: true,
   }),
@@ -56,6 +60,10 @@ export class StudentService {
     });
   }
 
+  public addDeleteButtonToStudentConfig(student: TableBodyConfig): void {
+    student.delete = new TableCellConfig({ isExternal: true });
+  }
+
   public getTableBodyConfig(students: Array<Student>): Array<TableBodyConfig> {
     if (students.length === 0) {
       return [];
@@ -69,6 +77,7 @@ export class StudentService {
       studentKeys.map((key) => {
         studentConfig[key] = new TableCellConfig({ value: student[key] });
       });
+      this.addDeleteButtonToStudentConfig(studentConfig);
 
       return studentConfig;
     });
