@@ -40,6 +40,18 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
       error,
     };
   }),
+  on(Actions.deleteStudentSuccess, (state) => {
+    return {
+      ...state,
+      error: null,
+    };
+  }),
+  on(Actions.deleteStudentError, (state, { error }) => {
+    return {
+      ...state,
+      error,
+    };
+  }),
   on(Actions.updateDraftStudent, (state, { draftStudent }) => {
     return {
       ...state,

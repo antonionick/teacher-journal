@@ -104,7 +104,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   private loadProcessMarks():
     UnaryFunction<Observable<IMarksSelectStore>, Observable<IMarksSelectStore>> {
     return pipe(
-      tap(({ id, marks, loading, loaded, error }) => {
+      tap(({ id, marks, loading, error }) => {
         if (marks !== null) {
           return this.tableService.subjectMarks = marks;
         }
@@ -113,7 +113,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           this.store.dispatch(MarksActions.loadMarks({ id }));
         });
       }),
-      filter(({ marks, loaded, error }) => marks !== null),
+      filter(({ marks }) => marks !== null),
     );
   }
 
@@ -154,7 +154,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       take(1),
       tap(({ error }) => {
         if (error && error.status !== 404) {
-          alert(`Marks: ${ error.message }`);
+          alert(`Marks: ${error.message}`);
         }
 
         this.store.dispatch(MarksActions.loadMarks({ id }));
@@ -187,7 +187,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       )),
       tap(({ err }) => {
         if (err) {
-          alert(`Subject: ${ err.message }`);
+          alert(`Subject: ${err.message}`);
         }
       }),
       map(({ subject }) => subject),

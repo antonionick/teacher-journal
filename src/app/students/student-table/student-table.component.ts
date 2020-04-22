@@ -3,31 +3,39 @@ import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-ico
 
 import { Store, select } from '@ngrx/store';
 
-import { Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { takeUntil, tap, filter, take, map, switchMap, mergeMap } from 'rxjs/operators';
 
 import * as StudentsActions from '../../@ngrx/students/students.actions';
+import * as MarksActions from '../../@ngrx/marks/marks.actions';
+import * as HttpUtils from '../../common/utils/http';
 import { AppState, IStudentsState, selectStudents } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
-import { StudentService } from '../services/student.service';
+import { StudentTableService } from '../services';
 import { TNullable } from '../../common/models/utils';
-import { ITableConfig } from 'src/app/common/models/table';
+import { ITableConfig, TableBodyConfig } from 'src/app/common/models/table';
+import { MarkService } from '../../common/services';
 
 @Component({
   selector: 'app-student-table',
   templateUrl: './student-table.component.html',
   styleUrls: ['./student-table.component.scss'],
+  providers: [StudentTableService],
 })
 export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
   public config: TNullable<ITableConfig>;
   public plusIcon: IconDefinition;
   public trashIcon: IconDefinition;
-  public error: Error | string;
+  public error: Error;
   public isLoading: boolean;
 
-  constructor(private store: Store<AppState>, private studentService: StudentService) {
+  constructor(
+    private store: Store<AppState>,
+    private studentTableService: StudentTableService,
+    private markService: MarkService,
+  ) {
     super();
     this.config = null;
     this.isLoading = false;
@@ -36,43 +44,91 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     this.students$ = store.pipe(select(selectStudents));
   }
 
-  private isNeedLoad({ loading, loaded, error }: IStudentsState): boolean {
-    this.isLoading = false;
+  private isNeedLoad({ loaded, error }: IStudentsState): boolean {
+    return !loaded && error === null;
+  }
 
-    if (loading) {
-      this.isLoading = true;
-    } else if (error) {
+  private updateDataByState({ error, loaded }: IStudentsState): void {
+    // if error because of load fail
+    if (error !== null && !loaded) {
       this.error = error;
-    } else if (!loaded) {
-      return true;
     }
+  }
 
-    return false;
+  private deleteStudentMarks(id: number): Observable<null> {
+    return this.store.pipe(
+      select('marks'),
+      take(1),
+      switchMap((marksState) => this.store.pipe(
+        select('subjects'),
+        take(1),
+        map((subjectsState) => (
+          this.markService.isAllMarksLoaded(marksState, subjectsState)
+        )),
+        mergeMap((isLoaded) => {
+          if (isLoaded) {
+            return of(this.markService.getMarksByKey('studentId', id, marksState));
+          }
+
+          return this.markService.fetchMarks(
+            HttpUtils.getParamsWithKey('studentId', [id]),
+          );
+        }),
+      )),
+      mergeMap((marks) => {
+        if (marks.length === 0) {
+          return of(null);
+        }
+
+        this.store.dispatch(MarksActions.deleteMarks({ marks }));
+        return this.store.pipe(
+          select('marks'),
+          filter(({ deleting }, index) => !deleting && index > 0),
+          map(() => null),
+        );
+      }),
+      take(1),
+    );
   }
 
   public ngOnInit(): void {
     this.store.pipe(
       select('students'),
-      takeUntil(this.unsubscribe$),
-    ).subscribe({
-      next: (studentsState) => {
-        if (!this.isNeedLoad(studentsState)) {
-          return;
+      filter(({ loading }) => !loading),
+      tap((state) => this.updateDataByState(state)),
+      tap((state) => {
+        if (!this.isNeedLoad(state)) {
+          return this.isLoading = false;
         }
 
+        this.isLoading = true;
         this.store.dispatch(StudentsActions.loadStudents());
-      },
-    });
+      }),
+      filter((state) => !this.isNeedLoad(state)),
+      take(1),
+    ).subscribe();
 
     this.students$.pipe(
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (students) => {
         this.config = {
-          headers: this.studentService.displayedColumns,
-          body: this.studentService.getTableBodyConfig(students),
+          headers: this.studentTableService.displayedColumns,
+          body: this.studentTableService.getTableBodyConfig(students),
         };
       },
     });
+  }
+
+  public onDelete({ id }: TableBodyConfig): void {
+    this.isLoading = true;
+    this.store.dispatch(StudentsActions.deleteStudent({ id: +id.value }));
+
+    this.students$.pipe(
+      take(1),
+      switchMap(() => this.deleteStudentMarks(+id.value)),
+      mergeMap(() => this.markService.updateMarksStateAfterDelete(this.store)),
+      tap(() => this.isLoading = false),
+    ).subscribe();
   }
 }

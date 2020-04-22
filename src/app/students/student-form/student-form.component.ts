@@ -46,7 +46,7 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
       select(selectDraftStudent),
       takeUntil(this.unsubscribe$),
     ).subscribe({
-      next: (student ) => {
+      next: (student) => {
         if (student == null && this.initialStudent === null) {
           return this.store.dispatch(StudentsActions.getDraftStudentLocalStorage());
         }

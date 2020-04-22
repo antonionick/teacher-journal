@@ -43,7 +43,9 @@
         >
           <ng-container [ngSwitch]=true>
             <ng-container *ngSwitchCase="cell[header.value].isExternal">
-              <ng-container *ngTemplateOutlet="isExternal"></ng-container>
+              <ng-container
+                *ngTemplateOutlet="isExternal; context: { value: cell }"
+              ></ng-container>
             </ng-container>
             <ng-container *ngSwitchCase="cell[header.value].highlight !== null">
               <ng-container *ngTemplateOutlet="isHighlightMark; context: {
@@ -74,9 +76,9 @@
   <span class="table__cell-item">{{ value | main: pipe : args }}</span>
 </ng-template>
 
-<ng-template #isExternal>
+<ng-template #isExternal let-value="value">
   <ng-container *ngIf="external else baseCall">
-    <ng-container *ngTemplateOutlet="external"></ng-container>
+    <ng-container *ngTemplateOutlet="external; context: { value: value }"></ng-container>
   </ng-container>
   <ng-template #baseCall>
     <ng-container *ngTemplateOutlet="base; context: { value: '', pipe: null }"></ng-container>

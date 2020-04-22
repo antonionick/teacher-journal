@@ -49,11 +49,11 @@ export class HighlightMarkDirective implements OnChanges {
   private updateColor(width: number, color: string): void {
     const { nativeElement: { parentElement } } = this.elementRef;
 
-    this.renderer.setStyle(parentElement, 'border-bottom', `${ width }px solid ${ color }`);
+    this.renderer.setStyle(parentElement, 'border-bottom', `${width}px solid ${color}`);
   }
 
   private isChanged(): boolean {
-    if (this.prevValue === null) {
+    if (this.prevValue === null || this.value === null) {
       return true;
     }
 

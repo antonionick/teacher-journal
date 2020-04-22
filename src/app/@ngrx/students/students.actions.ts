@@ -25,6 +25,17 @@ export const addStudentServerError = createAction(
   '[Add Student Server Effect] ADD_STUDENT_SERVER_ERROR',
   props<{ student: Student, error: Error }>(),
 );
+export const deleteStudent = createAction(
+  '[Student Table] DELETE_STUDENT',
+  props<{ id: number }>(),
+);
+export const deleteStudentSuccess = createAction(
+  '[Delete Student Effect] DELETE_STUDENT_SUCCESS',
+);
+export const deleteStudentError = createAction(
+  '[Delete Student Effect] DELETE_STUDENT_ERROR',
+  props<{ error: Error }>(),
+);
 export const getDraftStudentLocalStorage = createAction(
   '[Student Form (APP)] GET_DRAFT_STUDENT_LOCALSTORAGE',
 );
