@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
@@ -49,7 +49,6 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
 
   constructor(
     private store: Store<AppState>,
-    private route: ActivatedRoute,
     private router: Router,
     private tableService: SubjectTableService,
   ) {
@@ -62,7 +61,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     loading: boolean,
     action: () => void,
   ): void {
-    if (err) {
+    if (err !== null) {
       this.router.navigate(['subjects']);
     } else if (!loading) {
       action();
@@ -88,8 +87,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   private loadProcessStudents():
     UnaryFunction<Observable<IStudentsState>, Observable<IStudentsState>> {
     return pipe(
-      tap(({ students, loading, error }) => {
-        if (students.length > 0) {
+      tap(({ students, loading, loaded, error }) => {
+        if (students.length > 0 || loaded) {
           return this.tableService.subjectStudents = students;
         }
 
@@ -97,7 +96,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           this.store.dispatch(StudentsActions.loadStudents());
         });
       }),
-      filter(({ students }) => students.length > 0),
+      filter(({ students, loaded }) => students.length > 0 || loaded),
     );
   }
 

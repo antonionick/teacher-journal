@@ -24,7 +24,7 @@ export class SubjectTableBodyService {
 
   private createBodyField({ id, name, lastName }: Student): TableBodyConfig {
     return {
-      id: new TableCellConfig({ value: `${ id }` }),
+      id: new TableCellConfig({ value: `${id}` }),
       name: new TableCellConfig({ value: name }),
       lastName: new TableCellConfig({ value: lastName }),
       'average mark': new TableCellConfig({
@@ -58,7 +58,7 @@ export class SubjectTableBodyService {
 
   public getComputedAverageMark(field: TableBodyConfig): string {
     const mark: number = this.computeAverageMark(field);
-    return mark === -1 ? '' : `${ mark }`;
+    return mark === -1 ? '' : `${mark}`;
   }
 
   public createBody(marks: IMarksByDate, students: Array<Student>): Array<TableBodyConfig> {
@@ -76,7 +76,7 @@ export class SubjectTableBodyService {
           return field[date] = new TableCellConfig({ editCell: this.editMark });
         }
 
-        field[date] = new TableCellConfig({ value: `${ mark.value }`, editCell: this.editMark });
+        field[date] = new TableCellConfig({ value: `${mark.value}`, editCell: this.editMark });
       });
     });
 
@@ -128,7 +128,7 @@ export class SubjectTableBodyService {
       }
 
       if (mark !== -1) {
-        item[date].value = `${ mark }`;
+        item[date].value = `${mark}`;
       } else {
         item[date].value = '';
       }
@@ -156,7 +156,7 @@ export class SubjectTableBodyService {
     sort?: (a: TableBodyConfig, b: TableBodyConfig) => number,
   ): Array<TableBodyConfig> {
     if (body.length < 2) {
-      return;
+      return body;
     }
 
     const result: Array<TableBodyConfig> = body.slice();
