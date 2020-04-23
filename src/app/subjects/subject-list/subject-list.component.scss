@@ -6,7 +6,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: 30%;
+    width: 40%;
     min-width: 320px;
     margin: 0 auto;
     padding: 0;
@@ -15,11 +15,12 @@
 
   &__item {
     box-sizing: border-box;
-    width: 50%;
+    display: flex;
+    width: 45%;
     margin-bottom: 20px;
 
     &:nth-child(2n) {
-      text-align: right;
+      justify-content: flex-end;
     }
   }
 
@@ -36,6 +37,22 @@
   }
 
   &__button {
-    align-self: center;
+    &_center {
+      align-self: center;
+    }
+
+    &_small {
+      &::ng-deep .button {
+        max-width: 30px;
+        min-width: 10px;
+        width: 30px;
+        padding: 8px 0;
+        font-size: 20px;
+        line-height: 110%;
+        border-radius: 0;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+    }
   }
 }

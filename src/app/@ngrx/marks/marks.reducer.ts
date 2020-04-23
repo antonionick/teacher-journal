@@ -1,4 +1,4 @@
-import { Action, ActionReducer, createReducer, on, select } from '@ngrx/store';
+import { Action, ActionReducer, createReducer, on } from '@ngrx/store';
 
 import * as Actions from './marks.actions';
 import { IMarksState, initialStateMarks } from './marks.state';

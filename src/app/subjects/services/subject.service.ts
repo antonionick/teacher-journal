@@ -35,6 +35,10 @@ export class SubjectService {
     return this.http.put<Subject>(`${subjectUrl}/${id}`, subject);
   }
 
+  public deleteSubject({ id }: Subject): Observable<Subject> {
+    return this.http.delete<Subject>(`${subjectUrl}/${id}`);
+  }
+
   public isChanged(sourceSubject: Subject, subject: Subject): boolean {
     return !Object.keys(subject).every((key) => (
       typeof subject[key] === 'object' ||

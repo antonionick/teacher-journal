@@ -7,10 +7,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { SubjectService } from '../../subjects/services';
 import * as SubjectsActions from './subjects.actions';
-import { Subject } from '../../common/models/subject';
 import * as HttpUtils from '../../common/utils/http';
+import { SubjectService } from '../../subjects/services';
+import { Subject } from '../../common/models/subject';
 
 @Injectable()
 export class SubjectsEffects {
@@ -80,6 +80,18 @@ export class SubjectsEffects {
         this.subjectService.updateSubject(subject).pipe(
           map(() => SubjectsActions.updateSubjectSuccess({ subject })),
           catchError((error) => of(SubjectsActions.updateSubjectError({ error }))),
+        )
+      )),
+    )
+  ));
+
+  public deleteSubject$: Observable<Action> = createEffect(() => (
+    this.actions.pipe(
+      ofType(SubjectsActions.deleteSubject),
+      switchMap(({ subject }) => (
+        this.subjectService.deleteSubject(subject).pipe(
+          map(() => SubjectsActions.deleteSubjectSuccess({ subject })),
+          catchError((error) => of(SubjectsActions.deleteSubjectError({ error }))),
         )
       )),
     )
