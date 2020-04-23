@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ITableConfig, IChangeField } from '../../common/models/table';
+import { ITableConfig, IChangeField, TableHeaderConfig } from '../../common/models/table';
 import { Student } from 'src/app/common/models/student/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectTableConfigService } from './subject-table-config.service';
@@ -59,8 +59,8 @@ export class SubjectTableService {
     return this.configService.addHeader();
   }
 
-  public deleteHeader(input: HTMLInputElement): ITableConfig {
-    return this.configService.deleteHeader(input);
+  public deleteHeader(header: TableHeaderConfig): ITableConfig {
+    return this.configService.deleteHeader(header);
   }
 
   public updateMark(change: IChangeField<number>): ITableConfig {

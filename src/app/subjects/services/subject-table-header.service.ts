@@ -21,6 +21,7 @@ export class SubjectTableHeaderService {
       inputControl: new FormControl({ value: date, disabled: true }),
       sort: true,
       isAscSortStart: false,
+      hoverContent: true,
     });
   }
 

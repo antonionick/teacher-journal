@@ -111,13 +111,10 @@ export class SubjectTableConfigService {
     return this.resetRefConfig();
   }
 
-  public deleteHeader(input: HTMLInputElement): ITableConfig {
-    const milliseconds: number = (
-      new Date(input.value)
-    ).getTime();
-    this.config.headers = this.headerService.deleteDateHeader(milliseconds, this.config.headers);
-    this.config.body = this.bodyService.deleteMarkByDate(milliseconds, this.config.body);
-    this.configHistory.deleteDate(milliseconds);
+  public deleteHeader({ value }: TableHeaderConfig): ITableConfig {
+    this.config.headers = this.headerService.deleteDateHeader(+value, this.config.headers);
+    this.config.body = this.bodyService.deleteMarkByDate(+value, this.config.body);
+    this.configHistory.deleteDate(+value);
     return this.resetRefConfig();
   }
 

@@ -23,7 +23,7 @@ import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/ma
 import { AppState, IStudentsState } from '../../@ngrx';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
 import { TNullable } from '../../common/models/utils';
-import { ITableConfig, IChangeField } from 'src/app/common/models/table';
+import { ITableConfig, IChangeField, TableHeaderConfig } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
 import { IDataChanges } from '../../common/models/utils';
@@ -252,16 +252,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.config = this.tableService.addHeader();
   }
 
-  public onDeleteDateHeader(event: MouseEvent): void {
-    const classList: DOMTokenList = (event.target as HTMLInputElement).classList;
-
-    if (
-      !(classList.contains('table__item_input-date-picker') && (event.ctrlKey || event.metaKey))
-    ) {
-      return;
-    }
-
-    this.config = this.tableService.deleteHeader(event.target as HTMLInputElement);
+  public onDeleteDateHeader(header: TableHeaderConfig): void {
+    this.config = this.tableService.deleteHeader(header);
   }
 
   public onChangeMark(change: IChangeField<number>): void {

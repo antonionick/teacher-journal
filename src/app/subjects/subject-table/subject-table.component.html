@@ -5,9 +5,12 @@
       class="subject__table"
       [config]="config"
       (headerChange)="onUpdateHeaders()"
-      (dblclick)="onDeleteDateHeader($event)"
       (changeField)="onChangeMark($event)"
+      (headerHoverContentClick)="onDeleteDateHeader($event)"
     >
+      <ng-template #headerHoverContent>
+        <span>Delete</span>
+      </ng-template>
     </app-table>
     <div class="subject__table-button-wrapper" *ngIf="config">
       <app-button

@@ -23,7 +23,6 @@ import {
   styleUrls: ['./table.component.scss'],
 })
 export class TableComponent implements OnChanges {
-
   @Input()
   public config: ITableConfig;
   public columnHeaders: Array<string>;
@@ -33,9 +32,13 @@ export class TableComponent implements OnChanges {
   public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
   @Output()
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
+  @Output('headerHoverContentClick')
+  public headerHoverContentClick: EventEmitter<TableHeaderConfig> = new EventEmitter();
 
   @ContentChild('external')
   public external: TemplateRef<HTMLElement>;
+  @ContentChild('headerHoverContent')
+  public headerHoverContent: TemplateRef<HTMLElement>;
 
   private compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
@@ -82,5 +85,10 @@ export class TableComponent implements OnChanges {
     const data: Array<TableBodyConfig> = this.config.body.slice();
     const sortedData: Array<TableBodyConfig> = data.sort(this.sort(sort));
     this.dataSource = new MatTableDataSource(sortedData);
+  }
+
+  public onHeaderContentClick(event: MouseEvent, header: TableHeaderConfig): void {
+    event.stopPropagation();
+    this.headerHoverContentClick.emit(header);
   }
 }

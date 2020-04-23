@@ -37,6 +37,16 @@
         <ng-template #value>
           <span>{{ header.isVisible ? header.value : ('' | titlecase) }}</span>
         </ng-template>
+
+        <div
+          class="table__item-hover-content"
+          *ngIf="header.hoverContent"
+          (click)="onHeaderContentClick($event, header)"
+        >
+          <ng-container *ngIf="headerHoverContent">
+            <ng-template *ngTemplateOutlet="headerHoverContent"></ng-template>
+          </ng-container>
+        </div>
       </th>
 
       <td

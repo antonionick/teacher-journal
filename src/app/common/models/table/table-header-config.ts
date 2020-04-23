@@ -12,6 +12,7 @@ interface ITableHeaderConfig {
   min: TNullable<Date>;
   max: TNullable<Date>;
   isVisible: boolean;
+  hoverContent: boolean;
 }
 
 export class TableHeaderConfig implements ITableHeaderConfig {
@@ -24,6 +25,7 @@ export class TableHeaderConfig implements ITableHeaderConfig {
   public min: TNullable<Date>;
   public max: TNullable<Date>;
   public isVisible: boolean;
+  public hoverContent: boolean;
 
   constructor({
     value,
@@ -35,6 +37,7 @@ export class TableHeaderConfig implements ITableHeaderConfig {
     min = null,
     max = null,
     isVisible = true,
+    hoverContent = false,
   }: Partial<ITableHeaderConfig> = {}) {
     this.value = value;
     this.sort = sort;
@@ -45,5 +48,6 @@ export class TableHeaderConfig implements ITableHeaderConfig {
     this.min = min;
     this.max = max;
     this.isVisible = isVisible;
+    this.hoverContent = hoverContent;
   }
 }
