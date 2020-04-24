@@ -11,11 +11,17 @@ import { StudentsModule } from './students/students.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './root/app.component';
-import { PanelComponent, BaseComponent } from './components';
+import { PanelComponent, BaseComponent, BreadcrumbsComponent } from './components';
 import { RootStoreModule } from './@ngrx/root-store.module';
 
 @NgModule({
-  declarations: [AppComponent, PanelComponent, BaseComponent, AppRoutingModule.components],
+  declarations: [
+    AppComponent,
+    PanelComponent,
+    BaseComponent,
+    BreadcrumbsComponent,
+    AppRoutingModule.components,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

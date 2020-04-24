@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 
-import { TNullable } from '../utils/tnullable';
+import { TNullable } from '../utils';
 
 interface ITableHeaderConfig {
   value: TNullable<string>;
@@ -8,10 +8,11 @@ interface ITableHeaderConfig {
   isAscSortStart: boolean;
   sticky: boolean;
   datePicker: boolean;
-  inputControl: TNullable<FormControl | null>;
-  min: TNullable<Date | null>;
-  max: TNullable<Date | null>;
-  isDelete: boolean;
+  inputControl: TNullable<FormControl>;
+  min: TNullable<Date>;
+  max: TNullable<Date>;
+  isVisible: boolean;
+  hoverContent: boolean;
 }
 
 export class TableHeaderConfig implements ITableHeaderConfig {
@@ -23,7 +24,8 @@ export class TableHeaderConfig implements ITableHeaderConfig {
   public inputControl: TNullable<FormControl>;
   public min: TNullable<Date>;
   public max: TNullable<Date>;
-  public isDelete: boolean;
+  public isVisible: boolean;
+  public hoverContent: boolean;
 
   constructor({
     value,
@@ -34,7 +36,8 @@ export class TableHeaderConfig implements ITableHeaderConfig {
     inputControl = null,
     min = null,
     max = null,
-    isDelete = false,
+    isVisible = true,
+    hoverContent = false,
   }: Partial<ITableHeaderConfig> = {}) {
     this.value = value;
     this.sort = sort;
@@ -44,6 +47,7 @@ export class TableHeaderConfig implements ITableHeaderConfig {
     this.inputControl = inputControl;
     this.min = min;
     this.max = max;
-    this.isDelete = isDelete;
+    this.isVisible = isVisible;
+    this.hoverContent = hoverContent;
   }
 }

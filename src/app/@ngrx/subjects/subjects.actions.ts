@@ -51,6 +51,18 @@ export const updateSubjectError = createAction(
   '[Update Subject Effect] UPDATE_SUBJECT_ERROR',
   props<{ error: Error }>(),
 );
+export const deleteSubject = createAction(
+  '[Subject List] DELETE_SUBJECT',
+  props<{ subject: Subject }>(),
+);
+export const deleteSubjectSuccess = createAction(
+  '[Delete Subject Effect] DELETE_SUBJECT_SUCCESS',
+  props<{ subject: Subject }>(),
+);
+export const deleteSubjectError = createAction(
+  '[Delete Subject Effect] DELETE_SUBJECT_ERROR',
+  props<{ error: Error }>(),
+);
 export const getDraftSubjectLocalStorage = createAction(
   '[Subject Form] GET_DRAFT_SUBJECT_LOCALSTORAGE',
 );

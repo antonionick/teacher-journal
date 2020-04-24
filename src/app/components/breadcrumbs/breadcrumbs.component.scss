@@ -1,0 +1,40 @@
+@import '../../../styles/variables';
+
+.breadcrumbs {
+  box-sizing: border-box;
+  width: $project-width;
+  margin: 0 auto;
+  padding: 10px;
+
+  &__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    margin-right: 10px;
+  }
+
+  &__link {
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom .6s;
+
+    &:hover:not(&_current) {
+      cursor: pointer;
+      border-bottom: 1px solid $project-color;
+    }
+
+    &_current {
+      color: $project-color;
+    }
+  }
+
+  &__icon {
+    margin-left: 10px;
+  }
+}

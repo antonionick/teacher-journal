@@ -1,5 +1,5 @@
 import { Subject } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 export interface ISubjectState {
   subjects: Array<Subject>;
@@ -7,6 +7,7 @@ export interface ISubjectState {
   loaded: boolean;
   loadedOne: boolean;
   updating: boolean;
+  deleting: boolean;
   error: TNullable<Error>;
   draftSubject: TNullable<Subject>;
 }
@@ -17,6 +18,7 @@ export const initialState: ISubjectState = {
   loaded: false,
   loadedOne: false,
   updating: false,
+  deleting: false,
   error: null,
   draftSubject: null,
 };

@@ -1,10 +1,10 @@
 import { createReducer, on, Action, ActionReducer } from '@ngrx/store';
 
-import { initialState, IStudentsState } from './students.state';
+import { initialStateStudents, IStudentsState } from './students.state';
 import * as Actions from './students.actions';
 
 const reducer: ActionReducer<IStudentsState> = createReducer(
-  initialState,
+  initialStateStudents,
   on(Actions.loadStudents, (state) => {
     return {
       ...state,
@@ -35,6 +35,18 @@ const reducer: ActionReducer<IStudentsState> = createReducer(
     };
   }),
   on(Actions.addStudentServerError, (state, { error }) => {
+    return {
+      ...state,
+      error,
+    };
+  }),
+  on(Actions.deleteStudentSuccess, (state) => {
+    return {
+      ...state,
+      error: null,
+    };
+  }),
+  on(Actions.deleteStudentError, (state, { error }) => {
     return {
       ...state,
       error,

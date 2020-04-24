@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
@@ -22,11 +22,11 @@ import {
 import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
 import { AppState, IStudentsState } from '../../@ngrx';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
-import { ITableConfig, ICell, IChangeField } from 'src/app/common/models/table';
+import { TNullable } from '../../common/models/utils';
+import { ITableConfig, IChangeField, TableHeaderConfig } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
-import { IDataChanges } from '../../common/models/utils/data-changes';
+import { IDataChanges } from '../../common/models/utils';
 
 @Component({
   selector: 'app-subject-table',
@@ -43,13 +43,12 @@ import { IDataChanges } from '../../common/models/utils/data-changes';
 export class SubjectTableComponent extends BaseComponent implements OnInit {
   public isLoading: boolean;
   public subject: Subject;
-  public config: ITableConfig<ICell<string>>;
+  public config: ITableConfig;
   public teacherControl: FormControl;
   public saveButtonConfig: ButtonConfig;
 
   constructor(
     private store: Store<AppState>,
-    private route: ActivatedRoute,
     private router: Router,
     private tableService: SubjectTableService,
   ) {
@@ -62,7 +61,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     loading: boolean,
     action: () => void,
   ): void {
-    if (err) {
+    if (err !== null) {
       this.router.navigate(['subjects']);
     } else if (!loading) {
       action();
@@ -88,8 +87,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   private loadProcessStudents():
     UnaryFunction<Observable<IStudentsState>, Observable<IStudentsState>> {
     return pipe(
-      tap(({ students, loading, error }) => {
-        if (students.length > 0) {
+      tap(({ students, loading, loaded, error }) => {
+        if (students.length > 0 || loaded) {
           return this.tableService.subjectStudents = students;
         }
 
@@ -97,14 +96,14 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           this.store.dispatch(StudentsActions.loadStudents());
         });
       }),
-      filter(({ students }) => students.length > 0),
+      filter(({ students, loaded }) => students.length > 0 || loaded),
     );
   }
 
   private loadProcessMarks():
     UnaryFunction<Observable<IMarksSelectStore>, Observable<IMarksSelectStore>> {
     return pipe(
-      tap(({ id, marks, loading, loaded, error }) => {
+      tap(({ id, marks, loading, error }) => {
         if (marks !== null) {
           return this.tableService.subjectMarks = marks;
         }
@@ -113,7 +112,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
           this.store.dispatch(MarksActions.loadMarks({ id }));
         });
       }),
-      filter(({ marks, loaded, error }) => marks !== null),
+      filter(({ marks }) => marks !== null),
     );
   }
 
@@ -154,7 +153,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       take(1),
       tap(({ error }) => {
         if (error && error.status !== 404) {
-          alert(`Marks: ${ error.message }`);
+          alert(`Marks: ${error.message}`);
         }
 
         this.store.dispatch(MarksActions.loadMarks({ id }));
@@ -187,7 +186,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       )),
       tap(({ err }) => {
         if (err) {
-          alert(`Subject: ${ err.message }`);
+          alert(`Subject: ${err.message}`);
         }
       }),
       map(({ subject }) => subject),
@@ -253,16 +252,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.config = this.tableService.addHeader();
   }
 
-  public onDeleteDateHeader(event: MouseEvent): void {
-    const classList: DOMTokenList = (event.target as HTMLInputElement).classList;
-
-    if (
-      !(classList.contains('table__item_input-date-picker') && (event.ctrlKey || event.metaKey))
-    ) {
-      return;
-    }
-
-    this.config = this.tableService.deleteHeader(event.target as HTMLInputElement);
+  public onDeleteDateHeader(header: TableHeaderConfig): void {
+    this.config = this.tableService.deleteHeader(header);
   }
 
   public onChangeMark(change: IChangeField<number>): void {

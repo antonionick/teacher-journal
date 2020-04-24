@@ -2,10 +2,10 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { RouterStateSerializer } from '@ngrx/router-store';
 
-import { RouterStateUrl } from './router.state';
+import { IRouterStateUrl } from './router.state';
 
-export class CustomSerializer implements RouterStateSerializer<RouterStateUrl> {
-  public serialize(routerState: RouterStateSnapshot): RouterStateUrl {
+export class CustomSerializer implements RouterStateSerializer<IRouterStateUrl> {
+  public serialize(routerState: RouterStateSnapshot): IRouterStateUrl {
     let route: ActivatedRouteSnapshot = routerState.root;
     while (route.firstChild) {
       route = route.firstChild;

@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { IConfirmSave } from '../models/utils/confirm-save';
+import { IConfirmSave } from '../models/utils';
 
 export function confirmNavigation<T>(
   component: T,

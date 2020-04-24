@@ -85,6 +85,27 @@ const reducer: ActionReducer<ISubjectState> = createReducer(
       updating: false,
     };
   }),
+  on(Actions.deleteSubject, (state) => {
+    return {
+      ...state,
+      deleting: true,
+    };
+  }),
+  on(Actions.deleteSubjectSuccess, (state, { subject }) => {
+    return {
+      ...state,
+      error: null,
+      subjects: state.subjects.filter(({ id }) => id !== subject.id),
+      deleting: false,
+    };
+  }),
+  on(Actions.deleteSubjectError, (state, { error }) => {
+    return {
+      ...state,
+      error,
+      deleting: false,
+    };
+  }),
   on(Actions.updateDraftSubject, (state, { draftSubject }) => {
     return {
       ...state,

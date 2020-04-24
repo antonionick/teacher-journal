@@ -9,7 +9,7 @@ import { AppState } from '../app.state';
 import { ISubjectState } from './subjects.state';
 import { selectRouter } from '../router';
 import { Subject, ISubjectSelectStore } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 const selectState: MemoizedSelector<AppState, ISubjectState> =
   createFeatureSelector<AppState, ISubjectState>('subjects');
@@ -36,9 +36,9 @@ export const selectSubjectByUrl: MemoizedSelector<AppState, ISubjectSelectStore>
   selectRouter,
   ({ subjects, error, loading }, router) => {
     const routerId: number = +router.state.params.id;
-    const subject: TNullable<Subject> = subjects.find(({ id }) => {
-      return id === routerId;
-    }) || null;
+    const subject: TNullable<Subject> = subjects.find(({ id }) => (
+      id === routerId
+    )) || null;
 
     return { id: routerId, subject, loading, err: error };
   },

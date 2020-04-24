@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,9 +12,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableComponent, ButtonComponent, FormComponent } from './components';
-import { EditMarkDirective } from 'src/app/common/directives/edit-mark.directive';
+import { EditMarkDirective, HighlightMarkDirective } from 'src/app/common/directives';
+import { MainPipe } from '../common/pipes/main.pipe';
 
-const publicComponents = [TableComponent, ButtonComponent, FormComponent, EditMarkDirective];
+const publicComponents = [
+  TableComponent,
+  ButtonComponent,
+  FormComponent,
+  EditMarkDirective,
+  MainPipe,
+  HighlightMarkDirective,
+];
 const publicModules = [
   MatTableModule,
   MatButtonModule,
@@ -28,7 +37,7 @@ const publicModules = [
 
 @NgModule({
   declarations: [publicComponents],
-  imports: [CommonModule, publicModules],
+  imports: [CommonModule, publicModules, FontAwesomeModule],
   exports: [publicModules, publicComponents],
 })
 export class SharedModule { }

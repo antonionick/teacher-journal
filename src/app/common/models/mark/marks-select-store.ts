@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Mark } from './mark';
-import { TNullable } from '../utils/tnullable';
+import { TNullable } from '../utils';
 
 export interface IMarksSelectStore {
   id: number;

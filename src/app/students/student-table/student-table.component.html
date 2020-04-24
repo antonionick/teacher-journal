@@ -1,5 +1,14 @@
 <div class="student" *ngIf="config">
-  <app-table [config]="config" class="student__table"> </app-table>
+  <app-table [config]="config" class="student__table">
+    <ng-template #external let-value="value">
+      <span
+        class="student__table-button student__table-button_delete"
+        (click)="onDelete(value)"
+      >
+        <fa-icon class="student__table-button-icon" [icon]="trashIcon"></fa-icon>
+      </span>
+    </ng-template>
+  </app-table>
 
   <app-button [routerLink]="['add']" class="student__button">
     <fa-icon [icon]="plusIcon"></fa-icon>

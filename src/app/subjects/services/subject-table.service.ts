@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { ITableConfig, ICell, IChangeField } from '../../common/models/table';
-import { Student } from 'src/app/common/models/student';
+import { ITableConfig, IChangeField, TableHeaderConfig } from '../../common/models/table';
+import { Student } from 'src/app/common/models/student/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectTableConfigService } from './subject-table-config.service';
 import { IDataChanges } from 'src/app/common/models/utils/data-changes';
@@ -47,23 +47,23 @@ export class SubjectTableService {
     return this.configService.getChanges(this.marks, subjectId);
   }
 
-  public createConfig(): ITableConfig<ICell<string>> {
+  public createConfig(): ITableConfig {
     return this.configService.createConfig(this.students, this.marks);
   }
 
-  public updateConfig(): ITableConfig<ICell<string>> {
+  public updateConfig(): ITableConfig {
     return this.configService.updateConfigByDateChange();
   }
 
-  public addHeader(): ITableConfig<ICell<string>> {
+  public addHeader(): ITableConfig {
     return this.configService.addHeader();
   }
 
-  public deleteHeader(input: HTMLInputElement): ITableConfig<ICell<string>> {
-    return this.configService.deleteHeader(input);
+  public deleteHeader(header: TableHeaderConfig): ITableConfig {
+    return this.configService.deleteHeader(header);
   }
 
-  public updateMark(change: IChangeField<number>): ITableConfig<ICell<string>> {
+  public updateMark(change: IChangeField<number>): ITableConfig {
     return this.configService.updateMark(change);
   }
 }

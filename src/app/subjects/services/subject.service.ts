@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
-import { Options } from '../../common/models/utils/http-options';
+import { Options } from '../../common/models/utils';
 import { map } from 'rxjs/operators';
 
 const { subjects: subjectUrl } = urlProvider;
@@ -16,14 +16,14 @@ export class SubjectService {
     private http: HttpClient,
   ) { }
 
-  public fetchSubjects(options: Options = new Options()): Observable<Array<Subject>> {
-    return this.http.get<Array<Subject>>(subjectUrl, options);
-  }
-
   public fetchSubject(options: Options = new Options()): Observable<Subject> {
     return this.http.get<Subject>(subjectUrl, options).pipe(
-      map((subjects) => subjects[0]),
+      map((response) => response[0]),
     );
+  }
+
+  public fetchSubjects(options: Options = new Options()): Observable<Array<Subject>> {
+    return this.http.get<Array<Subject>>(subjectUrl, options);
   }
 
   public addSubjectServer(subject: Subject): Observable<Subject> {
@@ -31,12 +31,12 @@ export class SubjectService {
   }
 
   public updateSubject(subject: Subject): Observable<Subject> {
-    // if (subject.id === null) {
-    //   return of(subject);
-    // }
-
     const { id } = subject;
-    return this.http.put<Subject>(`${ subjectUrl }/${ id }`, subject);
+    return this.http.put<Subject>(`${subjectUrl}/${id}`, subject);
+  }
+
+  public deleteSubject({ id }: Subject): Observable<Subject> {
+    return this.http.delete<Subject>(`${subjectUrl}/${id}`);
   }
 
   public isChanged(sourceSubject: Subject, subject: Subject): boolean {

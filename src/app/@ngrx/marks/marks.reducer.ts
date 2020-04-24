@@ -1,18 +1,21 @@
 import { Action, ActionReducer, createReducer, on } from '@ngrx/store';
 
 import * as Actions from './marks.actions';
-import { IMarksState, initialState } from './marks.state';
+import { IMarksState, initialStateMarks } from './marks.state';
+import { Mark } from 'src/app/common/models/mark';
 
 const reducer: ActionReducer<IMarksState> = createReducer(
-  initialState,
-  on(Actions.loadMarks, (state) => {
-    return {
-      ...state,
-      error: null,
-      loading: true,
-      loaded: false,
-    };
-  }),
+  initialStateMarks,
+  on(
+    Actions.loadMarks,
+    Actions.loadMarksBySubjects, (state) => {
+      return {
+        ...state,
+        error: null,
+        loading: true,
+        loaded: false,
+      };
+    }),
   on(Actions.loadMarksSuccess, (state, { id, marks }) => {
     return {
       ...state,
@@ -26,6 +29,28 @@ const reducer: ActionReducer<IMarksState> = createReducer(
       ...state,
       error,
       marks: { ...state.marks, [id]: [] },
+      loading: false,
+      loaded: false,
+    };
+  }),
+  on(Actions.loadMarksBySubjectsSuccess, (state, { marks }) => {
+    return {
+      ...state,
+      marks: { ...state.marks, ...marks },
+      loading: false,
+      loaded: true,
+    };
+  }),
+  on(Actions.loadMarksBySubjectsError, (state, { ids, error }) => {
+    const marks: { [key: string]: Array<Mark> } = { ...state.marks };
+    ids.forEach((id) => {
+      marks[id] = [];
+    });
+
+    return {
+      ...state,
+      error,
+      marks,
       loading: false,
       loaded: false,
     };

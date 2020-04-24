@@ -1,4 +1,4 @@
-import { KeyCheck } from '../models/utils/key-check';
+import { KeyCheck } from '../models/utils';
 
 /*
   keys from 0 to 9:

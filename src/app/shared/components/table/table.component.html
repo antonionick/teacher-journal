@@ -1,53 +1,121 @@
-<div class="content">
-  <table class="table" mat-table [dataSource]="dataSource" matSort>
-    <ng-container *ngFor="let item of config.headers">
-      <ng-container [matColumnDef]="item.value" [sticky]="item.sticky ? '' : null" >
-        <th
-          class="table__cell table__cell_header"
-          [class.table__cell_header-picker]="item.datePicker"
-          mat-header-cell
-          mat-sort-header
-          [start]="item.isAscSortStart ? 'asc': 'desc'"
-          [disabled]="item.sort ? null : ''"
-          *matHeaderCellDef
+<div class="table-wrapper">
+  <table
+    class="table"
+    mat-table
+    [dataSource]="dataSource"
+    matSort
+    (matSortChange)="sortData($event)"
+  >
+    <ng-container
+      *ngFor="let header of config.headers"
+      matColumnDef="{{ header.value }}"
+      [sticky]="header.sticky ? true : null"
+    >
+      <th
+        class="table__cell table__cell_header"
+        [class.table__cell_header-picker]="header.datePicker"
+        mat-header-cell
+        mat-sort-header
+        [start]="header.isAscSortStart ? 'asc' : 'desc'"
+        [disabled]="header.sort ? null : true"
+        *matHeaderCellDef
+      >
+        <ng-container *ngIf="header.datePicker; else value">
+          <input
+            class="table__item table__item_input-date-picker"
+            matInput
+            [formControl]="header.inputControl"
+            [matDatepicker]="datePicker"
+            [min]="header.min"
+            [max]="header.max"
+            (dateChange)="onDateChange($event)"
+          />
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker disabled="false"></mat-datepicker>
+        </ng-container>
+
+        <ng-template #value>
+          <span>{{ header.isVisible ? header.value : ('' | titlecase) }}</span>
+        </ng-template>
+
+        <div
+          class="table__item-hover-content"
+          *ngIf="header.hoverContent"
+          (click)="onHeaderContentClick($event, header)"
         >
-          <ng-container *ngIf="item.datePicker; else value">
-            <input
-              class="table__item table__item_input-date-picker"
-              matInput
-              [formControl]="item.inputControl"
-              [matDatepicker]="datePicker"
-              [min]="item.min"
-              [max]="item.max"
-              (dateChange)="onDateChange($event)"
-            />
-            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker disabled="false"></mat-datepicker>
+          <ng-container *ngIf="headerHoverContent">
+            <ng-template *ngTemplateOutlet="headerHoverContent"></ng-template>
           </ng-container>
+        </div>
+      </th>
 
-          <ng-template #value>
-            <span>{{ item.value | titlecase }}</span>
-          </ng-template>
-        </th>
-
-        <td
-          mat-cell
-          class="table__cell"
-          *matCellDef="let cell"
-          [class.table__row_mark]="item.datePicker"
-          appEditMark
-          [editMarkConfig]="item.datePicker ? config.editCell : null"
-          [column]="item.datePicker ? item.value : null"
-          [row]="item.datePicker ? cell.id : null"
-          (changeMark)="onChangeMark($event)"
-        >
-          <span> {{ cell[item.value] }} </span>
-        </td>
-      </ng-container>
+      <td
+        *matCellDef="let cell"
+        mat-cell
+        class="table__cell"
+        [class.table__cell_mark]="cell[header.value].editCell"
+        appEditMark
+        [editMarkConfig]="cell[header.value].editCell"
+        [column]="header.value"
+        [row]="cell.id.value"
+        (changeMark)="onChangeMark($event)"
+      >
+        <ng-container [ngSwitch]="true">
+          <ng-container *ngSwitchCase="cell[header.value].isExternal">
+            <ng-container *ngTemplateOutlet="isExternal; context: { value: cell }"></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchCase="cell[header.value].highlight !== null">
+            <ng-container
+              *ngTemplateOutlet="
+                isHighlightMark;
+                context: {
+                  config: cell[header.value].highlight,
+                  value: cell[header.value].value,
+                  pipe: cell[header.value].pipe,
+                  args: cell[header.value].pipeArgs
+                }"
+            ></ng-container>
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            <ng-container
+              *ngTemplateOutlet="
+                base;
+                context: {
+                  value: cell[header.value].value,
+                  pipe: cell[header.value].pipe,
+                  args: cell[header.value].pipeArgs
+                }"
+            ></ng-container>
+          </ng-container>
+        </ng-container>
+      </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
+    <tr class="table__row" mat-header-row *matHeaderRowDef="columnHeaders"></tr>
+    <tr class="table__row" mat-row *matRowDef="let row; columns: columnHeaders"></tr>
   </table>
-
 </div>
+
+<ng-template #base let-value="value" let-pipe="pipe" let-args="args">
+  <span class="table__cell-item">{{ value | main: pipe:args }}</span>
+</ng-template>
+
+<ng-template #isExternal let-value="value">
+  <ng-container *ngIf="external; else baseCall">
+    <ng-container *ngTemplateOutlet="external; context: { value: value }"></ng-container>
+  </ng-container>
+  <ng-template #baseCall>
+    <ng-container *ngTemplateOutlet="base; context: { value: '', pipe: null }"></ng-container>
+  </ng-template>
+</ng-template>
+
+<ng-template #isHighlightMark let-config="config" let-value="value" let-pipe="pipe" let-args="args">
+  <span
+    class="table__cell-item table__cell-item_text_center"
+    appHighlightMark
+    [config]="config"
+    [value]="value"
+  >
+    {{ value | main: pipe:args }}
+  </span>
+</ng-template>

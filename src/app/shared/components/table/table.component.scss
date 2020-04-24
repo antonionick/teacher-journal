@@ -1,10 +1,7 @@
 @import '../../../../styles/variables.scss';
 
-.content {
+.table-wrapper {
   box-sizing: border-box;
-  max-width: $max-table-width;
-  width: 100%;
-  margin: 0 auto;
   overflow: auto;
   border-radius: 5px;
 }
@@ -13,7 +10,14 @@
   width: 100%;
 
   &__cell {
-    padding: 17px 10px;
+    position: relative;
+    padding: 15px 10px;
+
+    &_header {
+      &:hover .table__item-hover-content {
+        top: 0;
+      }
+    }
 
     &_header-picker {
       box-sizing: border-box;
@@ -21,10 +25,16 @@
       width: 160px;
       padding: 0 5px;
     }
+
+    &_mark {
+      text-align: center;
+    }
   }
 
-  &__row {
-    &_mark {
+  &__cell-item {
+    display: block;
+
+    &_text_center {
       text-align: center;
     }
   }
@@ -42,6 +52,31 @@
       &:hover {
         cursor: pointer;
       }
+    }
+  }
+
+  &__item-hover-content {
+    position: absolute;
+    top: -100px;
+    box-sizing: border-box;
+    max-width: 150px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 5px 2px;
+    font-size: 15px;
+    color: white;
+    background-color: #737373;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0 0 3px black;
+    transition: box-shadow .6s, top .6s;
+
+    &:hover {
+      box-shadow: 0 -1px 5px black;
+    }
+
+    &:active {
+      box-shadow: none;
     }
   }
 }

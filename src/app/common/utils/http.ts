@@ -1,4 +1,4 @@
-import { Options } from '../models/utils/http-options';
+import { Options } from '../models/utils';
 import { HttpParams } from '@angular/common/http';
 
 export function updateParamsExcludes<T>(options: Options, key: string, values: Array<T>): void {

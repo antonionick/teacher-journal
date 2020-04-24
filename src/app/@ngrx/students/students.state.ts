@@ -1,5 +1,5 @@
 import { Student } from '../../common/models/student';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 export interface IStudentsState {
   students: Array<Student>;
@@ -9,7 +9,7 @@ export interface IStudentsState {
   readonly error: TNullable<Error>;
 }
 
-export const initialState: IStudentsState = {
+export const initialStateStudents: IStudentsState = {
   students: [],
   draftStudent: null,
   loading: false,

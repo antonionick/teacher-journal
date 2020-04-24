@@ -1,36 +1,57 @@
 import {
   Component,
-  ViewChild,
   SimpleChanges,
   Input,
   OnChanges,
   Output,
-  EventEmitter,
+  EventEmitter, ContentChild, TemplateRef,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
-import { ITableConfig, TableHeaderConfig, IChangeField } from '../../../common/models/table';
+import {
+  ITableConfig,
+  TableHeaderConfig,
+  IChangeField,
+  TableBodyConfig,
+} from '../../../common/models/table';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
 })
-export class TableComponent<T> implements OnChanges {
-  @ViewChild(MatSort, { static: true })
-  private sort: MatSort;
-
+export class TableComponent implements OnChanges {
   @Input()
-  public config: ITableConfig<T>;
+  public config: ITableConfig;
   public columnHeaders: Array<string>;
-  public dataSource: MatTableDataSource<T>;
+  public dataSource: MatTableDataSource<TableBodyConfig>;
 
   @Output('headerChange')
   public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
   @Output()
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
+  @Output('headerHoverContentClick')
+  public headerHoverContentClick: EventEmitter<TableHeaderConfig> = new EventEmitter();
+
+  @ContentChild('external')
+  public external: TemplateRef<HTMLElement>;
+  @ContentChild('headerHoverContent')
+  public headerHoverContent: TemplateRef<HTMLElement>;
+
+  private compare(a: number | string, b: number | string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  private sort({ active, direction }: Sort):
+    (a: TableBodyConfig, b: TableBodyConfig) => number {
+    return (a, b) => {
+      const isAsc: boolean = direction === 'asc';
+
+      return this.compare(a[active].value, b[active].value, isAsc);
+    };
+  }
 
   public ngOnChanges(change: SimpleChanges): void {
     let {
@@ -45,7 +66,6 @@ export class TableComponent<T> implements OnChanges {
 
     this.columnHeaders = currentValue.headers.map((item: TableHeaderConfig) => item.value);
     this.dataSource = new MatTableDataSource(currentValue.body);
-    this.dataSource.sort = this.sort;
   }
 
   public onDateChange(event: MatDatepickerInputEvent<Date>): void {
@@ -54,5 +74,21 @@ export class TableComponent<T> implements OnChanges {
 
   public onChangeMark(change: IChangeField<number>): void {
     this.changeField.emit(change);
+  }
+
+  public sortData(sort: Sort): void {
+    if (!sort.active || sort.direction === '') {
+      this.dataSource = new MatTableDataSource(this.config.body);
+      return;
+    }
+
+    const data: Array<TableBodyConfig> = this.config.body.slice();
+    const sortedData: Array<TableBodyConfig> = data.sort(this.sort(sort));
+    this.dataSource = new MatTableDataSource(sortedData);
+  }
+
+  public onHeaderContentClick(event: MouseEvent, header: TableHeaderConfig): void {
+    event.stopPropagation();
+    this.headerHoverContentClick.emit(header);
   }
 }

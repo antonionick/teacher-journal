@@ -4,7 +4,7 @@ import { MemoizedSelector } from '@ngrx/store/src/selector';
 import { Student } from '../../common/models/student';
 import { AppState } from '../app.state';
 import { IStudentsState } from './students.state';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { TNullable } from '../../common/models/utils';
 
 const selectFeature: MemoizedSelector<AppState, IStudentsState> =
   createFeatureSelector<AppState, IStudentsState>('students');

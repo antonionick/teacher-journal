@@ -1,13 +1,17 @@
 <div class="subject">
   <ul class="subject__list">
-    <li class="subject__item" *ngFor="let subject of subjects">
+    <li class="subject__item" *ngFor="let subject of subjects; let i=index">
       <app-button class="subject__link" [routerLink]="['table', subject.id]">
         {{ subject.name }}
+      </app-button>
+      <app-button
+        class="subject__button subject__button_small" (click)="onDelete(subject)">
+        <fa-icon [icon]="deleteIcon"></fa-icon>
       </app-button>
     </li>
   </ul>
 
-  <app-button class="subject__button" [routerLink]="['add']">
+  <app-button class="subject__button subject__button_center" [routerLink]="['add']">
     <fa-icon [icon]="plusIcon"></fa-icon>
   </app-button>
 </div>

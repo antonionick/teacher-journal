@@ -1,4 +1,4 @@
-import { TNullable } from '../utils/tnullable';
+import { TNullable } from '../utils';
 import { MarkHistory } from '../mark';
 
 interface ITableConfigHistory {

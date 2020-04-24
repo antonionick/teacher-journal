@@ -1,13 +1,9 @@
 @import "../../../styles/variables";
 
 .student {
-  &__form {
-    &::ng-deep .form{
-      box-sizing: border-box;
-      max-width: $max-table-width;
-      width: 100%;
-      margin: 0 auto;
-      overflow: auto;
-    }
-  }
+  box-sizing: border-box;
+  max-width: $project-width;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 10px;
 }

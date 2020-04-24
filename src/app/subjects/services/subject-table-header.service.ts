@@ -21,6 +21,7 @@ export class SubjectTableHeaderService {
       inputControl: new FormControl({ value: date, disabled: true }),
       sort: true,
       isAscSortStart: false,
+      hoverContent: true,
     });
   }
 
@@ -38,7 +39,7 @@ export class SubjectTableHeaderService {
     );
   }
 
-  public addDateHeader(headers: Array<TableHeaderConfig>): Array<TableHeaderConfig> {
+  public addDateHeader(headers: Array<TableHeaderConfig>): TableHeaderConfig {
     let date: Date = new Date();
     startOfDay(date);
 
@@ -47,8 +48,7 @@ export class SubjectTableHeaderService {
       date = getClosestEmptyDate(date, headers);
     }
 
-    const header: TableHeaderConfig = this.createDateHeader({ date });
-    return [...headers, header];
+    return this.createDateHeader({ date });
   }
 
   public deleteDateHeader(

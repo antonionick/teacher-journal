@@ -14,14 +14,14 @@ import {
   checkValidKeyCodes,
 } from '../utils/validate-number-input';
 import { EditMark } from '../models/mark';
-import { TNullable } from '../models/utils/tnullable';
+import { TNullable } from '../models/utils';
 import { IChangeField } from '../models/table';
 
 @Directive({
   selector: '[appEditMark]',
 })
 export class EditMarkDirective {
-  private config: EditMark;
+  private config: TNullable<EditMark>;
   private input: HTMLInputElement;
   private child: HTMLElement;
   private sourceChildDisplay: string;

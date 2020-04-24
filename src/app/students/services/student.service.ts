@@ -5,42 +5,14 @@ import { Observable } from 'rxjs';
 
 import { Student } from '../../common/models/student';
 import { urlProvider } from '../../url';
-import { TableHeaderConfig } from '../../common/models/table';
 
 const { students: studentUrl } = urlProvider;
 
-const displayedColumns: Array<TableHeaderConfig> = [
-  new TableHeaderConfig({
-    value: 'id',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'name',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'lastName',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'address',
-    sort: true,
-  }),
-  new TableHeaderConfig({
-    value: 'description',
-    sort: true,
-  }),
-];
-
 @Injectable()
 export class StudentService {
-  public displayedColumns: Array<TableHeaderConfig>;
-
   constructor(
     private http: HttpClient,
-  ) {
-    this.displayedColumns = displayedColumns;
-  }
+  ) { }
 
   public fetchStudentsServer(): Observable<Array<Student>> {
     return this.http.get<Array<Student>>(studentUrl);
@@ -48,6 +20,10 @@ export class StudentService {
 
   public addStudentServer(student: Student): Observable<Student> {
     return this.http.post<Student>(studentUrl, student);
+  }
+
+  public deleteStudent(id: number): Observable<Student> {
+    return this.http.delete<Student>(`${studentUrl}/${id}`);
   }
 
   public isChanged(sourceStudent: Student, student: Student): boolean {

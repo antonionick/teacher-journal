@@ -1,7 +1,6 @@
 import { TableConfigHistory } from '../../common/models/table/table-config-history';
 import { Mark, MarkHistory, IMarksByDate } from '../../common/models/mark';
-import { IDataChanges } from '../../common/models/utils/data-changes';
-import { TNullable } from 'src/app/common/models/utils/tnullable';
+import { IDataChanges, TNullable } from '../../common/models/utils';
 
 enum Actions {
   update,

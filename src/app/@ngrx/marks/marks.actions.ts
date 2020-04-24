@@ -17,6 +17,18 @@ export const loadMarksError = createAction(
   '[Load Marks Effect] LOAD_MARKS_ERROR',
   props<{ id: number, error: HttpErrorResponse }>(),
 );
+export const loadMarksBySubjects = createAction(
+  'LOAD_MARKS_BY_SUBJECTS',
+  props<{ ids: Array<number> }>(),
+);
+export const loadMarksBySubjectsSuccess = createAction(
+  '[Load Marks By Subjects Effect] LOAD_MARKS_BY_SUBJECTS_SUCCESS',
+  props<{ marks: { [subjectId: string]: Array<Mark> } }>(),
+);
+export const loadMarksBySubjectsError = createAction(
+  '[Load Marks By Subjects Effect] LOAD_MARKS_BY_SUBJECTS_ERROR',
+  props<{ ids: Array<number>, error: HttpErrorResponse }>(),
+);
 export const addMarks = createAction(
   '[Subject Table] ADD_MARKS',
   props<{ marks: Array<Mark> }>(),

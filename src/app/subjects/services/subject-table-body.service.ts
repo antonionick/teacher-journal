@@ -1,60 +1,82 @@
 import { Injectable } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 
-import { ICell, IChangeField } from 'src/app/common/models/table';
-import { Student } from 'src/app/common/models/student';
-import { IMarksByDate, Mark } from 'src/app/common/models/mark';
-import { TNullable } from 'src/app/common/models/utils/tnullable';
+import {
+  IChangeField,
+  TableCellConfig,
+  TableBodyConfig, TableHeaderConfig,
+} from 'src/app/common/models/table';
+import { Student } from 'src/app/common/models/student/student';
+import { IMarksByDate, Mark, EditMark, HighlightMark } from 'src/app/common/models/mark';
 import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
 export class SubjectTableBodyService {
-  private sortBodyFunc(a: ICell<string>, b: ICell<string>): number {
-    return a.lastName.localeCompare(b.lastName);
+  private readonly editMark: EditMark;
+
+  constructor() {
+    this.editMark = new EditMark();
   }
 
-  private createBodyField(student: Student): TNullable<ICell<string>> {
+  private sortBodyFunc(a: TableBodyConfig, b: TableBodyConfig): number {
+    return a.lastName.value.localeCompare(b.lastName.value);
+  }
+
+  private createBodyField({ id, name, lastName }: Student): TableBodyConfig {
     return {
-      id: `${student.id}`,
-      name: student.name,
-      lastName: student.lastName,
-      'average mark': '',
+      id: new TableCellConfig({ value: `${id}` }),
+      name: new TableCellConfig({ value: name }),
+      lastName: new TableCellConfig({ value: lastName }),
+      'average mark': new TableCellConfig({
+        pipe: new DecimalPipe('en-US'),
+        pipeArgs: '1.0-1',
+        highlight: new HighlightMark(),
+      }),
     };
   }
 
-  private computeAverageMark(field: ICell<string>): number {
+  private computeAverageMark(field: TableBodyConfig): number {
     let count: number = 0;
+
     const sum: number = Object.keys(field).reduce((acc, key) => {
-      return Number.isNaN(+key) ? acc : (count++, acc + +field[key]);
+      const isEditCell: boolean = !Number.isNaN(+key);
+
+      if (isEditCell && field[key].value !== '') {
+        count++;
+        return acc + +field[key].value;
+      }
+
+      return acc;
     }, 0);
 
     return count === 0 ? -1 : sum / count;
   }
 
-  private updateAverageMark(field: ICell<string>, value: string): void {
-    field['average mark'] = value;
+  private updateAverageMark(field: TableBodyConfig, value: string): void {
+    field['average mark'].value = value;
   }
 
-  public getComputedAverageMark(field: ICell<string>): string {
+  public getComputedAverageMark(field: TableBodyConfig): string {
     const mark: number = this.computeAverageMark(field);
     return mark === -1 ? '' : `${mark}`;
   }
 
-  public createBody(marks: IMarksByDate, students: Array<Student>): Array<ICell<string>> {
-    const body: Array<ICell<string>> = students.reduce((arr, student) => {
-      const field: ICell<string> = this.createBodyField(student);
+  public createBody(marks: IMarksByDate, students: Array<Student>): Array<TableBodyConfig> {
+    const body: Array<TableBodyConfig> = students.reduce((arr, student) => {
+      const field: TableBodyConfig = this.createBodyField(student);
       arr.push(field);
       return arr;
     }, []);
 
     Object.keys(marks).forEach((date) => {
       body.forEach((field) => {
-        const mark: TNullable<Mark> = marks[date][field.id] || null;
+        const mark: Mark = marks[date][field.id.value] || null;
 
         if (mark === null) {
-          return;
+          return field[date] = new TableCellConfig({ editCell: this.editMark });
         }
 
-        field[date] = `${mark.value}`;
+        field[date] = new TableCellConfig({ value: `${mark.value}`, editCell: this.editMark });
       });
     });
 
@@ -66,63 +88,78 @@ export class SubjectTableBodyService {
   }
 
   public updateBodyByDateChanges(
-    body: Array<ICell<string>>,
+    body: Array<TableBodyConfig>,
     { current, previously: prev }: DateChanges,
-  ): Array<ICell<string>> {
+  ): Array<TableBodyConfig> {
     if (current === null) {
       return body;
     }
 
-    return body.map((field) => {
+    body.forEach((field) => {
       if (!field[prev]) {
         return field;
       }
 
-      const item: ICell<string> = Object.assign({}, field);
-      item[current] = item[prev];
-      delete item[prev];
-      return item;
+      field[current] = field[prev];
+      delete field[prev];
     });
+
+    return body;
+  }
+
+  public updateBodyByAddDates(
+    body: Array<TableBodyConfig>,
+    { value: milliseconds }: TableHeaderConfig,
+  ): Array<TableBodyConfig> {
+    body.forEach((field) => {
+      field[milliseconds] = new TableCellConfig({ editCell: this.editMark });
+    });
+
+    return body;
   }
 
   public updateMark(
-    body: Array<ICell<string>>,
+    body: Array<TableBodyConfig>,
     { value: mark, column: date, row: id }: IChangeField<number>,
-  ): Array<ICell<string>> {
-    return body.map((item) => {
-      if (+item.id !== id) {
+  ): Array<TableBodyConfig> {
+    body.forEach((item) => {
+      if (+item.id.value !== id) {
         return item;
       }
 
       if (mark !== -1) {
-        item[date] = `${mark}`;
+        item[date].value = `${mark}`;
       } else {
-        delete item[date];
+        item[date].value = '';
       }
-      this.updateAverageMark(item, this.getComputedAverageMark(item));
 
-      return item;
+      this.updateAverageMark(item, this.getComputedAverageMark(item));
     });
+
+    return body;
   }
 
-  public deleteMarkByDate(milliseconds: number, body: Array<ICell<string>>): Array<ICell<string>> {
-    return body.map((item) => {
-      const newItem: ICell<string> = Object.assign({}, item);
-      delete newItem[milliseconds];
-      this.updateAverageMark(newItem, this.getComputedAverageMark(newItem));
-      return newItem;
+  public deleteMarkByDate(
+    milliseconds: number,
+    body: Array<TableBodyConfig>,
+  ): Array<TableBodyConfig> {
+    body.forEach((item) => {
+      delete item[milliseconds];
+      this.updateAverageMark(item, this.getComputedAverageMark(item));
     });
+
+    return body;
   }
 
   public sortBody(
-    body: Array<ICell<string>>,
-    sort?: (a: ICell<string>, b: ICell<string>) => number,
-  ): Array<ICell<string>> {
+    body: Array<TableBodyConfig>,
+    sort?: (a: TableBodyConfig, b: TableBodyConfig) => number,
+  ): Array<TableBodyConfig> {
     if (body.length < 2) {
-      return;
+      return body;
     }
 
-    const result: Array<ICell<string>> = body.slice();
+    const result: Array<TableBodyConfig> = body.slice();
     if (!sort) {
       sort = this.sortBodyFunc;
     }

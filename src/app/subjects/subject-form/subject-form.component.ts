@@ -14,8 +14,8 @@ import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
-import { IConfirmSave } from '../../common/models/utils/confirm-save';
-import { TNullable } from '../../common/models/utils/tnullable';
+import { IConfirmSave } from '../../common/models/utils';
+import { TNullable } from '../../common/models/utils';
 
 @Component({
   selector: 'app-subject-form',
