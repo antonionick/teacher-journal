@@ -104,8 +104,8 @@ export class MarkService {
   public getMarksByKey<T>(key: string, value: T, { marks }: IMarksState): Array<Mark> {
     const keys: Array<string> = Object.keys(marks);
 
-    return keys.reduce((arr, markKey) => {
-      const valueMarks: Array<Mark> = marks[markKey].filter((mark) => mark[key] === value);
+    return keys.reduce((arr, subjectId) => {
+      const valueMarks: Array<Mark> = marks[subjectId].filter((mark) => mark[key] === value);
       return [...arr, ...valueMarks];
     }, []);
   }
