@@ -16,6 +16,6 @@ export class BreadcrumbChooseHandler {
 
   public process(state: IRouterStateUrl): TNullable<IBreadcrumbHandler> {
     const handlerConfig: TNullable<IBreadcrumbHandlerConfig> = this.findHandler(state);
-    return handlerConfig === null ? null : handlerConfig.handler;
+    return handlerConfig?.handler || null;
   }
 }

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
-import { Observable, pipe, UnaryFunction, of, zip } from 'rxjs';
-import { takeUntil, switchMap, tap, filter, take, map } from 'rxjs/operators';
+import { Observable, of, pipe, UnaryFunction, zip } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as SubjectsSelectors from '../../@ngrx/subjects/subjects.selectors';
@@ -13,20 +13,19 @@ import * as StudentsActions from '../../@ngrx/students/students.actions';
 import * as MarksSelectors from '../../@ngrx/marks/marks.selectors';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
 import {
-  SubjectTableService,
-  SubjectTableConfigService,
   SubjectTableBodyService,
+  SubjectTableConfigService,
   SubjectTableHeaderService,
+  SubjectTableService,
   TableConfigHistoryService,
 } from '../services';
 import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
 import { AppState, IStudentsState } from '../../@ngrx';
-import { Subject, ISubjectSelectStore } from '../../common/models/subject';
-import { TNullable } from '../../common/models/utils';
-import { ITableConfig, IChangeField, TableHeaderConfig } from 'src/app/common/models/table';
+import { ISubjectSelectStore, Subject } from '../../common/models/subject';
+import { IDataChanges, TNullable } from '../../common/models/utils';
+import { IChangeField, ITableConfig, TableHeaderConfig } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
-import { IDataChanges } from '../../common/models/utils';
 
 @Component({
   selector: 'app-subject-table',
@@ -39,6 +38,7 @@ import { IDataChanges } from '../../common/models/utils';
     SubjectTableBodyService,
     TableConfigHistoryService,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubjectTableComponent extends BaseComponent implements OnInit {
   public isLoading: boolean;
@@ -51,6 +51,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     private store: Store<AppState>,
     private router: Router,
     private tableService: SubjectTableService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.isLoading = false;
@@ -221,6 +222,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     ).subscribe({
       next: (): void => {
         this.config = this.tableService.createConfig();
+        this.cdr.detectChanges();
       },
     });
   }
@@ -239,7 +241,8 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
         this.setSubject(subject);
         this.tableService.subjectMarks = marks;
         this.config = this.tableService.createConfig();
-        this.saveButtonConfig.disable = false;
+        this.saveButtonConfig = { ...this.saveButtonConfig, disable: false };
+        this.cdr.detectChanges();
       },
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
@@ -17,6 +17,7 @@ import { BreadcrumbChooseHandler, handlers } from '../../common/utils/breadcrumb
   selector: 'app-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbsComponent implements OnInit {
   private chooseHandler: BreadcrumbChooseHandler;
@@ -24,7 +25,7 @@ export class BreadcrumbsComponent implements OnInit {
   public icon: IconDefinition;
   public config: TNullable<Array<Breadcrumb>>;
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private cdr: ChangeDetectorRef) {
     this.chooseHandler = new BreadcrumbChooseHandler(handlers);
     this.icon = faArrowRight;
     this.config = null;
@@ -53,6 +54,7 @@ export class BreadcrumbsComponent implements OnInit {
     ).subscribe({
       next: (config) => {
         this.config = config;
+        this.cdr.markForCheck();
       },
     });
   }

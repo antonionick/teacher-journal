@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
@@ -11,10 +11,9 @@ import { AppState, selectDraftStudent } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { IFormConfig } from '../../common/models/form';
 import { Student } from '../../common/models/student';
-import { StudentService } from '../services/student.service';
+import { StudentService, StudentFormService } from '../services';
 import { FormComponent } from '../../shared/components';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
-import { StudentFormService } from '../services/student-form.service';
 import { IConfirmSave } from '../../common/models/utils';
 
 @Component({
@@ -22,6 +21,7 @@ import { IConfirmSave } from '../../common/models/utils';
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
   providers: [StudentFormService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentFormComponent extends BaseComponent implements OnInit {
   private initialStudent: Student;

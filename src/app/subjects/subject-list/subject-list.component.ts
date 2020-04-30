@@ -1,10 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { select, Store } from '@ngrx/store';
 
-import { of, Observable } from 'rxjs';
-import { takeUntil, filter, tap, take, mergeMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { filter, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
@@ -19,6 +25,7 @@ import { Mark } from 'src/app/common/models/mark';
   selector: 'app-subject-list',
   templateUrl: './subject-list.component.html',
   styleUrls: ['./subject-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubjectListComponent extends BaseComponent implements OnInit, OnDestroy {
   public subjects: Array<Subject>;
@@ -29,6 +36,7 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
 
   constructor(
     private store: Store<AppState>,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.plusIcon = faPlus;
@@ -104,6 +112,7 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
         this.isLoading = false;
         this.subjects = state.subjects;
         this.updateDataByState(state);
+        this.cdr.detectChanges();
       }),
       takeUntil(this.unsubscribe$),
     ).subscribe();
@@ -120,6 +129,7 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
       tap((state) => {
         this.updateDataByState(state);
         this.subjects = state.subjects;
+        this.cdr.detectChanges();
       }),
       mergeMap(({ error }) => (
         error !== null ? of(null) : this.deleteSubjectMarks(subject)

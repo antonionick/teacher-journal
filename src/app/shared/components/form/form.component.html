@@ -34,10 +34,10 @@
   <div class="form__row form__row_button">
     <app-button
       class="form__button"
-      *ngFor="let config of formConfig.buttons"
-      [config]="config"
+      *ngFor="let buttonConfig of formConfig.buttons"
+      [config]="buttonConfig"
     >
-      {{ config.value }}
+      {{ buttonConfig.value }}
     </app-button>
   </div>
 </form>

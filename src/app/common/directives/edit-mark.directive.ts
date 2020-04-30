@@ -101,7 +101,6 @@ export class EditMarkDirective {
     this.render.setAttribute(input, 'min', min.toString());
     this.render.setAttribute(input, 'max', max.toString());
     this.render.listen(input, 'keydown', this.handleKeyDown.bind(this));
-
     if (classes !== '') {
       this.render.addClass(input, classes);
     }

@@ -25,15 +25,15 @@
   <section class="subject__update-form-wrapper">
     <label class="subject__label">
       <span class="subject__label-title">Teacher:</span>
-      <input class="subject__label-item" matInput type="text" [formControl]="teacherControl" />
+      <input class="subject__label-item" type="text" [formControl]="teacherControl" />
     </label>
-  </section>
 
-  <app-button
-    class="subject__button subject__button_save"
-    [config]="saveButtonConfig"
-    (click)="onSave()"
-  >
-    Save
-  </app-button>
+    <app-button
+      class="subject__button subject__button_save"
+      [config]="saveButtonConfig"
+      (click)="onSave()"
+    >
+      Save
+    </app-button>
+  </section>
 </article>

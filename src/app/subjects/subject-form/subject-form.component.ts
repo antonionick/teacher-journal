@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
@@ -14,14 +14,14 @@ import { FormComponent } from '../../shared/components';
 import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
-import { IConfirmSave } from '../../common/models/utils';
-import { TNullable } from '../../common/models/utils';
+import { IConfirmSave, TNullable } from '../../common/models/utils';
 
 @Component({
   selector: 'app-subject-form',
   templateUrl: './subject-form.component.html',
   styleUrls: ['./subject-form.component.scss'],
   providers: [SubjectFormService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubjectFormComponent extends BaseComponent implements OnInit {
   private isSaving: boolean;

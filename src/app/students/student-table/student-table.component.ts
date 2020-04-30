@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
-import { takeUntil, tap, filter, take, map, switchMap, mergeMap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as StudentsActions from '../../@ngrx/students/students.actions';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
@@ -22,6 +22,7 @@ import { MarkService } from '../../common/services';
   templateUrl: './student-table.component.html',
   styleUrls: ['./student-table.component.scss'],
   providers: [StudentTableService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
@@ -35,6 +36,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     private store: Store<AppState>,
     private studentTableService: StudentTableService,
     private markService: MarkService,
+    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.config = null;
@@ -116,6 +118,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
           headers: this.studentTableService.displayedColumns,
           body: this.studentTableService.getTableBodyConfig(students),
         };
+        this.cdr.detectChanges();
       },
     });
   }

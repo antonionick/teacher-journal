@@ -1,6 +1,6 @@
 <div class="subject">
   <ul class="subject__list">
-    <li class="subject__item" *ngFor="let subject of subjects; let i=index">
+    <li class="subject__item" *ngFor="let subject of subjects; let i = index">
       <app-button class="subject__link" [routerLink]="['table', subject.id]">
         {{ subject.name }}
       </app-button>

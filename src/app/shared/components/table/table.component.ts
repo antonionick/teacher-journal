@@ -1,26 +1,30 @@
 import {
   Component,
-  SimpleChanges,
+  ContentChild,
+  EventEmitter,
   Input,
   OnChanges,
   Output,
-  EventEmitter, ContentChild, TemplateRef,
+  SimpleChanges,
+  TemplateRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 import {
-  ITableConfig,
-  TableHeaderConfig,
   IChangeField,
+  ITableConfig,
   TableBodyConfig,
+  TableHeaderConfig,
 } from '../../../common/models/table';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent implements OnChanges {
   @Input()
@@ -28,12 +32,12 @@ export class TableComponent implements OnChanges {
   public columnHeaders: Array<string>;
   public dataSource: MatTableDataSource<TableBodyConfig>;
 
-  @Output('headerChange')
-  public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
   @Output()
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
-  @Output('headerHoverContentClick')
+  @Output()
   public headerHoverContentClick: EventEmitter<TableHeaderConfig> = new EventEmitter();
+  @Output('headerChange')
+  public dateChange: EventEmitter<MatDatepickerInputEvent<Date>> = new EventEmitter();
 
   @ContentChild('external')
   public external: TemplateRef<HTMLElement>;

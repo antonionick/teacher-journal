@@ -15,7 +15,8 @@ export class SubjectTableBodyService {
   private readonly editMark: EditMark;
 
   constructor() {
-    this.editMark = new EditMark();
+    const editMarkClasses: Array<string> = ['edit-mark'];
+    this.editMark = new EditMark({ inputClasses: editMarkClasses });
   }
 
   private sortBodyFunc(a: TableBodyConfig, b: TableBodyConfig): number {
