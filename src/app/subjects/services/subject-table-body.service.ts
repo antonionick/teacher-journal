@@ -4,7 +4,7 @@ import { DecimalPipe } from '@angular/common';
 import {
   IChangeField,
   TableCellConfig,
-  TableBodyConfig, TableHeaderConfig,
+  ITableBodyConfig, TableHeaderConfig,
 } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student/student';
 import { IMarksByDate, Mark, EditMark, HighlightMark } from 'src/app/common/models/mark';
@@ -19,11 +19,11 @@ export class SubjectTableBodyService {
     this.editMark = new EditMark({ inputClasses: editMarkClasses });
   }
 
-  private sortBodyFunc(a: TableBodyConfig, b: TableBodyConfig): number {
+  private sortBodyFunc(a: ITableBodyConfig, b: ITableBodyConfig): number {
     return a.lastName.value.localeCompare(b.lastName.value);
   }
 
-  private createBodyField({ id, name, lastName }: Student): TableBodyConfig {
+  private createBodyField({ id, name, lastName }: Student): ITableBodyConfig {
     return {
       id: new TableCellConfig({ value: `${id}` }),
       name: new TableCellConfig({ value: name }),
@@ -36,7 +36,7 @@ export class SubjectTableBodyService {
     };
   }
 
-  private computeAverageMark(field: TableBodyConfig): number {
+  private computeAverageMark(field: ITableBodyConfig): number {
     let count: number = 0;
 
     const sum: number = Object.keys(field).reduce((acc, key) => {
@@ -53,18 +53,18 @@ export class SubjectTableBodyService {
     return count === 0 ? -1 : sum / count;
   }
 
-  private updateAverageMark(field: TableBodyConfig, value: string): void {
+  private updateAverageMark(field: ITableBodyConfig, value: string): void {
     field['average mark'].value = value;
   }
 
-  public getComputedAverageMark(field: TableBodyConfig): string {
+  public getComputedAverageMark(field: ITableBodyConfig): string {
     const mark: number = this.computeAverageMark(field);
     return mark === -1 ? '' : `${mark}`;
   }
 
-  public createBody(marks: IMarksByDate, students: Array<Student>): Array<TableBodyConfig> {
-    const body: Array<TableBodyConfig> = students.reduce((arr, student) => {
-      const field: TableBodyConfig = this.createBodyField(student);
+  public createBody(marks: IMarksByDate, students: Array<Student>): Array<ITableBodyConfig> {
+    const body: Array<ITableBodyConfig> = students.reduce((arr, student) => {
+      const field: ITableBodyConfig = this.createBodyField(student);
       arr.push(field);
       return arr;
     }, []);
@@ -89,9 +89,9 @@ export class SubjectTableBodyService {
   }
 
   public updateBodyByDateChanges(
-    body: Array<TableBodyConfig>,
+    body: Array<ITableBodyConfig>,
     { current, previously: prev }: DateChanges,
-  ): Array<TableBodyConfig> {
+  ): Array<ITableBodyConfig> {
     if (current === null) {
       return body;
     }
@@ -109,9 +109,9 @@ export class SubjectTableBodyService {
   }
 
   public updateBodyByAddDates(
-    body: Array<TableBodyConfig>,
+    body: Array<ITableBodyConfig>,
     { value: milliseconds }: TableHeaderConfig,
-  ): Array<TableBodyConfig> {
+  ): Array<ITableBodyConfig> {
     body.forEach((field) => {
       field[milliseconds] = new TableCellConfig({ editCell: this.editMark });
     });
@@ -120,9 +120,9 @@ export class SubjectTableBodyService {
   }
 
   public updateMark(
-    body: Array<TableBodyConfig>,
+    body: Array<ITableBodyConfig>,
     { value: mark, column: date, row: id }: IChangeField<number>,
-  ): Array<TableBodyConfig> {
+  ): Array<ITableBodyConfig> {
     body.forEach((item) => {
       if (+item.id.value !== id) {
         return item;
@@ -142,8 +142,8 @@ export class SubjectTableBodyService {
 
   public deleteMarkByDate(
     milliseconds: number,
-    body: Array<TableBodyConfig>,
-  ): Array<TableBodyConfig> {
+    body: Array<ITableBodyConfig>,
+  ): Array<ITableBodyConfig> {
     body.forEach((item) => {
       delete item[milliseconds];
       this.updateAverageMark(item, this.getComputedAverageMark(item));
@@ -153,14 +153,14 @@ export class SubjectTableBodyService {
   }
 
   public sortBody(
-    body: Array<TableBodyConfig>,
-    sort?: (a: TableBodyConfig, b: TableBodyConfig) => number,
-  ): Array<TableBodyConfig> {
+    body: Array<ITableBodyConfig>,
+    sort?: (a: ITableBodyConfig, b: ITableBodyConfig) => number,
+  ): Array<ITableBodyConfig> {
     if (body.length < 2) {
       return body;
     }
 
-    const result: Array<TableBodyConfig> = body.slice();
+    const result: Array<ITableBodyConfig> = body.slice();
     if (!sort) {
       sort = this.sortBodyFunc;
     }

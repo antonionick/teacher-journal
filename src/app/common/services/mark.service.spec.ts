@@ -14,7 +14,7 @@ describe('MarkService', () => {
       service = new MarkService({} as HttpClient);
     });
 
-    it('should return false if subjects did not loaded', () => {
+    it('should return false if subjects did not load', () => {
       const marks: IMarksState = { ...initialStateMarks };
       const subjects: ISubjectState = { ...initialState };
 

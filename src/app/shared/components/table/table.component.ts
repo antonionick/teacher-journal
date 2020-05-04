@@ -16,7 +16,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import {
   IChangeField,
   ITableConfig,
-  TableBodyConfig,
+  ITableBodyConfig,
   TableHeaderConfig,
 } from '../../../common/models/table';
 
@@ -30,7 +30,7 @@ export class TableComponent implements OnChanges {
   @Input()
   public config: ITableConfig;
   public columnHeaders: Array<string>;
-  public dataSource: MatTableDataSource<TableBodyConfig>;
+  public dataSource: MatTableDataSource<ITableBodyConfig>;
 
   @Output()
   public changeField: EventEmitter<IChangeField<number>> = new EventEmitter();
@@ -49,7 +49,7 @@ export class TableComponent implements OnChanges {
   }
 
   private sort({ active, direction }: Sort):
-    (a: TableBodyConfig, b: TableBodyConfig) => number {
+    (a: ITableBodyConfig, b: ITableBodyConfig) => number {
     return (a, b) => {
       const isAsc: boolean = direction === 'asc';
 
@@ -86,8 +86,8 @@ export class TableComponent implements OnChanges {
       return;
     }
 
-    const data: Array<TableBodyConfig> = this.config.body.slice();
-    const sortedData: Array<TableBodyConfig> = data.sort(this.sort(sort));
+    const data: Array<ITableBodyConfig> = this.config.body.slice();
+    const sortedData: Array<ITableBodyConfig> = data.sort(this.sort(sort));
     this.dataSource = new MatTableDataSource(sortedData);
   }
 

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { IFormConfig } from '../../common/models/form';
-import { FormElement } from '../../common/models/form';
+import { IFormConfig, FormElement } from '../../common/models/form';
 import { Student } from '../../common/models/student';
 
 const config: IFormConfig = {

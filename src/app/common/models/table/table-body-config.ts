@@ -1,5 +1,5 @@
 import { TableCellConfig } from './table-cell-config';
 
-export interface TableBodyConfig {
+export interface ITableBodyConfig {
   [tableHeader: string]: TableCellConfig;
 }

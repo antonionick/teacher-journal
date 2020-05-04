@@ -1,8 +1,8 @@
-import { TableHeaderConfig, Paginator, TableBodyConfig } from './index';
+import { TableHeaderConfig, Paginator, ITableBodyConfig } from './index';
 import { TNullable } from '../utils';
 
 export interface ITableConfig {
   headers: Array<TableHeaderConfig>;
-  body: Array<TableBodyConfig>;
+  body: Array<ITableBodyConfig>;
   paginator?: TNullable<Paginator>;
 }

@@ -14,7 +14,7 @@ import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentTableService } from '../services';
 import { TNullable } from '../../common/models/utils';
-import { ITableConfig, TableBodyConfig } from 'src/app/common/models/table';
+import { ITableConfig, ITableBodyConfig } from 'src/app/common/models/table';
 import { MarkService } from '../../common/services';
 
 @Component({
@@ -123,7 +123,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     });
   }
 
-  public onDelete({ id }: TableBodyConfig): void {
+  public onDelete({ id }: ITableBodyConfig): void {
     this.isLoading = true;
     this.store.dispatch(StudentsActions.deleteStudent({ id: +id.value }));
 
