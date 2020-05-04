@@ -11,21 +11,14 @@ describe('StudentFormService', () => {
     beforeEach(() => {
       service = new StudentFormService();
       formConfig = new FormGroup({
-        'name': new FormControl('Unknown name'),
-        'lastName': new FormControl('Unknown lastName'),
+        name: new FormControl('Unknown name'),
+        lastName: new FormControl('Unknown lastName'),
       });
-    });
-
-    it('should return Student with data from FormGroup', () => {
-      const student: Student = service.getStudentByForm(formConfig);
-      expect(student).toEqual(new Student({
-        name: 'Unknown name',
-        lastName: 'Unknown lastName',
-      }));
     });
 
     it('should return Student with data which are contained in FormGroup', () => {
       const student: Student = service.getStudentByForm(formConfig);
+
       expect(student.name).toBe('Unknown name');
       expect(student.lastName).toBe('Unknown lastName');
       expect(student.address).toBe('');

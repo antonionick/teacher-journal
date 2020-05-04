@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 
 import { IFormConfig, FormElement } from '../../common/models/form';
 import { Subject } from 'src/app/common/models/subject/subject';
+import { TNullable } from 'src/app/common/models/utils';
 
 const formConfig: IFormConfig = {
   id: '',
@@ -80,7 +81,7 @@ export class SubjectFormService {
     return subject;
   }
 
-  public updateFormData(subject: Subject): void {
+  public updateFormData(subject: TNullable<Subject>): void {
     if (subject === null) {
       return;
     }
