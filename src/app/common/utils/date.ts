@@ -1,3 +1,5 @@
+const dayMilliseconds: number = 86400000;
+
 function startOfDay(date: Date): Date {
   date.setHours(0);
   date.setMinutes(0);
@@ -12,13 +14,11 @@ function getEmptyDate(milliseconds: number): Date {
 }
 
 function getNextDay(milliseconds: number): Date {
-  const dayMilliseconds: number = 86400000;
   const nextDay: Date = new Date(milliseconds + dayMilliseconds);
   return startOfDay(nextDay);
 }
 
 function getPrevDay(milliseconds: number): Date {
-  const dayMilliseconds: number = 86400000;
   const prevDay: Date = new Date(milliseconds - dayMilliseconds);
   return startOfDay(prevDay);
 }

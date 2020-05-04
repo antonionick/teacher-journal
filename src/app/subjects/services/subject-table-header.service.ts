@@ -8,9 +8,8 @@ import {
   getNextDay,
 } from 'src/app/common/utils/date';
 import { TableHeaderConfig } from 'src/app/common/models/table';
-import { TNullable } from 'src/app/common/models/utils/tnullable';
+import { TNullable, DateChanges } from 'src/app/common/models/utils';
 import { IMarksByDate } from 'src/app/common/models/mark';
-import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 @Injectable()
 export class SubjectTableHeaderService {
@@ -34,9 +33,8 @@ export class SubjectTableHeaderService {
   }
 
   public createDateHeaders(marks: IMarksByDate): Array<TableHeaderConfig> {
-    return Object.keys(marks).map((milliseconds) =>
-      this.createDateHeader({ date: new Date(+milliseconds) }),
-    );
+    return Object.keys(marks)
+      .map((milliseconds) => this.createDateHeader({ date: new Date(+milliseconds) }));
   }
 
   public addDateHeader(headers: Array<TableHeaderConfig>): TableHeaderConfig {
@@ -110,12 +108,12 @@ export class SubjectTableHeaderService {
     headers: Array<TableHeaderConfig>,
     sort?: (a: TableHeaderConfig, b: TableHeaderConfig) => number,
   ): Array<TableHeaderConfig> {
-    if (headers.length < 2) {
-      return headers;
+    const sortHeaders: Array<TableHeaderConfig> = [...headers];
+    if (sortHeaders.length < 2) {
+      return sortHeaders;
     }
 
-    const sortHeaders: Array<TableHeaderConfig> = headers.slice();
-    if (!sort) {
+    if (sort === undefined) {
       sort = this.sortDateHeadersFunc;
     }
 
