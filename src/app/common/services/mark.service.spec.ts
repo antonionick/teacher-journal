@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { MarkService } from './mark.service';
 import { Subject } from '../models/subject';
-import { Mark } from '../models/mark';
+import { IMarksByDate, Mark } from '../models/mark';
 import { initialStateMarks, IMarksState } from '../../@ngrx/marks';
 import { initialState, ISubjectState } from '../../@ngrx/subjects';
 
@@ -149,6 +149,49 @@ describe('MarkService', () => {
 
         expect(service.getMarksByKey('subjectId', 3, marks))
           .toEqual([new Mark({ subjectId: 3, date: 1 })]);
+      });
+    });
+  });
+
+  describe('getMarksByDate', () => {
+    let service: MarkService;
+    let marks: Array<Mark>;
+    let marksByDate: IMarksByDate;
+
+    beforeEach(() => {
+      service = new MarkService({} as HttpClient);
+      marks = [
+        {
+          id: 1,
+          studentId: 1,
+          subjectId: 1,
+          date: 1586725200000,
+          value: 9,
+        },
+        {
+          id: 2,
+          studentId: 1,
+          subjectId: 1,
+          date: 1586811600000,
+          value: 6,
+        },
+        {
+          id: 3,
+          studentId: 1,
+          subjectId: 1,
+          date: 1586898000000,
+          value: 3,
+        },
+      ];
+      marksByDate = {};
+    });
+
+    it('should return all marks by date', () => {
+      marksByDate = service.getMarksByDate(marks);
+
+      marks.forEach((mark) => {
+        const { date, studentId } = mark;
+        expect(marksByDate[date][studentId]).toEqual(mark);
       });
     });
   });

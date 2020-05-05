@@ -27,4 +27,10 @@ function isAppropriatePath(url: string, path: string): boolean {
   return true;
 }
 
-export { filterByIds, isAppropriatePath };
+function toTitleCase(str: string): string {
+  return str.split(' ').reduce((acc, item) => (
+      `${acc} ${item[0].toUpperCase()}${item.slice(1)}`
+    ), '');
+}
+
+export { filterByIds, isAppropriatePath, toTitleCase };

@@ -5,7 +5,7 @@ import { Student } from 'src/app/common/models/student/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
 import { SubjectTableConfigService } from './subject-table-config.service';
 import { IDataChanges } from 'src/app/common/models/utils/data-changes';
-import { getEmptyDate } from 'src/app/common/utils/date';
+import { MarkService } from '../../common/services';
 
 @Injectable()
 export class SubjectTableService {
@@ -14,25 +14,10 @@ export class SubjectTableService {
 
   constructor(
     private configService: SubjectTableConfigService,
+    private markService: MarkService,
   ) {
     this.students = [];
     this.marks = {};
-  }
-
-  private getMarksByDate(marks: Array<Mark>): IMarksByDate {
-    const obj: IMarksByDate = {};
-
-    marks.forEach((item) => {
-      const milliseconds: number = getEmptyDate(item.date).getTime();
-
-      if (!obj[milliseconds]) {
-        obj[milliseconds] = {};
-      }
-
-      obj[milliseconds][item.studentId] = item;
-    });
-
-    return obj;
   }
 
   public set subjectStudents(students: Array<Student>) {
@@ -40,7 +25,7 @@ export class SubjectTableService {
   }
 
   public set subjectMarks(marks: Array<Mark>) {
-    this.marks = this.getMarksByDate(marks);
+    this.marks = this.markService.getMarksByDate(marks);
   }
 
   public getChanges(subjectId: number): IDataChanges<Mark> {

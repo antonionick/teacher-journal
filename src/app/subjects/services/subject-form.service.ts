@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { IFormConfig, FormElement } from '../../common/models/form';
 import { Subject } from 'src/app/common/models/subject/subject';
 import { TNullable } from 'src/app/common/models/utils';
+import { toTitleCase } from '../../common/utils/utils';
 
 const formConfig: IFormConfig = {
   id: '',
@@ -78,6 +79,8 @@ export class SubjectFormService {
       subject[key] = form.value[key] || subject[key];
     });
 
+    subject.name = toTitleCase(subject.name);
+    subject.teacher = toTitleCase(subject.teacher);
     return subject;
   }
 

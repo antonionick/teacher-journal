@@ -7,10 +7,11 @@ import { forkJoin, Observable } from 'rxjs';
 import { map, tap, filter, take, switchMap } from 'rxjs/operators';
 
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
-import { Mark } from '../models/mark';
+import { IMarksByDate, Mark } from '../models/mark';
 import { urlProvider } from '../../url';
 import { Options } from '../models/utils';
 import { IMarksState, ISubjectState, AppState } from 'src/app/@ngrx';
+import { getEmptyDate } from '../utils/date';
 
 const {
   marks: marksURL,
@@ -108,5 +109,21 @@ export class MarkService {
       const valueMarks: Array<Mark> = marks[subjectId].filter((mark) => mark[key] === value);
       return [...arr, ...valueMarks];
     }, []);
+  }
+
+  public getMarksByDate(marks: Array<Mark>): IMarksByDate {
+    const obj: IMarksByDate = {};
+
+    marks.forEach((item) => {
+      const milliseconds: number = getEmptyDate(item.date).getTime();
+
+      if (!obj[milliseconds]) {
+        obj[milliseconds] = {};
+      }
+
+      obj[milliseconds][item.studentId] = item;
+    });
+
+    return obj;
   }
 }
