@@ -125,7 +125,7 @@ export class SubjectTableBodyService {
   ): Array<ITableBodyConfig> {
     body.forEach((item) => {
       if (+item.id.value !== id) {
-        return item;
+        return;
       }
 
       if (mark !== -1) {
@@ -157,7 +157,7 @@ export class SubjectTableBodyService {
     sort?: (a: ITableBodyConfig, b: ITableBodyConfig) => number,
   ): Array<ITableBodyConfig> {
     if (body.length < 2) {
-      return body;
+      return [...body];
     }
 
     const result: Array<ITableBodyConfig> = body.slice();
