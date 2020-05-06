@@ -28,9 +28,13 @@ function isAppropriatePath(url: string, path: string): boolean {
 }
 
 function toTitleCase(str: string): string {
+  if (str.trim().length === 0) {
+    return  str;
+  }
+
   return str.split(' ').reduce((acc, item) => (
       `${acc} ${item[0].toUpperCase()}${item.slice(1)}`
-    ), '');
+    ), '').trim();
 }
 
 export { filterByIds, isAppropriatePath, toTitleCase };
