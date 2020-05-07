@@ -5,7 +5,11 @@ import { TNullable } from '../models/utils';
   name: 'main',
 })
 export class MainPipe implements PipeTransform {
-  public transform(value: string, pipe: TNullable<PipeTransform>, args: string = ''): string {
+  public transform(
+    value: string,
+    pipe: TNullable<PipeTransform> = null,
+    args: string = '',
+  ): string {
     if (pipe === null) {
       return value;
     }
