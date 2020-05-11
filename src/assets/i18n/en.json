@@ -1,0 +1,9 @@
+{
+  "TITLE_APP": "teacher journal",
+  "PANEL_APP": {
+    "STUDENTS": "students",
+    "SUBJECTS": "subjects",
+    "STATISTICS": "statistics",
+    "EXPORT": "export"
+  }
+}

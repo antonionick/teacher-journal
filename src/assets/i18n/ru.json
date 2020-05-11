@@ -1,0 +1,9 @@
+{
+  "TITLE_APP": "журнал учителя",
+  "PANEL_APP": {
+    "STUDENTS": "студенты",
+    "SUBJECTS": "предметы",
+    "STATISTICS": "статистика",
+    "EXPORT": "экспорт"
+  }
+}

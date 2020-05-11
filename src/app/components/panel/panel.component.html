@@ -7,7 +7,7 @@
     [active]="students.isActive"
     class="panel__link"
   >
-    Students
+    {{ "PANEL_APP.STUDENTS" | translate | titlecase }}
   </a>
   <a
     mat-tab-link
@@ -17,7 +17,7 @@
     [active]="subjects.isActive"
     class="panel__link"
   >
-    Subjects
+    {{ "PANEL_APP.SUBJECTS" | translate | titlecase }}
   </a>
   <a
     mat-tab-link
@@ -27,7 +27,7 @@
     [active]="statistics.isActive"
     class="panel__link"
   >
-    Statistics
+    {{ "PANEL_APP.STATISTICS" | translate | titlecase }}
   </a>
   <a
     mat-tab-link
@@ -37,6 +37,6 @@
     [active]="exportLink.isActive"
     class="panel__link"
   >
-    Export
+    {{ "PANEL_APP.EXPORT" | translate | titlecase }}
   </a>
 </nav>
