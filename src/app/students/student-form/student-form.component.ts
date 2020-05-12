@@ -66,16 +66,10 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
   }
 
   private getFormConfig(): void {
-    let callCount: number = 0;
-
-    this.config$ = this.formService.getFormConfig().pipe(
+    this.config$ = this.formService.config.pipe(
       tap(() => {
-        let currentFormData: Student;
-
-        if (callCount === 0) {
-          currentFormData = this.initialStudent;
-          callCount++;
-        } else {
+        let currentFormData: Student = this.initialStudent;
+        if (this.formComponent !== undefined) {
           currentFormData = this.formService.getStudentByForm(this.formComponent.form);
         }
 

@@ -39,5 +39,31 @@
       "address",
       "description"
     ]
+  },
+  "SUBJECTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Name",
+          "PLACEHOLDER": "Enter name:"
+        },
+        "TEACHER": {
+          "LABEL": "Teacher",
+          "PLACEHOLDER": "Enter teacher:"
+        },
+        "CABINET": {
+          "LABEL": "Cabinet",
+          "PLACEHOLDER": "Enter cabinet:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Description",
+          "PLACEHOLDER": "Enter description:"
+        }
+      },
+      "BUTTONS": [
+        "Add",
+        "Clear"
+      ]
+    }
   }
 }

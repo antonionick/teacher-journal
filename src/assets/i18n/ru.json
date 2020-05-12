@@ -39,5 +39,31 @@
       "адрес",
       "описание"
     ]
+  },
+  "SUBJECTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Предмет",
+          "PLACEHOLDER": "Введите название предмета:"
+        },
+        "TEACHER": {
+          "LABEL": "Учитель",
+          "PLACEHOLDER": "Введите учителя:"
+        },
+        "CABINET": {
+          "LABEL": "Кабинет",
+          "PLACEHOLDER": "Введите номер кабинета:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Описание",
+          "PLACEHOLDER": "Введите описание:"
+        }
+      },
+      "BUTTONS": [
+        "Добавить",
+        "Отчистить"
+      ]
+    }
   }
 }

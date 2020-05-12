@@ -3,6 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Observable, of } from 'rxjs';
+import { take, tap } from 'rxjs/operators';
 
 import { StudentFormService } from './student-form.service';
 import { Student } from 'src/app/common/models/student';
@@ -37,11 +38,7 @@ const buttons: Array<string> = ['Add', 'Clear'];
 const translate: TranslateService = {
   onLangChange: new EventEmitter,
   get(key: string | Array<string>): Observable<IElements | Array<string>> {
-    if (key === 'STUDENTS.FORM.ELEMENTS') {
-      return of(elements);
-    }
-
-    return of(buttons);
+    return key === 'STUDENTS.FORM.ELEMENTS' ? of(elements) : of(buttons);
   },
 } as TranslateService;
 
@@ -83,20 +80,30 @@ describe('StudentFormService', () => {
 
     it('should update data to empty string if Student value is false in coerce to boolean', () => {
       const student: Student = {} as Student;
-
       service.updateConfigData(student);
-      service.config.elements.forEach((item) => {
-        expect(item.value).toBe('');
-      });
+
+      service.config.pipe(
+        take(1),
+        tap((config) => {
+          config.elements.forEach((item) => {
+            expect(item.value).toBe('');
+          });
+        }),
+      ).subscribe();
     });
 
     it('should update data to empty string if Student is empty', () => {
       const student: Student = new Student();
-
       service.updateConfigData(student);
-      service.config.elements.forEach((item) => {
-        expect(item.value).toBe('');
-      });
+
+      service.config.pipe(
+        take(1),
+        tap((config) => {
+          config.elements.forEach((item) => {
+            expect(item.value).toBe('');
+          });
+        }),
+      ).subscribe();
     });
 
     it('should update data with match value by Student', () => {
@@ -105,11 +112,16 @@ describe('StudentFormService', () => {
         lastName: 'Unknown',
         address: 'some street',
       });
-
       service.updateConfigData(student);
-      service.config.elements.forEach((item) => {
-        expect(item.value).toBe(student[item.key]);
-      });
+
+      service.config.pipe(
+        take(1),
+        tap((config) => {
+          config.elements.forEach((item) => {
+            expect(item.value).toBe(student[item.key]);
+          });
+        }),
+      ).subscribe();
     });
   });
 });

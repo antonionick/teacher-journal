@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Observable, zip } from 'rxjs';
-import { map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -57,11 +57,23 @@ const initialConfig: IFormConfig = {
 @Injectable()
 export class StudentFormService extends BaseComponent {
   private translateEvent: EventEmitter<void>;
-  public config: IFormConfig;
+  private readonly formConfig: IFormConfig;
+
+  public get config(): Observable<IFormConfig> {
+    return this.translateEvent.pipe(
+      startWith({}),
+      filter(() => this.formConfig.elements.every(
+        (element) => element.label !== '',
+      )),
+      map(() => (
+        { ...this.formConfig }
+      )),
+    );
+  }
 
   constructor(private translate: TranslateService) {
     super();
-    this.config = cloneDeep(initialConfig);
+    this.formConfig = cloneDeep(initialConfig);
     this.translateEvent = new EventEmitter<void>();
 
     translate.onLangChange.pipe(
@@ -76,7 +88,7 @@ export class StudentFormService extends BaseComponent {
     return this.translate.get('STUDENTS.FORM.ELEMENTS').pipe(
       take(1),
       map((elements) => {
-        this.config.elements.forEach((element) => {
+        this.formConfig.elements.forEach((element) => {
           const { LABEL, PLACEHOLDER } = elements[element.key.toUpperCase()];
           element.label = LABEL;
           element.placeholder = PLACEHOLDER;
@@ -89,7 +101,7 @@ export class StudentFormService extends BaseComponent {
     return this.translate.get('STUDENTS.FORM.BUTTONS').pipe(
       take(1),
       map((buttonsText) => {
-        this.config.buttons.forEach((button, index) => (
+        this.formConfig.buttons.forEach((button, index) => (
           button.value = buttonsText[index]
         ));
       }),
@@ -98,8 +110,8 @@ export class StudentFormService extends BaseComponent {
 
   private translateConfig(): Observable<IFormConfig> {
     return zip(this.translateConfigElements(), this.translateConfigButtons()).pipe(
-        map(() => this.config),
-      );
+      map(() => this.formConfig),
+    );
   }
 
   public getStudentByForm({ value }: FormGroup): Student {
@@ -113,16 +125,9 @@ export class StudentFormService extends BaseComponent {
   }
 
   public updateConfigData(student: Student): void {
-    this.config.elements.forEach((item) => {
+    this.formConfig.elements.forEach((item) => {
       item.value = student[item.key] || '';
     });
-  }
-
-  public getFormConfig(): Observable<IFormConfig> {
-    return this.translateEvent.pipe(
-      startWith({}),
-      map(() => ({ ...this.config })),
-    );
   }
 
   public clearFormConfig(): void {
