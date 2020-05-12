@@ -4,7 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import * as StudentsActions from '../../@ngrx/students/students.actions';
 import { AppState, selectDraftStudent } from '../../@ngrx';
@@ -14,7 +14,7 @@ import { Student } from '../../common/models/student';
 import { StudentService, StudentFormService } from '../services';
 import { FormComponent } from '../../shared/components';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
-import { IConfirmSave } from '../../common/models/utils';
+import { IConfirmSave, TNullable } from '../../common/models/utils';
 
 @Component({
   selector: 'app-student-form',
@@ -24,12 +24,12 @@ import { IConfirmSave } from '../../common/models/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentFormComponent extends BaseComponent implements OnInit {
-  private initialStudent: Student;
-  private isAdding: boolean;
+  private initialStudent: TNullable<Student>;
+  private isAdding: TNullable<boolean>;
 
   @ViewChild(FormComponent)
   public formComponent: FormComponent;
-  public config: IFormConfig;
+  public config$: Observable<IFormConfig>;
 
   constructor(
     private store: Store<AppState>,
@@ -41,13 +41,18 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
     this.initialStudent = null;
   }
 
-  public ngOnInit(): void {
+  private resetButton(): void {
+    this.formComponent.form.reset();
+    this.formService.clearFormConfig();
+  }
+
+  private getInitialStudent(): void {
     this.store.pipe(
       select(selectDraftStudent),
       takeUntil(this.unsubscribe$),
     ).subscribe({
       next: (student) => {
-        if (student == null && this.initialStudent === null) {
+        if (student === null && this.initialStudent === null) {
           return this.store.dispatch(StudentsActions.getDraftStudentLocalStorage());
         }
 
@@ -58,12 +63,35 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
     if (this.initialStudent === null) {
       this.initialStudent = new Student();
     }
-    this.config = this.formService.getFormConfig(this.initialStudent);
-    // set clear function for form
-    this.config.buttons[1].onClick = () => {
-      this.formComponent.form.reset();
-      this.formService.clearFormConfig();
-    };
+  }
+
+  private getFormConfig(): void {
+    let callCount: number = 0;
+
+    this.config$ = this.formService.getFormConfig().pipe(
+      tap(() => {
+        let currentFormData: Student;
+
+        if (callCount === 0) {
+          currentFormData = this.initialStudent;
+          callCount++;
+        } else {
+          currentFormData = this.formService.getStudentByForm(this.formComponent.form);
+        }
+
+        this.formService.updateConfigData(currentFormData);
+      }),
+      tap((config) => {
+        const clearButtonIndex: number = 1;
+        config.buttons[clearButtonIndex].onClick = this.resetButton.bind(this);
+      }),
+      takeUntil(this.unsubscribe$),
+    );
+  }
+
+  public ngOnInit(): void {
+    this.getInitialStudent();
+    this.getFormConfig();
   }
 
   public onSubmit(form: FormGroup): void {
@@ -77,7 +105,7 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
   }
 
   public showSaveQuestion(): Observable<boolean> {
-    if (this.isAdding) {
+    if (this.isAdding || this.formComponent === undefined) {
       return of(true);
     }
 

@@ -5,5 +5,31 @@
     "SUBJECTS": "предметы",
     "STATISTICS": "статистика",
     "EXPORT": "экспорт"
+  },
+  "STUDENTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Имя",
+          "PLACEHOLDER": "Введите имя:"
+        },
+        "LASTNAME": {
+          "LABEL": "Фамилия",
+          "PLACEHOLDER": "Введите фамилию:"
+        },
+        "ADDRESS": {
+          "LABEL": "Адрес",
+          "PLACEHOLDER": "Введите адрес:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Описание",
+          "PLACEHOLDER": "Введите описание:"
+        }
+      },
+      "BUTTONS": [
+        "Добавить",
+        "Отчистить"
+      ]
+    }
   }
 }

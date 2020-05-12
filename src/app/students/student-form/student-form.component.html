@@ -1,4 +1,4 @@
-<div class="student" *ngIf="config">
+<div class="student" *ngIf="config$ | async as config">
   <app-form
     class="student__form"
     [config]="config"

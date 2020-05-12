@@ -5,5 +5,31 @@
     "SUBJECTS": "subjects",
     "STATISTICS": "statistics",
     "EXPORT": "export"
+  },
+  "STUDENTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Name",
+          "PLACEHOLDER": "Enter name:"
+        },
+        "LASTNAME": {
+          "LABEL": "LastName",
+          "PLACEHOLDER": "Enter lastName:"
+        },
+        "ADDRESS": {
+          "LABEL": "Address",
+          "PLACEHOLDER": "Enter address:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Description",
+          "PLACEHOLDER": "Enter description:"
+        }
+      },
+      "BUTTONS": [
+        "Add",
+        "Clear"
+      ]
+    }
   }
 }
