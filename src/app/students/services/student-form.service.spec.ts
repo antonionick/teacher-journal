@@ -1,7 +1,51 @@
+import { EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+
+import { Observable, of } from 'rxjs';
 
 import { StudentFormService } from './student-form.service';
 import { Student } from 'src/app/common/models/student';
+
+interface IElements {
+  [key: string]: {
+    LABEL: string,
+    PLACEHOLDER: string,
+  };
+}
+
+const elements: IElements = {
+  NAME: {
+    LABEL: 'Name',
+    PLACEHOLDER: 'Enter name:',
+  },
+  LASTNAME: {
+    LABEL: 'LastName',
+    PLACEHOLDER: 'Enter lastName:',
+  },
+  ADDRESS: {
+    LABEL: 'Address',
+    PLACEHOLDER: 'Enter address:',
+  },
+  DESCRIPTION: {
+    LABEL: 'Description',
+    PLACEHOLDER: 'Enter description:',
+  },
+};
+const buttons: Array<string> = ['Add', 'Clear'];
+
+const translate: TranslateService = {
+  onLangChange: new EventEmitter,
+  get(
+    key: string | Array<string>,
+  ): Observable<IElements | Array<string>> {
+    if (key === 'STUDENTS.FORM.ELEMENTS') {
+      return of(elements);
+    }
+
+    return of(buttons);
+  },
+} as TranslateService;
 
 describe('StudentFormService', () => {
   describe('getStudentByForm', () => {
@@ -9,7 +53,7 @@ describe('StudentFormService', () => {
     let formConfig: FormGroup;
 
     beforeEach(() => {
-      service = new StudentFormService();
+      service = new StudentFormService(translate);
       formConfig = new FormGroup({
         name: new FormControl('Unknown name'),
         lastName: new FormControl('Unknown lastName'),
@@ -36,7 +80,7 @@ describe('StudentFormService', () => {
     let service: StudentFormService;
 
     beforeEach(() => {
-      service = new StudentFormService();
+      service = new StudentFormService(translate);
     });
 
     it('should update data to empty string if Student value is false in coerce to boolean', () => {

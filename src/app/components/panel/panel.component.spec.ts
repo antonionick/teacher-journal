@@ -2,6 +2,8 @@ import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 import { PanelComponent } from './panel.component';
 import { RouterLinkDirectiveStub } from '../../common/testing/router-link-directive-stub';
@@ -15,12 +17,15 @@ describe('PanelComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
+        TranslateModule.forRoot(),
       ],
       declarations: [
         PanelComponent,
         RouterLinkDirectiveStub,
       ],
+      providers: [TranslateService],
       schemas: [NO_ERRORS_SCHEMA],
     });
 

@@ -5,6 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, zip } from 'rxjs';
 import { map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
+import cloneDeep from 'lodash/cloneDeep';
+
 import { IFormConfig, FormElement } from '../../common/models/form';
 import { Student } from '../../common/models/student';
 import { ButtonConfig } from '../../common/models/button';
@@ -59,15 +61,7 @@ export class StudentFormService extends BaseComponent {
 
   constructor(private translate: TranslateService) {
     super();
-    this.config = {
-      ...initialConfig,
-      elements: initialConfig.elements.map((item) => (
-        { ...item }
-      )),
-      buttons: initialConfig.buttons.map((item) => (
-        { ...item }
-      )),
-    };
+    this.config = cloneDeep(initialConfig);
 
     translate.onLangChange.pipe(
       startWith({}),
