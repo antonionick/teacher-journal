@@ -1,41 +1,74 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+import { Observable } from 'rxjs';
+import { exhaustMap, filter, map, startWith, takeUntil, tap } from 'rxjs/operators';
+
+import cloneDeep from 'lodash/cloneDeep';
 
 import { TableHeaderConfig, TableCellConfig, ITableBodyConfig } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
+import { BaseComponent } from '../../components';
 
 const displayedColumns: Array<TableHeaderConfig> = [
   new TableHeaderConfig({
-    value: 'id',
+    title: 'id',
     sort: true,
   }),
   new TableHeaderConfig({
-    value: 'delete',
+    title: 'delete',
     isVisible: false,
   }),
   new TableHeaderConfig({
-    value: 'name',
+    title: 'name',
     sort: true,
   }),
   new TableHeaderConfig({
-    value: 'lastName',
+    title: 'lastName',
     sort: true,
   }),
   new TableHeaderConfig({
-    value: 'address',
+    title: 'address',
     sort: true,
   }),
   new TableHeaderConfig({
-    value: 'description',
+    title: 'description',
     sort: true,
   }),
 ];
 
 @Injectable()
-export class StudentTableService {
-  public displayedColumns: Array<TableHeaderConfig>;
+export class StudentTableService extends BaseComponent {
+  private translateEvent: EventEmitter<void>;
+  private readonly displayedColumns: Array<TableHeaderConfig>;
 
-  constructor() {
-    this.displayedColumns = displayedColumns;
+  public get headers(): Observable<Array<TableHeaderConfig>> {
+    return this.translateEvent.pipe(
+      startWith({}),
+      filter(() => this.displayedColumns.every((header) => header.content !== null)),
+      map(() => this.displayedColumns),
+    );
+  }
+
+  constructor(private translate: TranslateService) {
+    super();
+    this.translateEvent = new EventEmitter<void>();
+    this.displayedColumns = cloneDeep(displayedColumns);
+
+    translate.onLangChange.pipe(
+      startWith({}),
+      exhaustMap(() => this.translateDisplayedColumns()),
+      tap(() => this.translateEvent.emit()),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
+  }
+
+  private translateDisplayedColumns(): Observable<void> {
+    return this.translate.get('STUDENTS.TABLE').pipe(
+      map((headers) => this.displayedColumns.forEach((item, index) =>
+        item.content = headers[index],
+      )),
+    );
   }
 
   public addDeleteButtonToStudentConfig(student: ITableBodyConfig): void {

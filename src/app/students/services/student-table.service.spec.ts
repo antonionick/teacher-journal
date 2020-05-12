@@ -1,6 +1,20 @@
+import { EventEmitter } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+import { Observable, of } from 'rxjs';
+
 import { StudentTableService } from './student-table.service';
 import { ITableBodyConfig, TableCellConfig } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
+
+const tableHeaders: Array<string> = ['id', 'delete', 'name', 'lastName', 'address', 'description'];
+
+const translate: TranslateService = {
+  onLangChange: new EventEmitter,
+  get(key: string): Observable<Array<string>> {
+    return of(tableHeaders);
+  },
+} as TranslateService;
 
 describe('StudentTableService', () => {
   describe('addDeleteButtonToStudentConfig', () => {
@@ -8,7 +22,7 @@ describe('StudentTableService', () => {
     let bodyConfig: ITableBodyConfig;
 
     beforeEach(() => {
-      service = new StudentTableService();
+      service = new StudentTableService(translate);
       bodyConfig = {};
     });
 
@@ -25,7 +39,7 @@ describe('StudentTableService', () => {
     let bodyConfigs: Array<ITableBodyConfig>;
 
     beforeEach(() => {
-      service = new StudentTableService();
+      service = new StudentTableService(translate);
       students = [];
       bodyConfigs = [];
     });
@@ -47,14 +61,14 @@ describe('StudentTableService', () => {
 
     it('should return bodyConfig items with length of keys equal '
       + 'length of Student keys + 1 because add a delete button', () => {
-        students = [new Student()];
-        bodyConfigs = service.getTableBodyConfig(students);
+      students = [new Student()];
+      bodyConfigs = service.getTableBodyConfig(students);
 
-        const bodyConfigLength: number = Object.keys(bodyConfigs[0]).length;
-        const studentLength: number = Object.keys(students[0]).length;
+      const bodyConfigLength: number = Object.keys(bodyConfigs[0]).length;
+      const studentLength: number = Object.keys(students[0]).length;
 
-        expect(studentLength + 1).toBe(bodyConfigLength);
-      });
+      expect(studentLength + 1).toBe(bodyConfigLength);
+    });
 
     it('should return bodyConfig items where keys is Student keys', () => {
       students = [new Student()];

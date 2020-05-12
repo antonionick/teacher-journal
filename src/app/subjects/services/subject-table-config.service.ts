@@ -16,14 +16,17 @@ import { DateChanges } from 'src/app/common/models/utils/date-changes';
 
 const headerConfig: Array<TableHeaderConfig> = [
   new TableHeaderConfig({
-    value: 'name',
+    title: 'name',
+    content: 'name',
   }),
   new TableHeaderConfig({
-    value: 'lastName',
+    title: 'lastName',
+    content: 'lastName',
     sticky: true,
   }),
   new TableHeaderConfig({
-    value: 'average mark',
+    title: 'average mark',
+    content: 'average mark',
     sort: true,
     isAscSortStart: false,
   }),
@@ -111,10 +114,10 @@ export class SubjectTableConfigService {
     return this.resetRefConfig();
   }
 
-  public deleteHeader({ value }: TableHeaderConfig): ITableConfig {
-    this.config.headers = this.headerService.deleteDateHeader(+value, this.config.headers);
-    this.config.body = this.bodyService.deleteMarkByDate(+value, this.config.body);
-    this.configHistory.deleteDate(+value);
+  public deleteHeader({ title }: TableHeaderConfig): ITableConfig {
+    this.config.headers = this.headerService.deleteDateHeader(+title, this.config.headers);
+    this.config.body = this.bodyService.deleteMarkByDate(+title, this.config.body);
+    this.configHistory.deleteDate(+title);
     return this.resetRefConfig();
   }
 

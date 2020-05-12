@@ -56,12 +56,13 @@ const initialConfig: IFormConfig = {
 
 @Injectable()
 export class StudentFormService extends BaseComponent {
-  private translateEvent: EventEmitter<void> = new EventEmitter<void>();
+  private translateEvent: EventEmitter<void>;
   public config: IFormConfig;
 
   constructor(private translate: TranslateService) {
     super();
     this.config = cloneDeep(initialConfig);
+    this.translateEvent = new EventEmitter<void>();
 
     translate.onLangChange.pipe(
       startWith({}),

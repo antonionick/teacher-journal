@@ -36,9 +36,7 @@ const buttons: Array<string> = ['Add', 'Clear'];
 
 const translate: TranslateService = {
   onLangChange: new EventEmitter,
-  get(
-    key: string | Array<string>,
-  ): Observable<IElements | Array<string>> {
+  get(key: string | Array<string>): Observable<IElements | Array<string>> {
     if (key === 'STUDENTS.FORM.ELEMENTS') {
       return of(elements);
     }

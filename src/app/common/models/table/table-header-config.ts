@@ -3,7 +3,8 @@ import { FormControl } from '@angular/forms';
 import { TNullable } from '../utils';
 
 interface ITableHeaderConfig {
-  value: TNullable<string>;
+  title: TNullable<string>;
+  content: TNullable<string>;
   sort: boolean;
   isAscSortStart: boolean;
   sticky: boolean;
@@ -16,7 +17,8 @@ interface ITableHeaderConfig {
 }
 
 export class TableHeaderConfig implements ITableHeaderConfig {
-  public value: TNullable<string>;
+  public title: TNullable<string>;
+  public content: TNullable<string>;
   public sort: boolean;
   public isAscSortStart: boolean;
   public sticky: boolean;
@@ -28,7 +30,8 @@ export class TableHeaderConfig implements ITableHeaderConfig {
   public hoverContent: boolean;
 
   constructor({
-    value,
+    title = null,
+    content = null,
     sort = false,
     isAscSortStart = true,
     sticky = false,
@@ -39,7 +42,8 @@ export class TableHeaderConfig implements ITableHeaderConfig {
     isVisible = true,
     hoverContent = false,
   }: Partial<ITableHeaderConfig> = {}) {
-    this.value = value;
+    this.title = title;
+    this.content = content;
     this.sort = sort;
     this.isAscSortStart = isAscSortStart;
     this.sticky = sticky;

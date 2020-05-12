@@ -4,7 +4,7 @@ import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-ico
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { exhaustMap, filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as StudentsActions from '../../@ngrx/students/students.actions';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
@@ -14,7 +14,7 @@ import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentTableService } from '../services';
 import { TNullable } from '../../common/models/utils';
-import { ITableConfig, ITableBodyConfig } from 'src/app/common/models/table';
+import { ITableConfig, ITableBodyConfig, TableHeaderConfig } from 'src/app/common/models/table';
 import { MarkService } from '../../common/services';
 
 @Component({
@@ -93,6 +93,38 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     );
   }
 
+  private updateConfigBody(students: Array<Student>): void {
+    if (this.config === null) {
+      this.config = { headers: [], body: [] };
+    }
+
+    this.config = {
+      ...this.config,
+      body: this.studentTableService.getTableBodyConfig(students),
+    };
+
+    this.cdr.detectChanges();
+  }
+
+  private updateConfigHeaders(headers: Array<TableHeaderConfig>): void {
+    this.config = {
+      ...this.config,
+      headers,
+    };
+
+    this.cdr.detectChanges();
+  }
+
+  private updateConfig(): void {
+    this.students$.pipe(
+      tap((students) => this.updateConfigBody(students)),
+      exhaustMap(() => this.studentTableService.headers.pipe(
+        tap((headers) => this.updateConfigHeaders(headers)),
+      )),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
+  }
+
   public ngOnInit(): void {
     this.store.pipe(
       select('students'),
@@ -110,17 +142,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       take(1),
     ).subscribe();
 
-    this.students$.pipe(
-      takeUntil(this.unsubscribe$),
-    ).subscribe({
-      next: (students) => {
-        this.config = {
-          headers: this.studentTableService.displayedColumns,
-          body: this.studentTableService.getTableBodyConfig(students),
-        };
-        this.cdr.detectChanges();
-      },
-    });
+    this.updateConfig();
   }
 
   public onDelete({ id }: ITableBodyConfig): void {

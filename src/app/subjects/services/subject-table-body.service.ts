@@ -110,7 +110,7 @@ export class SubjectTableBodyService {
 
   public updateBodyByAddDates(
     body: Array<ITableBodyConfig>,
-    { value: milliseconds }: TableHeaderConfig,
+    { title: milliseconds }: TableHeaderConfig,
   ): Array<ITableBodyConfig> {
     body.forEach((field) => {
       field[milliseconds] = new TableCellConfig({ editCell: this.editMark });

@@ -14,8 +14,10 @@ import { IMarksByDate } from 'src/app/common/models/mark';
 @Injectable()
 export class SubjectTableHeaderService {
   private createDateHeader({ date }: { date: Date }): TableHeaderConfig {
+    const milliseconds: number = date.getTime();
     return new TableHeaderConfig({
-      value: `${date.getTime()}`,
+      title: `${ milliseconds }`,
+      content: `${ milliseconds }`,
       datePicker: true,
       inputControl: new FormControl({ value: date, disabled: true }),
       sort: true,
@@ -25,11 +27,11 @@ export class SubjectTableHeaderService {
   }
 
   private checkDateOnUnique(date: Date, headers: Array<TableHeaderConfig>): boolean {
-    return headers.every((header) => +header.value !== date.getTime());
+    return headers.every((header) => +header.title !== date.getTime());
   }
 
   private sortDateHeadersFunc(a: TableHeaderConfig, b: TableHeaderConfig): number {
-    return +a.value - +b.value;
+    return +a.title - +b.title;
   }
 
   public createDateHeaders(marks: IMarksByDate): Array<TableHeaderConfig> {
@@ -54,11 +56,11 @@ export class SubjectTableHeaderService {
     headers: Array<TableHeaderConfig>,
   ): Array<TableHeaderConfig> {
     return headers.filter((item) => {
-      if (Number.isNaN(+item.value)) {
+      if (Number.isNaN(+item.title)) {
         return true;
       }
 
-      return +item.value !== milliseconds;
+      return +item.title !== milliseconds;
     });
   }
 
@@ -71,7 +73,7 @@ export class SubjectTableHeaderService {
         const date: Date = new Date(header.inputControl.value);
         milliseconds = date.getTime();
 
-        return +header.value !== milliseconds;
+        return +header.title !== milliseconds;
       }) || null;
 
     if (updatedHeader === null) {
@@ -79,8 +81,8 @@ export class SubjectTableHeaderService {
     }
 
     changeDates.current = milliseconds;
-    changeDates.previously = +updatedHeader.value;
-    updatedHeader.value = `${milliseconds}`;
+    changeDates.previously = +updatedHeader.title;
+    updatedHeader.title = `${ milliseconds }`;
 
     return changeDates;
   }
@@ -91,7 +93,7 @@ export class SubjectTableHeaderService {
 
     return headers.map((item, i) => {
       if (i + 1 !== headers.length) {
-        maxDate = getPrevDay(+headers[i + 1].value);
+        maxDate = getPrevDay(+headers[i + 1].title);
       } else {
         maxDate = null;
       }
@@ -99,7 +101,7 @@ export class SubjectTableHeaderService {
       const header: TableHeaderConfig = Object.assign({}, item);
       header.min = minDate;
       header.max = maxDate;
-      minDate = getNextDay(+header.value);
+      minDate = getNextDay(+header.title);
       return header;
     });
   }

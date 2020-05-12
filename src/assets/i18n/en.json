@@ -30,6 +30,14 @@
         "Add",
         "Clear"
       ]
-    }
+    },
+    "TABLE": [
+      "id",
+      "delete",
+      "name",
+      "lastName",
+      "address",
+      "description"
+    ]
   }
 }
