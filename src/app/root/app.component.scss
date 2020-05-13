@@ -17,7 +17,6 @@
     align-items: center;
     width: 520px;
     margin: 0 auto;
-    padding: 0 10px;
     color: white;
     text-decoration: none;
   }
@@ -25,6 +24,12 @@
   &__title {
     display: block;
     font-size: 22px;
+  }
+
+  &__title-link {
+    display: block;
+    color: white;
+    text-decoration: none;
   }
 
   &__lang {

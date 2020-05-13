@@ -1,7 +1,11 @@
 <header class="header">
   <mat-toolbar class="header__toolbar">
     <div class="header__content">
-      <h1 class="header__title">{{ 'TITLE_APP' | translate | titlecase }}</h1>
+      <h1 class="header__title">
+        <a class="header__title-link" [routerLink]="['']">
+          {{ 'TITLE_APP' | translate | titlecase }}
+        </a>
+      </h1>
 
       <mat-form-field class="header__lang">
         <mat-select

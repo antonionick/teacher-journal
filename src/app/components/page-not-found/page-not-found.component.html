@@ -1,11 +1,11 @@
-<div class="error">
-  <h2 class="error__title">Page Not Found</h2>
+<article class="error">
+    <h2 class="error__title">{{ "PAGE-NOT-FOUND.TITLE" | translate | titlecase }}</h2>
 
-  <span class="error__code">
-    404
-  </span>
+    <span class="error__code">
+      {{ "PAGE-NOT-FOUND.CODE" | translate | titlecase }}
+    </span>
 
-  <a mat-button class="error__link" [routerLink]="['']">
-    Go to home!
-  </a>
-</div>
+    <a mat-button class="error__link" [routerLink]="['']">
+      {{ "PAGE-NOT-FOUND.LINK" | translate | titlecase }}
+    </a>
+</article>

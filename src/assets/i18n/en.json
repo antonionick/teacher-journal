@@ -70,5 +70,10 @@
       "lastName",
       "average mark"
     ]
+  },
+  "PAGE-NOT-FOUND": {
+    "TITLE": "page not found",
+    "CODE": "404",
+    "LINK": "Go to home!"
   }
 }

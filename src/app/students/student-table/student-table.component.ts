@@ -103,7 +103,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       body: this.studentTableService.getTableBodyConfig(students),
     };
 
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   private updateConfigHeaders(headers: Array<TableHeaderConfig>): void {
@@ -112,7 +112,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       headers,
     };
 
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   private updateConfig(): void {

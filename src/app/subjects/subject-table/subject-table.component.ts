@@ -233,7 +233,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit, OnDe
       take(1),
       tap(() => {
         this.config$ = this.tableService.createConfig();
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }),
       takeUntil(this.unsubscribe$),
     ).subscribe();

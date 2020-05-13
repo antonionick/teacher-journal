@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { select, Store } from '@ngrx/store';
@@ -41,7 +35,6 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     private store: Store<AppState>,
     private formService: SubjectFormService,
     private subjectService: SubjectService,
-    private cdr: ChangeDetectorRef,
   ) {
     super();
     this.initialSubject = null;
@@ -49,8 +42,8 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
   }
 
   private resetButton(): void {
-      this.formComponent.form.reset();
-      this.formService.clearFormData();
+    this.formComponent.form.reset();
+    this.formService.clearFormData();
   }
 
   private getInitialSubject(): void {
@@ -85,7 +78,6 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
       tap((config) => {
         const resetButtonIndex: number = 1;
         config.buttons[resetButtonIndex].onClick = this.resetButton.bind(this);
-        this.cdr.detectChanges();
       }),
     );
   }
