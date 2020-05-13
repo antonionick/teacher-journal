@@ -64,6 +64,11 @@
         "Add",
         "Clear"
       ]
-    }
+    },
+    "TABLE": [
+      "name",
+      "lastName",
+      "average mark"
+    ]
   }
 }

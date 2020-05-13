@@ -1,4 +1,4 @@
-<article class="subject" *ngIf="config">
+<article class="subject" *ngIf="config$ | async as config">
   <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
   <section class="subject__table-wrapper">
     <app-table
