@@ -65,11 +65,19 @@
         "Clear"
       ]
     },
-    "TABLE": [
-      "name",
-      "lastName",
-      "average mark"
-    ]
+    "TABLE": {
+      "HEADERS": [
+        "name",
+        "lastName",
+        "average mark"
+      ],
+      "TEXT": {
+        "ADD HEADER": "add",
+        "DELETE HEADER": "delete",
+        "SAVE CHANGES": "save",
+        "TEACHER": "teacher"
+      }
+    }
   },
   "PAGE-NOT-FOUND": {
     "TITLE": "page not found",

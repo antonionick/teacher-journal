@@ -1,8 +1,8 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
-import { Observable } from 'rxjs';
-import { exhaustMap, filter, map, startWith, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap, startWith, take, takeUntil, tap } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -41,7 +41,7 @@ export class SubjectTableConfigService extends BaseComponent {
   private readonly editConfig: EditMark;
   private readonly headerConfig: Array<TableHeaderConfig>;
   private readonly config: ITableConfig;
-  private emitConfig: EventEmitter<void>;
+  private changeConfig: EventEmitter<void>;
   private dateChanges: DateChanges;
 
   constructor(
@@ -51,7 +51,7 @@ export class SubjectTableConfigService extends BaseComponent {
     private translate: TranslateService,
   ) {
     super();
-    this.emitConfig = new EventEmitter<void>();
+    this.changeConfig = new EventEmitter<void>();
     this.editConfig = new EditMark();
     this.headerConfig = cloneDeep(headerConfig);
     this.config = {
@@ -60,19 +60,32 @@ export class SubjectTableConfigService extends BaseComponent {
     };
 
     this.translate.onLangChange.pipe(
-      startWith({}),
-      exhaustMap(() => this.translateHeaders()),
-      tap(() => this.emitConfig.emit()),
+      startWith({ lang: null }),
+      mergeMap((event: LangChangeEvent) => (
+        event.lang === null ? this.getTableTranslation() : of(this.convertTranslation(event))
+      )),
+      tap((data) => {
+        this.translateHeaders(data);
+        this.changeConfig.emit();
+      }),
       takeUntil(this.unsubscribe$),
     ).subscribe();
   }
 
-  private translateHeaders(): Observable<Array<string>> {
-    return this.translate.get('SUBJECTS.TABLE').pipe(
-      tap((headers: Array<string>) => (
-        headers.forEach((header, index) => this.headerConfig[index].content = header)
-      )),
+  private getTableTranslation(): Observable<Array<string>> {
+    return this.translate.get('SUBJECTS.TABLE.HEADERS').pipe(
+      take(1),
     );
+  }
+
+  private convertTranslation({ translations }: LangChangeEvent): Array<string> {
+    return translations.SUBJECTS.TABLE.HEADERS;
+  }
+
+  private translateHeaders(headers: Array<string>): void {
+    headers.forEach((header, index) => (
+      this.headerConfig[index].content = header
+    ));
   }
 
   private createHeaders(marks: IMarksByDate): Array<TableHeaderConfig> {
@@ -106,23 +119,24 @@ export class SubjectTableConfigService extends BaseComponent {
   public getConfig(students: Array<Student>, marks: IMarksByDate): Observable<ITableConfig> {
     this.createConfig(students, marks);
 
-    return this.emitConfig.pipe(
+    return this.changeConfig.pipe(
       startWith({}),
-      filter(() => this.headerConfig.every((header) => header.content !== '')),
-      map(() => ({ ...this.config })),
+      map(() => (
+        { ...this.config }
+      )),
     );
   }
 
   public updateConfig(students: Array<Student>, marks: IMarksByDate): void {
     this.createConfig(students, marks);
-    this.emitConfig.emit();
+    this.changeConfig.emit();
   }
 
   public updateConfigByDateChanges(): void {
     this.config.headers = this.updateHeaders();
     this.config.body = this.bodyService.updateBodyByDateChanges(this.config.body, this.dateChanges);
     this.configHistory.updateDate(this.dateChanges);
-    this.emitConfig.emit();
+    this.changeConfig.emit();
   }
 
   public addHeader(): void {
@@ -133,20 +147,20 @@ export class SubjectTableConfigService extends BaseComponent {
     dateHeaders = this.headerService.setRangeDateHeaders(dateHeaders);
     this.config.headers = [...this.headerConfig, ...dateHeaders];
     this.config.body = this.bodyService.updateBodyByAddDates(this.config.body, newDateHeader);
-    this.emitConfig.emit();
+    this.changeConfig.emit();
   }
 
   public deleteHeader({ title: date }: TableHeaderConfig): void {
     this.config.headers = this.headerService.deleteDateHeader(+date, this.config.headers);
     this.config.body = this.bodyService.deleteMarkByDate(+date, this.config.body);
     this.configHistory.deleteDate(+date);
-    this.emitConfig.emit();
+    this.changeConfig.emit();
   }
 
   public updateMark(change: IChangeField<number>): void {
     this.config.body = this.bodyService.updateMark(this.config.body, change);
     this.configHistory.updateMark(change);
-    this.emitConfig.emit();
+    this.changeConfig.emit();
   }
 
   public getChanges(marks: IMarksByDate, subjectId: number): IDataChanges<Mark> {

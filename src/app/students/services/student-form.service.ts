@@ -1,16 +1,17 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
-import { Observable, zip } from 'rxjs';
-import { filter, map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap, startWith, tap } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
 import { IFormConfig, FormElement } from '../../common/models/form';
 import { Student } from '../../common/models/student';
 import { ButtonConfig } from '../../common/models/button';
-import { BaseComponent } from '../../components';
+import { ITranslateFormElements } from '../../common/models/translate/translate-form-elements';
+import { ITranslateForm } from '../../common/models/translate/translate-form';
 
 const initialConfig: IFormConfig = {
   id: '',
@@ -55,16 +56,16 @@ const initialConfig: IFormConfig = {
 };
 
 @Injectable()
-export class StudentFormService extends BaseComponent {
-  private translateEvent: EventEmitter<void>;
+export class StudentFormService {
   private readonly formConfig: IFormConfig;
 
   public get config(): Observable<IFormConfig> {
-    return this.translateEvent.pipe(
-      startWith({}),
-      filter(() => this.formConfig.elements.every(
-        (element) => element.label !== '',
+    return this.translate.onLangChange.pipe(
+      startWith({ lang: null }),
+      mergeMap((event: LangChangeEvent) => (
+        event.lang === null ? this.getFormTranslation() : of(this.convertTranslation(event))
       )),
+      tap((data: ITranslateForm) => this.translateConfig(data)),
       map(() => (
         { ...this.formConfig }
       )),
@@ -72,46 +73,41 @@ export class StudentFormService extends BaseComponent {
   }
 
   constructor(private translate: TranslateService) {
-    super();
     this.formConfig = cloneDeep(initialConfig);
-    this.translateEvent = new EventEmitter<void>();
-
-    translate.onLangChange.pipe(
-      startWith({}),
-      switchMap(() => this.translateConfig()),
-      tap(() => this.translateEvent.emit()),
-      takeUntil(this.unsubscribe$),
-    ).subscribe();
   }
 
-  private translateConfigElements(): Observable<void> {
-    return this.translate.get('STUDENTS.FORM.ELEMENTS').pipe(
-      take(1),
-      map((elements) => {
-        this.formConfig.elements.forEach((element) => {
-          const { LABEL, PLACEHOLDER } = elements[element.key.toUpperCase()];
-          element.label = LABEL;
-          element.placeholder = PLACEHOLDER;
-        });
-      }),
+  private getFormTranslation(): Observable<ITranslateForm> {
+    return this.translate.get('STUDENTS.FORM').pipe(
+      map(({ ELEMENTS, BUTTONS }) => (
+        { elements: ELEMENTS, buttons: BUTTONS }
+      )),
     );
   }
 
-  private translateConfigButtons(): Observable<void> {
-    return this.translate.get('STUDENTS.FORM.BUTTONS').pipe(
-      take(1),
-      map((buttonsText) => {
-        this.formConfig.buttons.forEach((button, index) => (
-          button.value = buttonsText[index]
-        ));
-      }),
-    );
+  private convertTranslation({ translations }: LangChangeEvent): ITranslateForm {
+    const elements: ITranslateFormElements = translations.STUDENTS.FORM.ELEMENTS;
+    const buttons: Array<string> = translations.STUDENTS.FORM.BUTTONS;
+
+    return { elements, buttons };
   }
 
-  private translateConfig(): Observable<IFormConfig> {
-    return zip(this.translateConfigElements(), this.translateConfigButtons()).pipe(
-      map(() => this.formConfig),
-    );
+  private translateConfigElements(elements: ITranslateFormElements): void {
+    this.formConfig.elements.forEach((element) => {
+      const { LABEL, PLACEHOLDER } = elements[element.key.toUpperCase()];
+      element.label = LABEL;
+      element.placeholder = PLACEHOLDER;
+    });
+  }
+
+  private translateConfigButtons(buttons: Array<string>): void {
+    this.formConfig.buttons.forEach((button, index) => (
+      button.value = buttons[index]
+    ));
+  }
+
+  private translateConfig({ elements, buttons }: ITranslateForm): void {
+    this.translateConfigElements(elements);
+    this.translateConfigButtons(buttons);
   }
 
   public getStudentByForm({ value }: FormGroup): Student {

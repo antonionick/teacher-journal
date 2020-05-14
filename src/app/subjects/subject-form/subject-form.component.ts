@@ -15,6 +15,7 @@ import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
 import { IConfirmSave, TNullable } from '../../common/models/utils';
+import { Student } from '../../common/models/student';
 
 @Component({
   selector: 'app-subject-form',
@@ -68,12 +69,11 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
   private getConfig(): void {
     this.config$ = this.formService.config.pipe(
       tap(() => {
-        let subjectForUpdate: Subject = this.initialSubject;
-        if (this.formComponent !== undefined) {
-          subjectForUpdate = this.formService.getSubjectByForm(this.formComponent.form);
-        }
+        const currentFormData: Subject = this.formComponent === undefined ?
+          this.initialSubject :
+          this.formService.getSubjectByForm(this.formComponent.form);
 
-        this.formService.updateFormData(subjectForUpdate);
+        this.formService.updateFormData(currentFormData);
       }),
       tap((config) => {
         const resetButtonIndex: number = 1;

@@ -68,10 +68,9 @@ export class StudentFormComponent extends BaseComponent implements OnInit {
   private getFormConfig(): void {
     this.config$ = this.formService.config.pipe(
       tap(() => {
-        let currentFormData: Student = this.initialStudent;
-        if (this.formComponent !== undefined) {
-          currentFormData = this.formService.getStudentByForm(this.formComponent.form);
-        }
+        const currentFormData: Student = this.formComponent === undefined ?
+          this.initialStudent :
+          this.formService.getStudentByForm(this.formComponent.form);
 
         this.formService.updateConfigData(currentFormData);
       }),
