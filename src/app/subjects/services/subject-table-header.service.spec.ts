@@ -74,7 +74,7 @@ describe('SubjectTableHeaderService', () => {
       headers = service.createDateHeaders(marks);
 
       headers.forEach((item) => {
-        expect(marksDate.includes(item.value)).toBe(true);
+        expect(marksDate.includes(item.title)).toBe(true);
       });
     });
 
@@ -103,7 +103,7 @@ describe('SubjectTableHeaderService', () => {
     beforeEach(() => {
       headers = [
         new TableHeaderConfig({
-          value: `${dates[0]}`,
+          title: `${dates[0]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[0], disabled: true }),
           sort: true,
@@ -111,7 +111,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[1]}`,
+          title: `${dates[1]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[1], disabled: true }),
           sort: true,
@@ -126,7 +126,7 @@ describe('SubjectTableHeaderService', () => {
       const todayDate: number = startOfDay(new Date()).getTime();
       createdHeader = service.addDateHeader(headers);
 
-      expect(createdHeader.value).toBe(`${todayDate}`);
+      expect(createdHeader.title).toBe(`${todayDate}`);
     });
 
     it(
@@ -141,7 +141,7 @@ describe('SubjectTableHeaderService', () => {
 
         headers.push(
           new TableHeaderConfig({
-            value: `${occupiedDates[0]}`,
+            title: `${occupiedDates[0]}`,
             datePicker: true,
             inputControl: new FormControl({ value: occupiedDates[0], disabled: true }),
             sort: true,
@@ -149,7 +149,7 @@ describe('SubjectTableHeaderService', () => {
             hoverContent: true,
           }),
           new TableHeaderConfig({
-            value: `${occupiedDates[1]}`,
+            title: `${occupiedDates[1]}`,
             datePicker: true,
             inputControl: new FormControl({ value: occupiedDates[1], disabled: true }),
             sort: true,
@@ -159,7 +159,7 @@ describe('SubjectTableHeaderService', () => {
         );
         createdHeader = service.addDateHeader(headers);
 
-        expect(createdHeader.value).toBe(`${targetDate.getTime()}`);
+        expect(createdHeader.title).toBe(`${targetDate.getTime()}`);
       },
     );
   });
@@ -176,7 +176,7 @@ describe('SubjectTableHeaderService', () => {
     beforeEach(() => {
       headers = [
         new TableHeaderConfig({
-          value: `${dates[0]}`,
+          title: `${dates[0]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[0], disabled: true }),
           sort: true,
@@ -184,7 +184,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[1]}`,
+          title: `${dates[1]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[1], disabled: true }),
           sort: true,
@@ -212,7 +212,7 @@ describe('SubjectTableHeaderService', () => {
       headersWithoutDeleted = service.deleteDateHeader(1587502800000, headers);
 
       headersWithoutDeleted.forEach((header) => {
-        expect(header.value).not.toBe('1587502800000');
+        expect(header.title).not.toBe('1587502800000');
       });
     });
 
@@ -236,7 +236,7 @@ describe('SubjectTableHeaderService', () => {
     beforeEach(() => {
       headers = [
         new TableHeaderConfig({
-          value: `${dates[0]}`,
+          title: `${dates[0]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dateForChange, disabled: true }),
           sort: true,
@@ -244,7 +244,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[1]}`,
+          title: `${dates[1]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[1], disabled: true }),
           sort: true,
@@ -272,11 +272,11 @@ describe('SubjectTableHeaderService', () => {
     it('should update changed value of header(take value from inputControl)', () => {
       service.updateDateByChanges(headers);
 
-      expect(+headers[0].value).toBe(headers[0].inputControl.value);
+      expect(+headers[0].title).toBe(headers[0].inputControl.value);
     });
 
     it('should return DateChanges with correct data', () => {
-      const previously: number = +headers[0].value;
+      const previously: number = +headers[0].title;
       const current: number = dateForChange;
       dateChanges = service.updateDateByChanges(headers);
 
@@ -298,7 +298,7 @@ describe('SubjectTableHeaderService', () => {
     beforeEach(() => {
       headers = [
         new TableHeaderConfig({
-          value: `${dates[0]}`,
+          title: `${dates[0]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[0], disabled: true }),
           sort: true,
@@ -306,7 +306,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[1]}`,
+          title: `${dates[1]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[1], disabled: true }),
           sort: true,
@@ -314,7 +314,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[2]}`,
+          title: `${dates[2]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[2], disabled: true }),
           sort: true,
@@ -345,14 +345,14 @@ describe('SubjectTableHeaderService', () => {
     });
 
     it('should set min range as next day of prev header', () => {
-      const prev: number = getNextDay(+headers[0].value).getTime();
+      const prev: number = getNextDay(+headers[0].title).getTime();
       rangedHeaders = service.setRangeDateHeaders(headers);
 
       expect(rangedHeaders[1].min.getTime()).toBe(prev);
     });
 
     it('should set max range as prev day of next header', () => {
-      const next: number = getPrevDay(+headers[2].value).getTime();
+      const next: number = getPrevDay(+headers[2].title).getTime();
       rangedHeaders = service.setRangeDateHeaders(headers);
 
       expect(rangedHeaders[1].max.getTime()).toBe(next);
@@ -368,7 +368,7 @@ describe('SubjectTableHeaderService', () => {
     const sortFunc:
       (a: TableHeaderConfig, b: TableHeaderConfig) => number =
       (a, b) => {
-        return +b.value - +a.value;
+        return +b.title - +a.title;
       };
     const service: SubjectTableHeaderService = new SubjectTableHeaderService();
     let headers: Array<TableHeaderConfig>;
@@ -378,7 +378,7 @@ describe('SubjectTableHeaderService', () => {
     beforeEach(() => {
       headers = [
         new TableHeaderConfig({
-          value: `${dates[0]}`,
+          title: `${dates[0]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[0], disabled: true }),
           sort: true,
@@ -386,7 +386,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[1]}`,
+          title: `${dates[1]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[1], disabled: true }),
           sort: true,
@@ -394,7 +394,7 @@ describe('SubjectTableHeaderService', () => {
           hoverContent: true,
         }),
         new TableHeaderConfig({
-          value: `${dates[2]}`,
+          title: `${dates[2]}`,
           datePicker: true,
           inputControl: new FormControl({ value: dates[2], disabled: true }),
           sort: true,
@@ -420,10 +420,10 @@ describe('SubjectTableHeaderService', () => {
 
       sortedHeaders.forEach((header) => {
         if (prev > 0) {
-          expect(+header.value).toBeGreaterThan(prev);
+          expect(+header.title).toBeGreaterThan(prev);
         }
 
-        prev = +header.value;
+        prev = +header.title;
       });
     });
 

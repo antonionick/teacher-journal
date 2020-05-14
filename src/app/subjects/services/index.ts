@@ -5,3 +5,4 @@ export * from './subject-table-header.service';
 export * from './subject-table.service';
 export * from './subject.service';
 export * from './table-config-history.service';
+export * from './subject-table-text.service';

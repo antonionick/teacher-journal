@@ -13,7 +13,6 @@ import { AppState, IStudentsState, selectStudents } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentTableService } from '../services';
-import { TNullable } from '../../common/models/utils';
 import { ITableConfig, ITableBodyConfig } from 'src/app/common/models/table';
 import { MarkService } from '../../common/services';
 
@@ -26,7 +25,7 @@ import { MarkService } from '../../common/services';
 })
 export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
-  public config: TNullable<ITableConfig>;
+  public config$: Observable<ITableConfig>;
   public plusIcon: IconDefinition;
   public trashIcon: IconDefinition;
   public error: Error;
@@ -34,12 +33,11 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
 
   constructor(
     private store: Store<AppState>,
-    private studentTableService: StudentTableService,
+    private tableService: StudentTableService,
     private markService: MarkService,
     private cdr: ChangeDetectorRef,
   ) {
     super();
-    this.config = null;
     this.isLoading = false;
     this.plusIcon = faPlus;
     this.trashIcon = faTrash;
@@ -64,18 +62,12 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       switchMap((marksState) => this.store.pipe(
         select('subjects'),
         take(1),
-        map((subjectsState) => (
-          this.markService.isAllMarksLoaded(marksState, subjectsState)
+        map((subjectsState) => this.markService.isAllMarksLoaded(marksState, subjectsState)),
+        mergeMap((isLoaded) => (
+          isLoaded ?
+            of(this.markService.getMarksByKey('studentId', id, marksState)) :
+            this.markService.fetchMarks(HttpUtils.getParamsWithKey('studentId', [id]))
         )),
-        mergeMap((isLoaded) => {
-          if (isLoaded) {
-            return of(this.markService.getMarksByKey('studentId', id, marksState));
-          }
-
-          return this.markService.fetchMarks(
-            HttpUtils.getParamsWithKey('studentId', [id]),
-          );
-        }),
       )),
       mergeMap((marks) => {
         if (marks.length === 0) {
@@ -93,6 +85,18 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     );
   }
 
+  private updateConfig(): void {
+    this.students$.pipe(
+      tap((students) => this.tableService.updateTableBody(students)),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
+  }
+
+  private getConfig(students: Array<Student>): void {
+    this.config$ = this.tableService.getConfig(students);
+    this.cdr.markForCheck();
+  }
+
   public ngOnInit(): void {
     this.store.pipe(
       select('students'),
@@ -108,19 +112,10 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       }),
       filter((state) => !this.isNeedLoad(state)),
       take(1),
+      tap(({ students }) => this.getConfig(students)),
     ).subscribe();
 
-    this.students$.pipe(
-      takeUntil(this.unsubscribe$),
-    ).subscribe({
-      next: (students) => {
-        this.config = {
-          headers: this.studentTableService.displayedColumns,
-          body: this.studentTableService.getTableBodyConfig(students),
-        };
-        this.cdr.detectChanges();
-      },
-    });
+    this.updateConfig();
   }
 
   public onDelete({ id }: ITableBodyConfig): void {

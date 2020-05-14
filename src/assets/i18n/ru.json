@@ -1,0 +1,88 @@
+{
+  "TITLE_APP": "журнал учителя",
+  "PANEL_APP": {
+    "STUDENTS": "студенты",
+    "SUBJECTS": "предметы",
+    "STATISTICS": "статистика",
+    "EXPORT": "экспорт"
+  },
+  "STUDENTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Имя",
+          "PLACEHOLDER": "Введите имя:"
+        },
+        "LASTNAME": {
+          "LABEL": "Фамилия",
+          "PLACEHOLDER": "Введите фамилию:"
+        },
+        "ADDRESS": {
+          "LABEL": "Адрес",
+          "PLACEHOLDER": "Введите адрес:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Описание",
+          "PLACEHOLDER": "Введите описание:"
+        }
+      },
+      "BUTTONS": [
+        "Добавить",
+        "Отчистить"
+      ]
+    },
+    "TABLE": [
+      "идентификатор",
+      "удалить",
+      "имя",
+      "фамилия",
+      "адрес",
+      "описание"
+    ]
+  },
+  "SUBJECTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Предмет",
+          "PLACEHOLDER": "Введите название предмета:"
+        },
+        "TEACHER": {
+          "LABEL": "Учитель",
+          "PLACEHOLDER": "Введите учителя:"
+        },
+        "CABINET": {
+          "LABEL": "Кабинет",
+          "PLACEHOLDER": "Введите номер кабинета:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Описание",
+          "PLACEHOLDER": "Введите описание:"
+        }
+      },
+      "BUTTONS": [
+        "Добавить",
+        "Отчистить"
+      ]
+    },
+    "TABLE":
+    {
+      "HEADERS": [
+        "имя",
+        "фамилия",
+        "средний балл"
+      ],
+      "TEXT": {
+        "ADD HEADER": "добавить",
+        "DELETE HEADER": "удалить",
+        "SAVE CHANGES": "сохранить",
+        "TEACHER": "учитель"
+      }
+    }
+  },
+  "PAGE-NOT-FOUND": {
+    "TITLE": "страница не найдена",
+    "CODE": "404",
+    "LINK": "Главная!"
+  }
+}

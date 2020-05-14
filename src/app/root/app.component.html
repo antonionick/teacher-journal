@@ -1,8 +1,29 @@
 <header class="header">
-  <div class="header__logo-wrapper">
-    <h1 class="header__title">{{ title }}</h1>
-    <span class="header__logo"></span>
-  </div>
+  <mat-toolbar class="header__toolbar">
+    <div class="header__content">
+      <h1 class="header__title">
+        <a class="header__title-link" [routerLink]="['']">
+          {{ 'TITLE_APP' | translate | titlecase }}
+        </a>
+      </h1>
+
+      <mat-form-field class="header__lang">
+        <mat-select
+          class="header__lang-select"
+          [(value)]="selected"
+          (selectionChange)="onChangeLang($event)"
+        >
+          <mat-option
+            class="header__lang-item"
+            *ngFor="let item of languages"
+            [value]="item"
+          >
+            <span> {{ item | uppercase }} </span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-toolbar>
   <app-panel class="header__panel"></app-panel>
 </header>
 <main class="main">

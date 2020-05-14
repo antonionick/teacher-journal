@@ -4,7 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import * as SubjectActions from '../../@ngrx/subjects/subjects.actions';
 import { AppState, selectDraftSubject } from '../../@ngrx';
@@ -15,6 +15,7 @@ import { IFormConfig } from 'src/app/common/models/form';
 import { Subject } from '../../common/models/subject';
 import { confirmNavigation } from '../../common/utils/confirm-navigation';
 import { IConfirmSave, TNullable } from '../../common/models/utils';
+import { Student } from '../../common/models/student';
 
 @Component({
   selector: 'app-subject-form',
@@ -29,7 +30,7 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
 
   @ViewChild('form')
   public formComponent: FormComponent;
-  public config: IFormConfig;
+  public config$: Observable<IFormConfig>;
 
   constructor(
     private store: Store<AppState>,
@@ -41,7 +42,12 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     this.isSaving = false;
   }
 
-  public ngOnInit(): void {
+  private resetButton(): void {
+    this.formComponent.form.reset();
+    this.formService.clearFormData();
+  }
+
+  private getInitialSubject(): void {
     this.store.pipe(
       select(selectDraftSubject),
       takeUntil(this.unsubscribe$),
@@ -58,13 +64,27 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
     if (this.initialSubject === null) {
       this.initialSubject = new Subject();
     }
-    this.formService.updateFormData(this.initialSubject);
-    this.config = this.formService.config;
-    // set clear function for form
-    this.config.buttons[1].onClick = () => {
-      this.formComponent.form.reset();
-      this.formService.clearFormData();
-    };
+  }
+
+  private getConfig(): void {
+    this.config$ = this.formService.config.pipe(
+      tap(() => {
+        const currentFormData: Subject = this.formComponent === undefined ?
+          this.initialSubject :
+          this.formService.getSubjectByForm(this.formComponent.form);
+
+        this.formService.updateFormData(currentFormData);
+      }),
+      tap((config) => {
+        const resetButtonIndex: number = 1;
+        config.buttons[resetButtonIndex].onClick = this.resetButton.bind(this);
+      }),
+    );
+  }
+
+  public ngOnInit(): void {
+    this.getInitialSubject();
+    this.getConfig();
   }
 
   public onSubmit(form: FormGroup): void {
@@ -78,7 +98,7 @@ export class SubjectFormComponent extends BaseComponent implements OnInit {
   }
 
   public showSaveQuestion(): Observable<boolean> {
-    if (this.isSaving) {
+    if (this.isSaving || this.formComponent === undefined) {
       return of(true);
     }
 

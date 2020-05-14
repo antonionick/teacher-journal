@@ -1,11 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of, pipe, UnaryFunction, zip } from 'rxjs';
-import { filter, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as SubjectsActions from '../../@ngrx/subjects/subjects.actions';
 import * as SubjectsSelectors from '../../@ngrx/subjects/subjects.selectors';
@@ -18,14 +24,16 @@ import {
   SubjectTableHeaderService,
   SubjectTableService,
   TableConfigHistoryService,
+  SubjectTableTextService,
 } from '../services';
 import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
-import { AppState, IStudentsState } from '../../@ngrx';
+import { AppState, IMarksState, IStudentsState } from '../../@ngrx';
 import { ISubjectSelectStore, Subject } from '../../common/models/subject';
 import { IDataChanges, TNullable } from '../../common/models/utils';
 import { IChangeField, ITableConfig, TableHeaderConfig } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
+import { SubjectTableText } from '../models';
 
 @Component({
   selector: 'app-subject-table',
@@ -37,20 +45,23 @@ import { BaseComponent } from 'src/app/components/base/base.component';
     SubjectTableHeaderService,
     SubjectTableBodyService,
     TableConfigHistoryService,
+    SubjectTableTextService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SubjectTableComponent extends BaseComponent implements OnInit {
+export class SubjectTableComponent extends BaseComponent implements OnInit, OnDestroy {
   public isLoading: boolean;
   public subject: Subject;
-  public config: ITableConfig;
   public teacherControl: FormControl;
   public saveButtonConfig: ButtonConfig;
+  public config$: Observable<ITableConfig>;
+  public text$: Observable<SubjectTableText>;
 
   constructor(
     private store: Store<AppState>,
     private router: Router,
     private tableService: SubjectTableService,
+    private textService: SubjectTableTextService,
     private cdr: ChangeDetectorRef,
   ) {
     super();
@@ -148,49 +159,60 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
       );
     }
 
+    const loadMarks: () => UnaryFunction<Observable<IMarksState>, Observable<IMarksState>> = () => {
+      return pipe(
+        tap(({ error }) => {
+          if (error && error.status !== 404) {
+            alert(`Marks: ${ error.message }`);
+          }
+
+          this.store.dispatch(MarksActions.loadMarks({ id }));
+        }),
+      );
+    };
+    const selectMarks: () => Observable<TNullable<Array<Mark>>> = () => {
+      return this.store.select(MarksSelectors.selectMarksBySubject, { id }).pipe(
+        filter(({ loaded }, index) => loaded && index > 0),
+        take(1),
+        map(({ marks }) => marks === null ? [] : marks),
+      );
+    };
+
     return this.store.pipe(
       select(MarksSelectors.selectMarksState),
       filter(({ adding, updating, deleting }) => !adding && !updating && !deleting),
       take(1),
-      tap(({ error }) => {
-        if (error && error.status !== 404) {
-          alert(`Marks: ${error.message}`);
-        }
-
-        this.store.dispatch(MarksActions.loadMarks({ id }));
-      }),
-      switchMap(() => this.store.select(MarksSelectors.selectMarksBySubject, { id })),
-      filter(({ loaded }, index) => loaded && index > 0),
-      take(1),
-      map(({ marks }) => marks === null ? [] : marks),
+      loadMarks(),
+      switchMap(() => selectMarks()),
     );
   }
 
   private saveSubject(): Observable<Subject> {
     const isChanged: boolean = this.teacherControl.value !== this.subject.teacher;
-
     if (!isChanged) {
       return of(this.subject);
     }
+
     this.subject.teacher = this.teacherControl.value;
     this.store.dispatch(SubjectsActions.updateSubject({ subject: this.subject }));
 
+    const selectSubject: () => Observable<Subject> = () => {
+      return this.store.pipe(
+        select(SubjectsSelectors.selectSubjectById, { id: this.subject.id }),
+        tap(({ err }) => {
+          if (err) {
+            alert(`Subject: ${ err.message }`);
+          }
+        }),
+        map(({ subject }) => subject),
+      );
+    };
+
     return this.store.pipe(
       select('subjects'),
-    ).pipe(
       filter(({ updating }) => !updating),
       take(1),
-      switchMap(() => (
-        this.store.pipe(
-          select(SubjectsSelectors.selectSubjectById, { id: this.subject.id }),
-        )
-      )),
-      tap(({ err }) => {
-        if (err) {
-          alert(`Subject: ${err.message}`);
-        }
-      }),
-      map(({ subject }) => subject),
+      mergeMap(() => selectSubject()),
     );
   }
 
@@ -200,7 +222,6 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.config = null;
     this.isLoading = true;
     this.subject = new Subject();
     this.teacherControl = new FormControl('');
@@ -209,57 +230,48 @@ export class SubjectTableComponent extends BaseComponent implements OnInit {
     this.store.pipe(
       select(SubjectsSelectors.selectSubjectByUrl),
       this.loadProcessSubject(),
-      switchMap(() => {
-        return this.store.pipe(select('students'));
-      }),
+      switchMap(() => this.store.pipe(select('students'))),
       this.loadProcessStudents(),
-      switchMap(() => {
-        return this.store.pipe(select(MarksSelectors.selectMarksByUrl));
-      }),
+      switchMap(() => this.store.pipe(select(MarksSelectors.selectMarksByUrl))),
       this.loadProcessMarks(),
       take(1),
+      tap(() => {
+        this.config$ = this.tableService.createConfig();
+        this.text$ = this.textService.text;
+        this.cdr.markForCheck();
+      }),
       takeUntil(this.unsubscribe$),
-    ).subscribe({
-      next: (): void => {
-        this.config = this.tableService.createConfig();
-        this.cdr.detectChanges();
-      },
-    });
+    ).subscribe();
   }
 
   public onSave(): void {
     const { id } = this.subject;
     this.saveButtonConfig.disable = true;
 
-    zip(
-      this.saveMarks(id),
-      this.saveSubject(),
-    ).pipe(
+    zip(this.saveMarks(id), this.saveSubject()).pipe(
       take(1),
-    ).subscribe({
-      next: ([marks, subject]) => {
+      tap(([marks, subject]) => {
         this.setSubject(subject);
         this.tableService.subjectMarks = marks;
-        this.config = this.tableService.createConfig();
         this.saveButtonConfig = { ...this.saveButtonConfig, disable: false };
-        this.cdr.detectChanges();
-      },
-    });
+        this.tableService.updateConfig();
+      }),
+    ).subscribe();
   }
 
   public onUpdateHeaders(): void {
-    this.config = this.tableService.updateConfig();
+    this.tableService.updateConfigByDateChanges();
   }
 
   public onAddDateHeader(): void {
-    this.config = this.tableService.addHeader();
+    this.tableService.addHeader();
   }
 
   public onDeleteDateHeader(header: TableHeaderConfig): void {
-    this.config = this.tableService.deleteHeader(header);
+    this.tableService.deleteHeader(header);
   }
 
   public onChangeMark(change: IChangeField<number>): void {
-    this.config = this.tableService.updateMark(change);
+    this.tableService.updateMark(change);
   }
 }

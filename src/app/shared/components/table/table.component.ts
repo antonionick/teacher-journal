@@ -68,7 +68,7 @@ export class TableComponent implements OnChanges {
       };
     }
 
-    this.columnHeaders = currentValue.headers.map((item: TableHeaderConfig) => item.value);
+    this.columnHeaders = currentValue.headers.map((item: TableHeaderConfig) => item.title);
     this.dataSource = new MatTableDataSource(currentValue.body);
   }
 

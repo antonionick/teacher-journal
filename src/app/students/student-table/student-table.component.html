@@ -1,4 +1,4 @@
-<div class="student" *ngIf="config">
+<div class="student" *ngIf="config$ | async as config">
   <app-table [config]="config" class="student__table">
     <ng-template #external let-value="value">
       <span

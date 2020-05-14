@@ -1,39 +1,41 @@
-<article class="subject" *ngIf="config">
-  <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
-  <section class="subject__table-wrapper">
-    <app-table
-      class="subject__table"
-      [config]="config"
-      (headerChange)="onUpdateHeaders()"
-      (changeField)="onChangeMark($event)"
-      (headerHoverContentClick)="onDeleteDateHeader($event)"
-    >
-      <ng-template #headerHoverContent>
-        <span>Delete</span>
-      </ng-template>
-    </app-table>
-    <div class="subject__table-button-wrapper" *ngIf="config">
-      <app-button
-        class="subject__button subject__table-button subject__table-button_add"
-        (click)="onAddDateHeader()"
+<article class="subject" *ngIf="config$ | async as config">
+  <ng-container *ngIf="text$ | async as text">
+    <h2 class="subject__title">{{ subject.name | titlecase }}</h2>
+    <section class="subject__table-wrapper">
+      <app-table
+        class="subject__table"
+        [config]="config"
+        (headerChange)="onUpdateHeaders()"
+        (changeField)="onChangeMark($event)"
+        (headerHoverContentClick)="onDeleteDateHeader($event)"
       >
-        Add
+        <ng-template #headerHoverContent>
+          <span>{{ text.deleteHeader | titlecase }}</span>
+        </ng-template>
+      </app-table>
+      <div class="subject__table-button-wrapper" *ngIf="config">
+        <app-button
+          class="subject__button subject__table-button subject__table-button_add"
+          (click)="onAddDateHeader()"
+        >
+          {{ text.addHeader | titlecase }}
+        </app-button>
+      </div>
+    </section>
+
+    <section class="subject__update-form-wrapper">
+      <label class="subject__label">
+        <span class="subject__label-title">{{ text.teacher | titlecase }}:</span>
+        <input class="subject__label-item" type="text" [formControl]="teacherControl"/>
+      </label>
+
+      <app-button
+        class="subject__button subject__button_save"
+        [config]="saveButtonConfig"
+        (click)="onSave()"
+      >
+        {{ text.saveChanges | titlecase }}
       </app-button>
-    </div>
-  </section>
-
-  <section class="subject__update-form-wrapper">
-    <label class="subject__label">
-      <span class="subject__label-title">Teacher:</span>
-      <input class="subject__label-item" type="text" [formControl]="teacherControl" />
-    </label>
-
-    <app-button
-      class="subject__button subject__button_save"
-      [config]="saveButtonConfig"
-      (click)="onSave()"
-    >
-      Save
-    </app-button>
-  </section>
+    </section>
+  </ng-container>
 </article>

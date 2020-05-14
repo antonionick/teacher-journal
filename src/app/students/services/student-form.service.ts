@@ -1,18 +1,25 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+
+import { Observable, of } from 'rxjs';
+import { map, mergeMap, startWith, tap } from 'rxjs/operators';
+
+import cloneDeep from 'lodash/cloneDeep';
 
 import { IFormConfig, FormElement } from '../../common/models/form';
 import { Student } from '../../common/models/student';
+import { ButtonConfig } from '../../common/models/button';
+import { ITranslateFormElements } from '../../common/models/translate/translate-form-elements';
+import { ITranslateForm } from '../../common/models/translate/translate-form';
 
-const config: IFormConfig = {
+const initialConfig: IFormConfig = {
   id: '',
   classes: [],
   elements: [
     new FormElement({
       value: '',
       key: 'name',
-      label: 'Name',
-      placeholder: 'Enter name:',
       required: true,
       controlType: 'input',
       type: 'text',
@@ -20,8 +27,6 @@ const config: IFormConfig = {
     new FormElement({
       value: '',
       key: 'lastName',
-      label: 'LastName',
-      placeholder: 'Enter lastName:',
       required: true,
       controlType: 'input',
       type: 'text',
@@ -29,39 +34,80 @@ const config: IFormConfig = {
     new FormElement({
       value: '',
       key: 'address',
-      label: 'Address',
-      placeholder: 'Enter address:',
       controlType: 'input',
       type: 'text',
     }),
     new FormElement({
       value: '',
       key: 'description',
-      label: 'Description',
-      placeholder: 'Enter description:',
       controlType: 'textarea',
     }),
   ],
   buttons: [
-    {
-      value: 'Add',
+    new ButtonConfig({
       type: 'submit',
       disable: true,
-    },
-    {
-      value: 'Clear',
+    }),
+    new ButtonConfig({
       type: 'button',
       disable: false,
-    },
+    }),
   ],
 };
 
 @Injectable()
 export class StudentFormService {
-  public config: IFormConfig;
+  private readonly formConfig: IFormConfig;
 
-  constructor() {
-    this.config = config;
+  public get config(): Observable<IFormConfig> {
+    return this.translate.onLangChange.pipe(
+      startWith({ lang: null }),
+      mergeMap((event: LangChangeEvent) => (
+        event.lang === null ? this.getFormTranslation() : of(this.convertTranslation(event))
+      )),
+      tap((data: ITranslateForm) => this.translateConfig(data)),
+      map(() => (
+        { ...this.formConfig }
+      )),
+    );
+  }
+
+  constructor(private translate: TranslateService) {
+    this.formConfig = cloneDeep(initialConfig);
+  }
+
+  private getFormTranslation(): Observable<ITranslateForm> {
+    return this.translate.get('STUDENTS.FORM').pipe(
+      map(({ ELEMENTS, BUTTONS }) => (
+        { elements: ELEMENTS, buttons: BUTTONS }
+      )),
+    );
+  }
+
+  private convertTranslation({ translations }: LangChangeEvent): ITranslateForm {
+    const elements: ITranslateFormElements = translations.STUDENTS.FORM.ELEMENTS;
+    const buttons: Array<string> = translations.STUDENTS.FORM.BUTTONS;
+
+    return { elements, buttons };
+  }
+
+  private translateConfigElements(elements: ITranslateFormElements): void {
+    this.formConfig.elements.forEach((element) => {
+      const { LABEL, PLACEHOLDER } = elements[element.key.toUpperCase()];
+      element.label = LABEL;
+      element.placeholder = PLACEHOLDER;
+    });
+  }
+
+  private translateConfigButtons(buttons: Array<string>): void {
+    this.formConfig.buttons.forEach((button, index) => (
+      button.value = buttons[index]
+    ));
+  }
+
+  private translateConfig({ elements, buttons }: ITranslateForm): void {
+    this.translateConfigElements(elements);
+    this.translateConfigButtons(buttons);
   }
 
   public getStudentByForm({ value }: FormGroup): Student {
@@ -75,14 +121,9 @@ export class StudentFormService {
   }
 
   public updateConfigData(student: Student): void {
-    this.config.elements.forEach((item) => {
+    this.formConfig.elements.forEach((item) => {
       item.value = student[item.key] || '';
     });
-  }
-
-  public getFormConfig(student: Student): IFormConfig {
-    this.updateConfigData(student);
-    return this.config;
   }
 
   public clearFormConfig(): void {

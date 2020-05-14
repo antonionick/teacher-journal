@@ -1,2 +1,7 @@
-<app-form [config]="config" (submit)="onSubmit($event)" #form>
+<app-form
+  *ngIf="config$ | async as config"
+  [config]="config"
+  (submit)="onSubmit($event)"
+  #form
+>
 </app-form>

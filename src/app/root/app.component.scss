@@ -4,32 +4,36 @@
   display: flex;
   flex-flow: column;
 
-  &__logo-wrapper {
+  &__toolbar {
+    padding: 0 5px;
+    background-color: $project-color;
+  }
+
+  &__content {
+    box-sizing: border-box;
     display: flex;
-    max-width: 300px;
     align-self: center;
     justify-content: space-between;
+    align-items: center;
+    width: 520px;
+    margin: 0 auto;
     color: white;
     text-decoration: none;
   }
 
   &__title {
-    order: 2;
-    margin: 0;
+    display: block;
+    font-size: 22px;
   }
 
-  &__logo {
-    order: 1;
-    height: 80px;
-    width: 80px;
-    background-color: $project-color;
+  &__title-link {
+    display: block;
+    color: white;
+    text-decoration: none;
   }
 
-  &__panel {
-    margin-top: 30px;
+  &__lang {
+    width: 120px;
+    font-size: 16px;
   }
-}
-
-.main {
-  //margin-top: 30px;
 }

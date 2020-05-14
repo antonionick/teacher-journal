@@ -216,14 +216,14 @@ describe('SubjectTableBodyService', () => {
         }),
       ];
       bodyConfig = service.createBody(marks, students);
-      addedHeader = new TableHeaderConfig({ value: `${ 1587589200000 }` });
+      addedHeader = new TableHeaderConfig({ title: `${ 1587589200000 }` });
     });
 
     it('should add to each field created date', () => {
       service.updateBodyByAddDates(bodyConfig, addedHeader);
 
       bodyConfig.forEach((field) => {
-        expect(field[addedHeader.value]).not.toBe(undefined);
+        expect(field[addedHeader.title]).not.toBe(undefined);
       });
     });
   });

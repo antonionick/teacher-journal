@@ -1,8 +1,54 @@
+import { EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+
+import { Observable, of } from 'rxjs';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
 
 import { SubjectFormService } from './';
 import { Subject } from '../../common/models/subject';
-import { FormElement } from 'src/app/common/models/form';
+import { IFormConfig } from 'src/app/common/models/form';
+
+interface IElements {
+  [key: string]: {
+    LABEL: string;
+    PLACEHOLDER: string;
+  };
+}
+
+interface IFormData {
+  ELEMENTS: IElements;
+  BUTTONS: Array<string>;
+}
+
+const form: IFormData = {
+  ELEMENTS: {
+    NAME: {
+      LABEL: 'Name',
+      PLACEHOLDER: 'Enter name:',
+    },
+    TEACHER: {
+      LABEL: 'Teacher',
+      PLACEHOLDER: 'Enter teacher:',
+    },
+    CABINET: {
+      LABEL: 'Cabinet',
+      PLACEHOLDER: 'Enter cabinet:',
+    },
+    DESCRIPTION: {
+      LABEL: 'Description',
+      PLACEHOLDER: 'Enter description:',
+    },
+  },
+  BUTTONS: ['Add', 'Clear'],
+};
+
+const translate: TranslateService = {
+  onLangChange: new EventEmitter,
+  get(key: string): Observable<IFormData> {
+    return of(form);
+  },
+} as TranslateService;
 
 describe('SubjectFormService', () => {
   describe('getSubjectByForm', () => {
@@ -11,7 +57,7 @@ describe('SubjectFormService', () => {
     let formConfig: FormGroup;
 
     beforeEach(() => {
-      service = new SubjectFormService();
+      service = new SubjectFormService(translate);
       subject = new Subject();
       formConfig = new FormGroup({
         name: new FormControl('Subject'),
@@ -40,7 +86,7 @@ describe('SubjectFormService', () => {
     let subject: Subject;
 
     beforeEach(() => {
-      service = new SubjectFormService();
+      service = new SubjectFormService(translate);
       subject = new Subject({
         name: 'Subject',
         teacher: 'Teacher',
@@ -49,37 +95,53 @@ describe('SubjectFormService', () => {
     });
 
     it('should not update if Subject is null', () => {
-      const valuesBeforeUpdate: { [key: string]: string } =
-        service.config.elements.reduce((result, item) => {
-          result[item.key] = item.value;
-          return result;
-        }, {});
+      const valuesBeforeUpdate: { [key: string]: string } = {};
 
-      service.updateFormData(null);
+      const fillValues: (config: IFormConfig) => void =
+        (config) => config.elements.forEach((item) => {
+          valuesBeforeUpdate[item.key] = item.value;
+        });
 
-      service.config.elements.forEach((item) => {
-        expect(item.value).toBe(valuesBeforeUpdate[item.key]);
-      });
+      const checkValues: (config: IFormConfig) => void =
+        (config) => config.elements.forEach((item) => {
+          expect(item.value).toBe(valuesBeforeUpdate[item.key]);
+        });
+
+      service.config.pipe(
+        take(1),
+        tap(fillValues),
+        tap(() => service.updateFormData(null)),
+        mergeMap(() => service.config),
+        take(1),
+        tap(checkValues),
+      ).subscribe();
     });
 
     it('should update data by Subject', () => {
       service.updateFormData(subject);
 
-      service.config.elements.forEach((item) => {
-        expect(item.value).toBe(subject[item.key]);
-      });
+      service.config.pipe(
+        take(1),
+        tap((config) => {
+          config.elements.forEach((item) => {
+            expect(item.value).toBe(subject[item.key]);
+          });
+        }),
+      ).subscribe();
     });
 
     it('should take default data for Subject ' +
       'if passed Subject value in coerce to boolean is false', () => {
-        subject.name = null;
+      subject.name = null;
 
-        service.updateFormData(subject);
+      service.updateFormData(subject);
 
-        const nameField: FormElement<string> = service.config.elements.find((item) => (
-          item.key === 'name'
-        ));
-        expect(nameField.value).toBe('');
-      });
+      service.config.pipe(
+        map((config) => (
+          config.elements.find((item) => item.key === 'name')
+        )),
+        tap((nameField) => expect(nameField.value).toBe('')),
+      ).subscribe();
+    });
   });
 });

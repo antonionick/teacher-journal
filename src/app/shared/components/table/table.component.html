@@ -8,7 +8,7 @@
   >
     <ng-container
       *ngFor="let header of config.headers"
-      matColumnDef="{{ header.value }}"
+      matColumnDef="{{ header.title }}"
       [sticky]="header.sticky ? true : null"
     >
       <th
@@ -35,7 +35,7 @@
         </ng-container>
 
         <ng-template #value>
-          <span>{{ header.isVisible ? header.value : ('' | titlecase) }}</span>
+          <span>{{ header.isVisible ? header.content : ('' | titlecase) }}</span>
         </ng-template>
 
         <div
@@ -53,26 +53,26 @@
         *matCellDef="let cell"
         mat-cell
         class="table__cell"
-        [class.table__cell_mark]="cell[header.value].editCell"
+        [class.table__cell_mark]="cell[header.title].editCell"
         appEditMark
-        [editMarkConfig]="cell[header.value].editCell"
-        [column]="header.value"
+        [editMarkConfig]="cell[header.title].editCell"
+        [column]="header.title"
         [row]="cell.id.value"
         (changeMark)="onChangeMark($event)"
       >
         <ng-container [ngSwitch]="true">
-          <ng-container *ngSwitchCase="cell[header.value].isExternal">
+          <ng-container *ngSwitchCase="cell[header.title].isExternal">
             <ng-container *ngTemplateOutlet="isExternal; context: { value: cell }"></ng-container>
           </ng-container>
-          <ng-container *ngSwitchCase="cell[header.value].highlight !== null">
+          <ng-container *ngSwitchCase="cell[header.title].highlight !== null">
             <ng-container
               *ngTemplateOutlet="
                 isHighlightMark;
                 context: {
-                  config: cell[header.value].highlight,
-                  value: cell[header.value].value,
-                  pipe: cell[header.value].pipe,
-                  args: cell[header.value].pipeArgs
+                  config: cell[header.title].highlight,
+                  value: cell[header.title].value,
+                  pipe: cell[header.title].pipe,
+                  args: cell[header.title].pipeArgs
                 }"
             ></ng-container>
           </ng-container>
@@ -81,9 +81,9 @@
               *ngTemplateOutlet="
                 base;
                 context: {
-                  value: cell[header.value].value,
-                  pipe: cell[header.value].pipe,
-                  args: cell[header.value].pipeArgs
+                  value: cell[header.title].value,
+                  pipe: cell[header.title].pipe,
+                  args: cell[header.title].pipeArgs
                 }"
             ></ng-container>
           </ng-container>

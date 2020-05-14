@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { Observable } from 'rxjs';
+
 import { ITableConfig, IChangeField, TableHeaderConfig } from '../../common/models/table';
 import { Student } from 'src/app/common/models/student/student';
 import { Mark, IMarksByDate } from 'src/app/common/models/mark';
@@ -32,23 +34,27 @@ export class SubjectTableService {
     return this.configService.getChanges(this.marks, subjectId);
   }
 
-  public createConfig(): ITableConfig {
-    return this.configService.createConfig(this.students, this.marks);
+  public createConfig(): Observable<ITableConfig> {
+    return this.configService.getConfig(this.students, this.marks);
   }
 
-  public updateConfig(): ITableConfig {
-    return this.configService.updateConfigByDateChange();
+  public updateConfig(): void {
+    this.configService.updateConfig(this.students, this.marks);
   }
 
-  public addHeader(): ITableConfig {
-    return this.configService.addHeader();
+  public updateConfigByDateChanges(): void {
+    this.configService.updateConfigByDateChanges();
   }
 
-  public deleteHeader(header: TableHeaderConfig): ITableConfig {
-    return this.configService.deleteHeader(header);
+  public addHeader(): void {
+    this.configService.addHeader();
   }
 
-  public updateMark(change: IChangeField<number>): ITableConfig {
-    return this.configService.updateMark(change);
+  public deleteHeader(header: TableHeaderConfig): void {
+    this.configService.deleteHeader(header);
+  }
+
+  public updateMark(change: IChangeField<number>): void {
+    this.configService.updateMark(change);
   }
 }

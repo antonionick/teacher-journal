@@ -1,0 +1,87 @@
+{
+  "TITLE_APP": "teacher journal",
+  "PANEL_APP": {
+    "STUDENTS": "students",
+    "SUBJECTS": "subjects",
+    "STATISTICS": "statistics",
+    "EXPORT": "export"
+  },
+  "STUDENTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Name",
+          "PLACEHOLDER": "Enter name:"
+        },
+        "LASTNAME": {
+          "LABEL": "LastName",
+          "PLACEHOLDER": "Enter lastName:"
+        },
+        "ADDRESS": {
+          "LABEL": "Address",
+          "PLACEHOLDER": "Enter address:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Description",
+          "PLACEHOLDER": "Enter description:"
+        }
+      },
+      "BUTTONS": [
+        "Add",
+        "Clear"
+      ]
+    },
+    "TABLE": [
+      "id",
+      "delete",
+      "name",
+      "lastName",
+      "address",
+      "description"
+    ]
+  },
+  "SUBJECTS": {
+    "FORM": {
+      "ELEMENTS": {
+        "NAME": {
+          "LABEL": "Name",
+          "PLACEHOLDER": "Enter name:"
+        },
+        "TEACHER": {
+          "LABEL": "Teacher",
+          "PLACEHOLDER": "Enter teacher:"
+        },
+        "CABINET": {
+          "LABEL": "Cabinet",
+          "PLACEHOLDER": "Enter cabinet:"
+        },
+        "DESCRIPTION": {
+          "LABEL": "Description",
+          "PLACEHOLDER": "Enter description:"
+        }
+      },
+      "BUTTONS": [
+        "Add",
+        "Clear"
+      ]
+    },
+    "TABLE": {
+      "HEADERS": [
+        "name",
+        "lastName",
+        "average mark"
+      ],
+      "TEXT": {
+        "ADD HEADER": "add",
+        "DELETE HEADER": "delete",
+        "SAVE CHANGES": "save",
+        "TEACHER": "teacher"
+      }
+    }
+  },
+  "PAGE-NOT-FOUND": {
+    "TITLE": "page not found",
+    "CODE": "404",
+    "LINK": "Go to home!"
+  }
+}
