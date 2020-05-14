@@ -24,6 +24,7 @@ import {
   SubjectTableHeaderService,
   SubjectTableService,
   TableConfigHistoryService,
+  SubjectTableTextService,
 } from '../services';
 import { IMarksSelectStore, Mark, StatusSaveMarks } from '../../common/models/mark';
 import { AppState, IMarksState, IStudentsState } from '../../@ngrx';
@@ -32,6 +33,7 @@ import { IDataChanges, TNullable } from '../../common/models/utils';
 import { IChangeField, ITableConfig, TableHeaderConfig } from 'src/app/common/models/table';
 import { ButtonConfig } from 'src/app/common/models/button/button-config';
 import { BaseComponent } from 'src/app/components/base/base.component';
+import { SubjectTableText } from '../models';
 
 @Component({
   selector: 'app-subject-table',
@@ -43,6 +45,7 @@ import { BaseComponent } from 'src/app/components/base/base.component';
     SubjectTableHeaderService,
     SubjectTableBodyService,
     TableConfigHistoryService,
+    SubjectTableTextService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -52,11 +55,13 @@ export class SubjectTableComponent extends BaseComponent implements OnInit, OnDe
   public teacherControl: FormControl;
   public saveButtonConfig: ButtonConfig;
   public config$: Observable<ITableConfig>;
+  public text$: Observable<SubjectTableText>;
 
   constructor(
     private store: Store<AppState>,
     private router: Router,
     private tableService: SubjectTableService,
+    private textService: SubjectTableTextService,
     private cdr: ChangeDetectorRef,
   ) {
     super();
@@ -165,7 +170,6 @@ export class SubjectTableComponent extends BaseComponent implements OnInit, OnDe
         }),
       );
     };
-
     const selectMarks: () => Observable<TNullable<Array<Mark>>> = () => {
       return this.store.select(MarksSelectors.selectMarksBySubject, { id }).pipe(
         filter(({ loaded }, index) => loaded && index > 0),
@@ -233,6 +237,7 @@ export class SubjectTableComponent extends BaseComponent implements OnInit, OnDe
       take(1),
       tap(() => {
         this.config$ = this.tableService.createConfig();
+        this.text$ = this.textService.text;
         this.cdr.markForCheck();
       }),
       takeUntil(this.unsubscribe$),
