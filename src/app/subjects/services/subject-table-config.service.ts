@@ -4,7 +4,7 @@ import {
   TableHeaderConfig,
   ITableConfig,
   IChangeField,
-  TableBodyConfig,
+  ITableBodyConfig,
 } from '../../common/models/table';
 import { Mark, EditMark, IMarksByDate } from '../../common/models/mark';
 import { Student } from '../../common/models/student';
@@ -74,8 +74,8 @@ export class SubjectTableConfigService {
   private createBody(
     marks: IMarksByDate,
     students: Array<Student>,
-  ): Array<TableBodyConfig> {
-    let body: Array<TableBodyConfig> = this.bodyService.createBody(marks, students);
+  ): Array<ITableBodyConfig> {
+    let body: Array<ITableBodyConfig> = this.bodyService.createBody(marks, students);
     body = this.bodyService.sortBody(body);
     return body;
   }

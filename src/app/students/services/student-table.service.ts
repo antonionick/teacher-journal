@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { TableHeaderConfig, TableCellConfig, TableBodyConfig } from 'src/app/common/models/table';
+
+import { TableHeaderConfig, TableCellConfig, ITableBodyConfig } from 'src/app/common/models/table';
 import { Student } from 'src/app/common/models/student';
 
 const displayedColumns: Array<TableHeaderConfig> = [
@@ -37,11 +38,11 @@ export class StudentTableService {
     this.displayedColumns = displayedColumns;
   }
 
-  public addDeleteButtonToStudentConfig(student: TableBodyConfig): void {
+  public addDeleteButtonToStudentConfig(student: ITableBodyConfig): void {
     student.delete = new TableCellConfig({ isExternal: true });
   }
 
-  public getTableBodyConfig(students: Array<Student>): Array<TableBodyConfig> {
+  public getTableBodyConfig(students: Array<Student>): Array<ITableBodyConfig> {
     if (students.length === 0) {
       return [];
     }
@@ -49,7 +50,7 @@ export class StudentTableService {
     const studentKeys: Array<string> = Object.keys(students[0]);
 
     return students.map((student) => {
-      const studentConfig: TableBodyConfig = {};
+      const studentConfig: ITableBodyConfig = {};
 
       studentKeys.map((key) => {
         studentConfig[key] = new TableCellConfig({ value: student[key] });

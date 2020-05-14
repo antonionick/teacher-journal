@@ -2,7 +2,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ChangeDetectionStrategy,
@@ -21,7 +20,7 @@ import { BaseComponent } from '../../../components';
   styleUrls: ['./form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormComponent extends BaseComponent implements OnInit, OnDestroy {
+export class FormComponent extends BaseComponent implements OnInit {
   private config: IFormConfig;
 
   @Input('config')
@@ -82,9 +81,5 @@ export class FormComponent extends BaseComponent implements OnInit, OnDestroy {
   public onSubmit(event: Event): void {
     event.stopPropagation();
     this.submit.emit(this.form);
-  }
-
-  public ngOnDestroy(): void {
-    this.submitButton.disable = true;
   }
 }

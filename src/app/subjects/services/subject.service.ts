@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Subject } from '../../common/models/subject';
 import { urlProvider } from '../../url';
 import { Options } from '../../common/models/utils';
-import { map } from 'rxjs/operators';
 
 const { subjects: subjectUrl } = urlProvider;
 

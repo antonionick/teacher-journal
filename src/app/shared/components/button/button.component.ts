@@ -26,10 +26,6 @@ export class ButtonComponent {
   }
 
   constructor() {
-    this.buttonConfig = {
-      type: 'button',
-      disable: false,
-      onClick: (event: Event) => undefined,
-    } as ButtonConfig;
+    this.buttonConfig = new ButtonConfig();
   }
 }

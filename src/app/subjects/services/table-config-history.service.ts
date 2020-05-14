@@ -21,7 +21,7 @@ export class TableConfigHistoryService {
 
   private createHistoryItem(
     source: number,
-    current: TNullable<number> = source,
+    current: number = source,
   ): TableConfigHistory {
     return new TableConfigHistory({ source, current });
   }

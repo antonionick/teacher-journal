@@ -35,6 +35,7 @@ export class BreadcrumbsComponent implements OnInit {
     const breadcrumbs: Array<Breadcrumb> = [];
     let path: string = '';
 
+    // from 1 because first symbol is '/'
     url.slice(1).split('/').forEach((item) => {
       path += `/${item}`;
       breadcrumbs.push(new Breadcrumb({ path, name: item }));

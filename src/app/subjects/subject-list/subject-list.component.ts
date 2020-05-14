@@ -78,8 +78,8 @@ export class SubjectListComponent extends BaseComponent implements OnInit, OnDes
       take(1),
       mergeMap((state) => {
         const { id } = subject;
-        const marksToDelete: Array<Mark> = state.marks[id];
-        if (marksToDelete.length === 0) {
+        const marksToDelete: TNullable<Array<Mark>> = state.marks[id] || null;
+        if (marksToDelete === null || marksToDelete.length === 0) {
           return of(state);
         }
 
