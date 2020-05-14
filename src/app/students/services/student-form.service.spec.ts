@@ -10,35 +10,42 @@ import { Student } from 'src/app/common/models/student';
 
 interface IElements {
   [key: string]: {
-    LABEL: string,
-    PLACEHOLDER: string,
+    LABEL: string;
+    PLACEHOLDER: string;
   };
 }
 
-const elements: IElements = {
-  NAME: {
-    LABEL: 'Name',
-    PLACEHOLDER: 'Enter name:',
+interface IFormData {
+  ELEMENTS: IElements;
+  BUTTONS: Array<string>;
+}
+
+const form: IFormData = {
+  ELEMENTS: {
+    NAME: {
+      LABEL: 'Name',
+      PLACEHOLDER: 'Enter name:',
+    },
+    LASTNAME: {
+      LABEL: 'LastName',
+      PLACEHOLDER: 'Enter lastName:',
+    },
+    ADDRESS: {
+      LABEL: 'Address',
+      PLACEHOLDER: 'Enter address:',
+    },
+    DESCRIPTION: {
+      LABEL: 'Description',
+      PLACEHOLDER: 'Enter description:',
+    },
   },
-  LASTNAME: {
-    LABEL: 'LastName',
-    PLACEHOLDER: 'Enter lastName:',
-  },
-  ADDRESS: {
-    LABEL: 'Address',
-    PLACEHOLDER: 'Enter address:',
-  },
-  DESCRIPTION: {
-    LABEL: 'Description',
-    PLACEHOLDER: 'Enter description:',
-  },
+  BUTTONS: ['Add', 'Clear'],
 };
-const buttons: Array<string> = ['Add', 'Clear'];
 
 const translate: TranslateService = {
   onLangChange: new EventEmitter,
-  get(key: string | Array<string>): Observable<IElements | Array<string>> {
-    return key === 'STUDENTS.FORM.ELEMENTS' ? of(elements) : of(buttons);
+  get(key: string): Observable<IFormData> {
+    return of(form);
   },
 } as TranslateService;
 

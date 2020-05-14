@@ -4,7 +4,7 @@ import { faPlus, faTrash, IconDefinition } from '@fortawesome/free-solid-svg-ico
 import { select, Store } from '@ngrx/store';
 
 import { Observable, of } from 'rxjs';
-import { exhaustMap, filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import * as StudentsActions from '../../@ngrx/students/students.actions';
 import * as MarksActions from '../../@ngrx/marks/marks.actions';
@@ -13,8 +13,7 @@ import { AppState, IStudentsState, selectStudents } from '../../@ngrx';
 import { BaseComponent } from '../../components';
 import { Student } from '../../common/models/student';
 import { StudentTableService } from '../services';
-import { TNullable } from '../../common/models/utils';
-import { ITableConfig, ITableBodyConfig, TableHeaderConfig } from 'src/app/common/models/table';
+import { ITableConfig, ITableBodyConfig } from 'src/app/common/models/table';
 import { MarkService } from '../../common/services';
 
 @Component({
@@ -26,7 +25,7 @@ import { MarkService } from '../../common/services';
 })
 export class StudentTableComponent extends BaseComponent implements OnInit {
   public students$: Observable<Array<Student>>;
-  public config: TNullable<ITableConfig>;
+  public config$: Observable<ITableConfig>;
   public plusIcon: IconDefinition;
   public trashIcon: IconDefinition;
   public error: Error;
@@ -34,12 +33,11 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
 
   constructor(
     private store: Store<AppState>,
-    private studentTableService: StudentTableService,
+    private tableService: StudentTableService,
     private markService: MarkService,
     private cdr: ChangeDetectorRef,
   ) {
     super();
-    this.config = null;
     this.isLoading = false;
     this.plusIcon = faPlus;
     this.trashIcon = faTrash;
@@ -64,18 +62,12 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       switchMap((marksState) => this.store.pipe(
         select('subjects'),
         take(1),
-        map((subjectsState) => (
-          this.markService.isAllMarksLoaded(marksState, subjectsState)
+        map((subjectsState) => this.markService.isAllMarksLoaded(marksState, subjectsState)),
+        mergeMap((isLoaded) => (
+          isLoaded ?
+            of(this.markService.getMarksByKey('studentId', id, marksState)) :
+            this.markService.fetchMarks(HttpUtils.getParamsWithKey('studentId', [id]))
         )),
-        mergeMap((isLoaded) => {
-          if (isLoaded) {
-            return of(this.markService.getMarksByKey('studentId', id, marksState));
-          }
-
-          return this.markService.fetchMarks(
-            HttpUtils.getParamsWithKey('studentId', [id]),
-          );
-        }),
       )),
       mergeMap((marks) => {
         if (marks.length === 0) {
@@ -93,36 +85,16 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private updateConfigBody(students: Array<Student>): void {
-    if (this.config === null) {
-      this.config = { headers: [], body: [] };
-    }
-
-    this.config = {
-      ...this.config,
-      body: this.studentTableService.getTableBodyConfig(students),
-    };
-
-    this.cdr.markForCheck();
-  }
-
-  private updateConfigHeaders(headers: Array<TableHeaderConfig>): void {
-    this.config = {
-      ...this.config,
-      headers,
-    };
-
-    this.cdr.markForCheck();
-  }
-
   private updateConfig(): void {
     this.students$.pipe(
-      tap((students) => this.updateConfigBody(students)),
-      exhaustMap(() => this.studentTableService.headers.pipe(
-        tap((headers) => this.updateConfigHeaders(headers)),
-      )),
+      tap((students) => this.tableService.updateTableBody(students)),
       takeUntil(this.unsubscribe$),
     ).subscribe();
+  }
+
+  private getConfig(students: Array<Student>): void {
+    this.config$ = this.tableService.getConfig(students);
+    this.cdr.markForCheck();
   }
 
   public ngOnInit(): void {
@@ -140,6 +112,7 @@ export class StudentTableComponent extends BaseComponent implements OnInit {
       }),
       filter((state) => !this.isNeedLoad(state)),
       take(1),
+      tap(({ students }) => this.getConfig(students)),
     ).subscribe();
 
     this.updateConfig();
